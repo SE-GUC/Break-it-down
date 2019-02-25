@@ -107,3 +107,14 @@ class PartnerCoworkingSpace{
 
 
 module.exports= ParnerCoworkingSpace
+
+class Room {
+    constructor(id,capacity,schedule) {
+        this.id= uuid.v4();
+        this.capacity = capacity;
+        this.schedule = schedule;
+      
+    };
+}
+
+module.exports = Room
