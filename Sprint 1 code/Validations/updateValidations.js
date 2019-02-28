@@ -11,7 +11,7 @@ module.exports = {
 
             lastname: Joi.string().min(3).max(100),
 
-            age: Joi.number.min(15)
+            age: Joi.number().min(15)
 
         }
         

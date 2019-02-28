@@ -45,8 +45,8 @@ router.get('/viewUpdates', (req, res) => {
 router.put('/approveUpdates/:id',(req,res)=>{
      try {
     
-         const id = req.params.id
-         const uid=req.params.id
+         const id =parseInt(req.params.id)
+         const uid=parseInt(req.params.id)
     
          const user =  users.findIndex(user => user.id === id);
          const update=updates.findIndex(update => update.id === uid);
@@ -81,7 +81,7 @@ router.put('/approveUpdates/:id',(req,res)=>{
 });
 
 router.delete('/disapproveUpdates/:id',(req,res)=>{
-         const uid=req.params.id
+         const uid=parseInt(req.params.id)
     
          const update=updates.findIndex(update => update.id === uid);
 
