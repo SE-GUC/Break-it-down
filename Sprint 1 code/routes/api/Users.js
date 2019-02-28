@@ -7,13 +7,14 @@ const router = express.Router();
 // Models
 const User = require('../../Models/UserModel');
 
-// temporary data created as if it was pulled out of the database ...
+// temporary arbitary data created as if it was pulled out of the database ...
 var users = [
-	new User('Barney', 30),
-	new User('Lilly', 27),
-	new User('Ted', 29),
-	new User('Marshal', 27),
-	new User('Robin', 28)
+	new User('Barney', 30,'barney@hotmail.com',345678934780),
+	new User('Lilly', 27,'lily@hotmail.com',34563479347890),
+	new User('Ted', 29,'ted@hotmail.com',3456734890),
+	new User('Marshal', 27,'marshal@hotmail.com',3456754890),
+	new User('Robin', 28,'robin@hotmail.com',34567844390)
+
 ];
 
 // Instead of app use route
@@ -38,17 +39,28 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
 	const name = req.body.name;
 	const age = req.body.age;
+	const email = req.body.email;
+
+	const phoneNumber = req.body.phoneNumber;
 
 	if (!name) return res.status(400).send({ err: 'Name field is required' });
 	if (typeof name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
 	if (!age) return res.status(400).send({ err: 'Age field is required' });
 	if (typeof age !== 'number') return res.status(400).send({ err: 'Invalid value for age' });
+	if (!email) return res.status(400).send({ err: 'email field is required' });
+	if (typeof email !== 'string') return res.status(400).send({ err: 'Invalid value for email' });
+	if (!phoneNumber) return res.status(400).send({ err: 'phoneNumber field is required' });
+	if (typeof phoneNumber !== 'number') return res.status(400).send({ err: 'Invalid value for phoneNumber' });
+
+
 
 	const newUser = {
 		name,
 		age,
-		id: uuid.v4(),
+		email,
+		phoneNumber,
 	};
+
 	users.push(newUser)
 	return res.json({ data: newUser });
 });
@@ -64,7 +76,9 @@ router.put('/:id', (req, res) => {
 		if (user.id == (req.params.id)) {
 		  user.name = updUser.name ? updUser.name : user.name;
 		  user.age = updUser.age ? updUser.age : user.age;
-  
+		  user.email = updUser.email ? updUser.email : user.email; 
+		  user.phoneNumber = updUser.phoneNumber ? updUser.phoneNumber : user.phoneNumber;
+
 		  res.json({ msg: 'User successfully updated', user });
 		}
 	  });
@@ -91,22 +105,8 @@ router.delete('/:id', (req, res) => {
   
 
 
-/*router.post('/', (req, res) => {
-	const name = req.body.name;
-	const age = req.body.age;
+//JOI later
 
-	if (!name) return res.status(400).send({ err: 'Name field is required' });
-	if (typeof name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
-	if (!age) return res.status(400).send({ err: 'Age field is required' });
-	if (typeof age !== 'number') return res.status(400).send({ err: 'Invalid value for age' });
-
-	const newUser = {
-		name,
-		age,
-		id: uuid.v4(),
-	};
-	return res.json({ data: newUser });
-});*/
 /*
 router.post('/joi', (req, res) => {
 	const name = req.body.name
