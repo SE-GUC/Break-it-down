@@ -215,7 +215,6 @@ router.put('/:PID/:TID', (req, res)=> {
 
     const Task_id = req.params.TID
 
-    if(Part !== undefined) {
     const Task_Array = Part.Tasks
 
     const task_to_post = Task_Array.find(Tasks => Tasks.taskID === parseInt(Task_id))
@@ -229,8 +228,7 @@ router.put('/:PID/:TID', (req, res)=> {
     }else
         res.send('not approved') 
 
-    }else
-    res.send('Invalid request')
+    }
 
 });
 
