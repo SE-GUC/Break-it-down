@@ -12,11 +12,11 @@ const EducationalOrganisation = require('../../Models/EducationalOrganisation');
 
 // temporary arbitary data created as if it was pulled out of the database ...
 var educationalOrganisations = [
-	new EducationalOrganisation('NES', 'NES.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C","@barney"),
-	new EducationalOrganisation('KES', 'KES.com','lily@hotmail.com',"Giza", 01234567,3489348934,'Mohamed','Organs','Graduation',"O","@lilly"),
-	new EducationalOrganisation('TEA', 'TEA.com','ted@hotmail.com',"Point90", 01234567,8943893489,'Ali','Humans','CS4GameRoom',"N","@Ted"),
-	new EducationalOrganisation('Dale Carnegie', "carnegie.com",'marshal@hotmail.com',"Mohandseen", 01234567,34983489,'Samya','Relaxing','Kol El Nas Bet2ol Yarab',"S","@Ted"),
-	new EducationalOrganisation('Butterfly', "Butterfly.com",'robin@hotmail.com',"Agouza", 01234567,3489348989,'Farida','Being Happy','Concepts Food Logger in Prolog',"U","@Robin")
+	new EducationalOrganisation('NES', 'NES.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C"),
+	new EducationalOrganisation('KES', 'KES.com','lily@hotmail.com',"Giza", 01234567,3489348934,'Mohamed','Organs','Graduation',"O"),
+	new EducationalOrganisation('TEA', 'TEA.com','ted@hotmail.com',"Point90", 01234567,8943893489,'Ali','Humans','CS4GameRoom',"N"),
+	new EducationalOrganisation('Dale Carnegie', "carnegie.com",'marshal@hotmail.com',"Mohandseen", 01234567,34983489,'Samya','Relaxing','Kol El Nas Bet2ol Yarab',"S"),
+	new EducationalOrganisation('Butterfly', "Butterfly.com",'robin@hotmail.com',"Agouza", 01234567,3489348989,'Farida','Being Happy','Concepts Food Logger in Prolog',"U")
 
 ];
 
