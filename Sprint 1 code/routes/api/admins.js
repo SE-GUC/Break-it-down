@@ -11,7 +11,6 @@ const Admin = require('../../models/Admin')
 const User = require('../../models/User')
 
 
-
 // temporary data created as if it was pulled out of the database ...
 
 const admins = [
