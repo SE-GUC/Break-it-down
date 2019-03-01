@@ -5,7 +5,7 @@ const uuid = require('uuid');
 const router = express.Router();
 
 // Models
-const partner = require('C://Users/anour/Documents/partnerM');
+const partner = require('../../Models/partnerM');
 
 // temporary data created as if it was pulled out of the database ...
 // temporary arbitary data created as if it was pulled out of the database ...
