@@ -7,3 +7,4 @@ const RoomBookingsAPI = require('../../models/RoomBookings');
 router.get('/', (req, res) => res.json({ data: RoomBookings }));
 
 module.exports = router;
+
