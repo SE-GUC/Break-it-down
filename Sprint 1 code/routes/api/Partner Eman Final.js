@@ -3,7 +3,8 @@ const router= express.Router();
 const Joi = require('joi');
 
 const partner = require('../../models/Partner');
-
+const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const RoomBookings = require('../../models/RoomBookings');
 
 
 //-----------------------------------partner submit task description------------------------------------------- eman
@@ -124,7 +125,7 @@ router.get('/', (req, res) => res.json({ data: partner }));
 
 //nourhan
 //Get all bookings of a specific user
-router.get('/api/RoomBookings/:userID' ,(req, res)=>{
+router.get('/RoomBookings/:userID' ,(req, res)=>{
 	var RB = RoomBookings.find(p => p.userID === parseInt(req.params.userID));
     if(!RB){
         res.status(404).send('This user has no bookings');
@@ -134,7 +135,7 @@ router.get('/api/RoomBookings/:userID' ,(req, res)=>{
 });
 
 //get a room in a specific coworking space by id
-router.get('/api/cospace/:id/rooms/:id2' ,(req, res)=>{
+router.get('/cospace/:id/rooms/:id2' ,(req, res)=>{
     var scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
     if(!scheduleroom){
         res.status(404).send('The room with the given id is not found');
@@ -144,7 +145,7 @@ router.get('/api/cospace/:id/rooms/:id2' ,(req, res)=>{
 });
 
 //book a room , append it to the array of bookings if it is not in my bookings
-router.put('/api/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
+router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
     let scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
     if(!scheduleroom){
         res.status(404).send('The room with the given id is not found');
@@ -191,7 +192,7 @@ router.put('/api/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
 
 
 //delete booking and set the reservation boolean to false so others can now book it
-router.delete('/api/RoomBookings/:userID/:bookingID', (req, res) => {
+router.delete('/RoomBookings/:userID/:bookingID', (req, res) => {
     const temp = RoomBookings.find(c => c.userID === parseInt(req.params.userID));
     const book = temp.bookings;
     const temp2 = book.find(r => r.bookingID === parseInt(req.params.bookingID));

@@ -7,8 +7,9 @@ const validator = require('./validations/validations')
 
 const express = require('express')
 
+const ProfilesAPI = require('./routes/api/Profiles');
 const admins = require('./routes/api/admins')
-
+const consultatns = require('./routes/api/consultancyAgency');
 
 const Joi = require('joi');
 
@@ -17,7 +18,7 @@ const Joi = require('joi');
 const member = require('../Sprint 1 code/routes/api/member');
 
 const admin = require('../Sprint 1 code/routes/api/admin');
-const partner = require('../Sprint 1 code/routes/api/partner');
+const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
@@ -51,13 +52,15 @@ app.get('/', (req, res) => {
 
 app.use('/api/admins', admins)
 
-app.use('/api/member',member)
+app.use('/api/member', member);
 app.use('/api/admin',admin)
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
 app.use('/api/notification',notification)
+app.use('/api/ca',consultatns);
 
+app.use('/api/CreateAccount', ProfilesAPI)
 // Handling 404
 
 app.use((req, res) => {
