@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Models
 const partner = require('../../Models/partnerM');
+const PartnerCoworkingSpace = require('../../Models/Partner');
 
 // temporary data created as if it was pulled out of the database ...
 // temporary arbitary data created as if it was pulled out of the database ...
