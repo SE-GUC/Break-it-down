@@ -96,6 +96,18 @@ router.put('/', (req, res)=>{
     }  
 });
 
+router.delete('/:id/:idr', (req, res) => {
+    const cospaceID = parseInt(req.params.id) 
+    const roomID=parseInt(req.params.idr)
+    const cospace = PartnerCoworkingSpace.find(cospace => cospace.id === cospaceID)
+    
+    const room=cospace.rooms.find(room => room.id === roomID)
+  
+    const index = cospace.rooms.indexOf(room)
+    cospace.rooms.splice(index,1)
+    res.json(cospace.rooms)
+})
+
     
 
  module.exports = router;
