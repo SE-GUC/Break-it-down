@@ -1,3 +1,4 @@
+
 //const uuid = require('uuid')
 
 module.exports= Member=[
@@ -10,3 +11,4 @@ module.exports= Member=[
     {name:'Lina' , ID:3,field:'PHARM', activation:false,MemberTasks:[],
     age:29,email:'ted@hotmail.com',SSN:3456734890,phoneNumber:01234567,skills:'Judo',interests:'Relaxing',jobsCompleted:[],certificates:['Uni']}
 ];
+

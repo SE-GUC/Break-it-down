@@ -1,4 +1,3 @@
-
 module.exports = RoomBookings = [
     {
         userID:1,
