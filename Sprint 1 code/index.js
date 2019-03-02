@@ -14,6 +14,7 @@ const partner = require('../Sprint 1 code/routes/api/partner');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
+
 const app = express()
 
 app.use(express.json())
@@ -21,6 +22,7 @@ app.use(express.json())
 
 
 app.get('/', (req, res) => {
+
 
     res.send(`<h1>Home page</h1>
 
@@ -47,7 +49,6 @@ app.use('/api/admin',admin)
 //app.use('/api/partner',partner)
 //app.use('/api/notification',notification)
 
-
 // Handling 404
 
 app.use((req, res) => {
@@ -57,5 +58,6 @@ app.use((req, res) => {
  })
 
 const port = 4000
+
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`))
