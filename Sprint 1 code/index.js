@@ -1,3 +1,10 @@
+
+
+const coworkingSpace = require('./routes/api/coworkingSpace')
+const coworkingSpace2 = require('./routes/api/coworkingSpace2')
+
+const validator = require('./validations/validations')
+
 const express = require('express')
 
 const admins = require('./routes/api/admins')
@@ -14,8 +21,8 @@ const partner = require('../Sprint 1 code/routes/api/partner');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
-
 const app = express()
+
 
 app.use(express.json())
 
@@ -44,10 +51,12 @@ app.get('/', (req, res) => {
 
 app.use('/api/admins', admins)
 
-//app.use('/api/member',member)
+app.use('/api/member',member)
 app.use('/api/admin',admin)
-//app.use('/api/partner',partner)
-//app.use('/api/notification',notification)
+app.use('/api/coworkingSpace', coworkingSpace)
+app.use('/api/coworkingSpace2', coworkingSpace2)
+app.use('/api/partner',partner)
+app.use('/api/notification',notification)
 
 // Handling 404
 
