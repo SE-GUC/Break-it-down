@@ -78,6 +78,23 @@ router.put('/:ID', (req, res)=> {
 });
 
 
+//----------------------------delete notification--------------------------------------------------------------------------Eman
+
+
+router.delete('/:id', (req, res)=> {
+    const id = req.params.id;
+    const delNotif = notification.find(notification => notification.Notid === parseInt(id)); 
+
+    const index = notification.indexOf(delNotif);
+    notification.splice(index,1);
+
+    res.json(notification);
+});
+//------------------------------------------------------------------------------------------------------
+router.get('/', (req, res) => res.json({ data: Notification }));
+
+
+
 
 
 module.exports = router
