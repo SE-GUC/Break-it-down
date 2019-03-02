@@ -21,10 +21,10 @@ var events = [
 // res.json() Automatically sends a status of 200
 
 // Get all events
-router.get('/', (req, res) => res.json({ data: events }));
+router.get('/Events/', (req, res) => res.json({ data: events }));
 
 //Get Specific event
-router.get('/:id', (req, res) => {
+router.get('/Events/:id', (req, res) => {
 	const found = events.some(event => event.id == (req.params.id));
   
 	if (found) {
@@ -35,7 +35,7 @@ router.get('/:id', (req, res) => {
   });
 
 // Create a new event
-router.post('/', (req, res) => {
+router.post('/Events', (req, res) => {
 	const name = req.body.name;
 	const description = req.body.description;
     const date = req.body.date;
@@ -69,7 +69,7 @@ router.post('/', (req, res) => {
 
 
 // Update event
-router.put('/:id', (req, res) => {
+router.put('/Events/:id', (req, res) => {
 	const found = events.some(event => event.id == (req.params.id));
   
 	if (found) {
@@ -91,7 +91,7 @@ router.put('/:id', (req, res) => {
 
 
 // Delete event
-router.delete('/:id', (req, res) => {
+router.delete('/Events/:id', (req, res) => {
 	const found = events.some(event => event.id == (req.params.id));
   
 	if (found) {
