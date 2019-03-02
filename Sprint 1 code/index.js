@@ -17,7 +17,7 @@ const Joi = require('joi');
 
 const member = require('../Sprint 1 code/routes/api/member');
 
-const admin = require('../Sprint 1 code/routes/api/admin');
+
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
@@ -53,7 +53,6 @@ app.get('/', (req, res) => {
 app.use('/api/admins', admins)
 
 app.use('/api/member', member);
-app.use('/api/admin',admin)
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
