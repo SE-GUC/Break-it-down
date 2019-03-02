@@ -7,6 +7,7 @@ const router = express.Router();
 // Models
 var Members = require('../../Models/Member');
 var partner = require('../../models/Partner');
+const PartnerCoworkingSpace = require('../../Models/Partner');
 
 
 // Instead of app use route
