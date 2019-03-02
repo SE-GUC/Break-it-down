@@ -6,7 +6,7 @@ const express = require('express');
 const Joi = require('joi');
 const uuid = require('uuid');
 const router = express.Router();
-
+const PartnerCoworkingSpace = require('../../Models/Partner');
 // Models
 const EducationalOrganisation = require('../../Models/EducationalOrganisation');
 
@@ -168,4 +168,16 @@ router.post('/joi', (req, res) => {
 	return res.json({ data: newEducationalOrganisation });
 });*/
 
+//shaza
+//get the coworking space by id
+app.get('/api/PartnerCoworkingspaces/:id',(req,res)=>{
+	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
+	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
+	res.send(PartnerCoworkingspaces);
+});
+
+//view all coworking spaces
+app.get('/api/PartnerCoworkingspaces',(req,res)=>{
+	res.send(PartnerCoworkingSpace);
+}); 
 module.exports = router;
