@@ -1,7 +1,18 @@
 const express = require('express')
 
-const UserProfile = require('./models/UserProfile');
-const ProfilesAPI = require('./routes/api/Profiles');
+const admins = require('./routes/api/admins')
+
+
+const Joi = require('joi');
+
+
+
+const member = require('../Sprint 1 code/routes/api/member');
+
+const admin = require('../Sprint 1 code/routes/api/admin');
+const partner = require('../Sprint 1 code/routes/api/partner');
+const notification = require('../Sprint 1 code/routes/api/notification');
+
 
 
 const app = express()
@@ -12,23 +23,31 @@ app.use(express.json())
 
 app.get('/', (req, res) => {
 
-    res.send(`<h1>Create an account</h1>
 
-    <a href="/api/CreateAccount">  </a>
+    res.send(`<h1>Home page</h1>
 
+    <a href="/api/admin">Admin</a>
+
+    <a href="/api/coworkingSpace">Partner Coworking Space</a>
+    <a href="/api/member">Member</a>
+    <a href="/api/rooms">Rooms</a>
+    <a href="/api/admin">admin</a>
+    <a href="/api/notification">notfication</a>
 
     `);
 
+
+
 })
-
-
-
 
 // Direct routes to appropriate files 
 
-app.use('/api/CreateAccount', ProfilesAPI)
+app.use('/api/admins', admins)
 
-
+//app.use('/api/member',member)
+app.use('/api/admin',admin)
+//app.use('/api/partner',partner)
+//app.use('/api/notification',notification)
 
 // Handling 404
 
@@ -38,8 +57,7 @@ app.use((req, res) => {
 
  })
 
+const port = 4000
 
-
-const port = 3000
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`))
