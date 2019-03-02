@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express')
 const router = express.Router()
 const Joi = require('joi');
@@ -111,4 +112,6 @@ router.delete('/:id/:idr', (req, res) => {
     
 
  module.exports = router;
+=======
+>>>>>>> 9adc7e25dd5c66e89364810d2c3e7f44dfd034e3
 
