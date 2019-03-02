@@ -1,3 +1,4 @@
+
 // Dependencies
 const express = require('express');
 const Joi = require('joi');
@@ -146,3 +147,4 @@ app.get('/api/PartnerCoworkingspaces',(req,res)=>{
 }); 
 
 module.exports = router;
+
