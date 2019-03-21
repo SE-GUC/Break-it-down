@@ -16,6 +16,19 @@ const Members = require('../../models/Member')
 
 const Joi = require('joi');
 
+//------------------------------nourhan--------------------------------------------
+var bodyParser = require('body-parser')
+
+var mongoose = require('mongoose');
+
+const Message = require('../../models/Message')
+
+var http = require('http').Server(router);
+
+var io = require('socket.io')(http);
+
+var path = require('path');
+
 
 
 // temporary data created as if it was pulled out of the database ...
@@ -101,10 +114,13 @@ router.delete('/disapproveUpdates/:id',(req,res)=>{
 
 
 
+//--------------------------------------------------------------------------------------
 
 
 
-//--------------------------- admin check task description --------------------------------------------- LINA
+
+
+// //--------------------------- admin check task description --------------------------------------------- LINA
 
 
 
@@ -131,7 +147,7 @@ router.get('/:PID/:TID', (req, res)=> {
 
 });
 
-//----------------------------get all applicants of a task that belongs to partner----------------------------- Janna
+// //----------------------------get all applicants of a task that belongs to partner----------------------------- Janna
 
 router.get('/viewApplicants/:PID/:TID', (req, res)=> {
     const PartID = req.params.PID
@@ -148,7 +164,7 @@ router.get('/viewApplicants/:PID/:TID', (req, res)=> {
 
 });
 
-//------------------------------------------------------admin assigning the chosen member by partner-------------------- EMAN
+ //------------------------------------------------------admin assigning the chosen member by partner-------------------- EMAN
 
 
 
@@ -251,10 +267,87 @@ router.put('/:MID', (req, res)=> {
     res.send(Mem)
 
 });
+//------------------------------------------------------nourhan-----------------------------------------
+
+router.get('/', function(req, res){
+    res.sendFile(path.resolve('./index.html'));
+  });
+
+  router.get('/sent',(req, res)=>{
+    res.sendFile(path.resolve('./index2.html'));
+  })
+
+  router.get('/messages', (req, res) => {
+
+    Message.find({},(err, messages)=> {
+  
+      res.send(messages);
+  
+    })
+  
+  })
+  
+
+
+  router.post('/messages', async (req, res) => {
+  
+    try{
+  
+      var message = new Message(req.body);
+  
+  
+  
+      var savedMessage = await message.save()
+  
+        console.log('saved');
+  
+  
+  
+      var censored = await Message.findOne({message:'badword'});
+  
+        if(censored)
+  
+          await Message.remove({_id: censored.id})
+  
+        else
+  
+          io.emit('message', req.body);
+  
+        res.sendStatus(200);
+  
+    }
+  
+    catch (error){
+  
+      res.sendStatus(500);
+  
+      return console.log('error',error);
+  
+    }
+  
+    finally{
+  
+      console.log('Message Posted')
+  
+    }
+  
+  
+  
+  })
+  
+
+  
+  
+  
+  io.on('connection', () =>{
+  
+    console.log('a user is connected')
+  
+  })
 
 //------------------------------------------------------------------------------------------------------
 
-router.get('/', (req, res) => res.json("admin profile default route"));
+//router.get('/', (req, res) => res.json("admin profile default route"));
 
 
 module.exports = router
