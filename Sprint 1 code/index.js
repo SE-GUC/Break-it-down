@@ -2,11 +2,15 @@ const express = require('express')
 
 const UserProfile = require('./models/UserProfile');
 const ProfilesAPI = require('./routes/api/Profiles');
+const mongoose = require('mongoose');
+mongoose.connect("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true").
+then(()=>console.log('connected to the database'));
+const member = require('../Sprint 1 code/routes/api/member');
 
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
 
 
@@ -30,6 +34,7 @@ app.use('/api/CreateAccount', ProfilesAPI)
 
 
 
+app.use('/api/member', member);
 // Handling 404
 
 app.use((req, res) => {
