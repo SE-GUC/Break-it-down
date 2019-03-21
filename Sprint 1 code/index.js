@@ -1,4 +1,5 @@
 
+const mongoose = require('mongoose');
 
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
@@ -22,10 +23,24 @@ const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
-const app = express()
+const app = express();
+
+// DB Config
+const db = require('./config/keys').mongoURI;
+
+// Connect to mongo
+mongoose
+
+    .connect(db)
+
+    .then(() => console.log('Connected to MongoDB'))
+
+    .catch(err => console.log(err));
 
 
-app.use(express.json())
+
+
+app.use(express.json());
 
 
 
@@ -68,7 +83,7 @@ app.use((req, res) => {
 
  })
 
-const port = 4000
+ const port = process.env.PORT || 4000
 
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`))
