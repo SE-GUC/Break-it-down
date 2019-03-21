@@ -3,18 +3,34 @@ const express = require('express');
 const Joi = require('joi');
 const uuid = require('uuid');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 // Models
 var Members = require('../../Models/Member');
 var partner = require('../../models/Partner');
 const PartnerCoworkingSpace = require('../../Models/Partner');
+const User = require('../../models/UserProfile');
 
 
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
 
+//shaza
+//get the coworking space by id
+router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
+	const Users =await User.find({type:'coworkingSpace',userID:parseInt(req.params.id)})
+	if({Users:[]}) return res.json('Coworking space does not exist')
+	res.json({ data: Users })
+});
+
+//view all coworking spaces
+router.get('/PartnerCoworkingspaces',async (req, res) =>{
+	const Users = await User.find({type:'coworkingSpace'})
+	 res.json({ data: Users })
+	});
+	
 
 // Get all Members (Malak&Nour)
 router.get('/', (req, res) => res.json({Members }));
@@ -253,18 +269,6 @@ router.post('/joi', (req, res) => {
 });*/
 
 
-//shaza
-//get the coworking space by id
-app.get('/api/PartnerCoworkingspaces/:id',(req,res)=>{
-	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
-	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
-	res.send(PartnerCoworkingspaces);
-});
-
-//view all coworking spaces
-app.get('/api/PartnerCoworkingspaces',(req,res)=>{
-	res.send(PartnerCoworkingSpace);
-}); 
 
 //nourhan
 //Get all bookings of a specific user
