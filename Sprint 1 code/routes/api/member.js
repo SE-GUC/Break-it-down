@@ -348,6 +348,7 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
    
 		const temp = await RoomBookings.find({userID});
     //res.send(temp);
+		 if(!temp[0])res.send('user id does not exist');
 		const book = temp[0].bookings;
     const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
