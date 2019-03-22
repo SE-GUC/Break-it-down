@@ -97,8 +97,8 @@ router.put('/Events/:id', (req, res) => {
 // Delete event
 router.delete('/:id', (req, res) => {
 	Event.findById(req.params.id)
-		.then(event=> Event.remove().then(()=> res.json({Msg: "Event Successfully Deleted"})))
-		.catch(err=>res.status(400).json({ msg: 'No event with the id of ${req.params.id}'}))
+		.then(event=> event.remove().then(()=> res.json({Msg: "Event Successfully Deleted"})))
+		.catch(err=>res.status(404).json({ msg: 'No event with the id of ${req.params.id}'}))
 });
 
 		
