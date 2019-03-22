@@ -7,18 +7,42 @@ const validator = require('./validations/validations')
 
 const express = require('express')
 
+const mongoose = require('mongoose');
+
 const ProfilesAPI = require('./routes/api/Profiles');
 const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
 
 const Joi = require('joi');
 
+// DB Config
+
+const db = require('./config/keys').mongoURI;
+
+
+
+// Connect to mongo
+
+mongoose
+
+
+
+    .connect(db)
+
+
+
+    .then(() => console.log('Connected to MongoDB'))
+
+
+
+    .catch(err => console.log(err));
+
 
 
 const member = require('../Sprint 1 code/routes/api/member');
 
 
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const partner = require('../Sprint 1 code/routes/api/Partner');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
