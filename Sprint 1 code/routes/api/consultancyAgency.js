@@ -5,9 +5,10 @@ const uuid = require('uuid');
 const router = express.Router();
 
 // Models
-const ConsultancyAgency = require('../../Models/ConsultancyAgency');
+const ConsultancyAgency = require('../../models/ConsultancyAgency');
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
+const User = require('../../models/UserProfile');
 
 // temporary arbitary data created as if it was pulled out of the database ...
 var consultancyAgencys = [
@@ -284,6 +285,53 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 		
 		
     res.send('booking has been deleted successfully')
+	}
+
+	catch(error) {
+
+			// We will be handling the error later
+
+			console.log(error)
+
+	}  
+
+})
+
+//assign managerial roles to tasks
+
+router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
+
+	try {
+
+	 const partnerID=parseInt(req.params.partnerID)
+
+	 const taskID=parseInt(req.params.taskID)
+
+	 const memberID=parseInt(req.params.memberID)
+
+	 const partner = await User.find({userID:partnerID});
+
+	 if(!partner) res.send("Partner id is incorrect or this partner does not exist ")
+
+	 //res.send(partner[0].tasks)
+	 const taskArray= partner[0].tasks;
+	 
+	 const task=await taskArray.find(r => r.taskID === taskID)
+
+	 if(!task) res.send("This task does not exist");
+
+	 if(!task.wantsConsultant) res.send("You don't have access to this task")
+
+	 //set assigneeID to inserted member ID
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.assigneeID':memberID}}, function(err, model){});
+
+	 //set life cycle 'assigned' stage to true
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
+	 
+	 res.send('Member has been assigned to task successfully')
+
 	}
 
 	catch(error) {
