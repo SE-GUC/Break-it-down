@@ -7,11 +7,14 @@ const validator = require('./validations/validations')
 
 const express = require('express')
 
-const admins = require('./routes/api/admins')
+const admins = require('./routes/api/admins');
 
 
 const Joi = require('joi');
+const mongoose = require('mongoose');
+const db = require('./config/keys_dev').mongoURI;
 
+mongoose.connect(db,{ useNewUrlParser: true }).then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
 
 
 const member = require('../Sprint 1 code/routes/api/member');
