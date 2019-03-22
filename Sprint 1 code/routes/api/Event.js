@@ -67,7 +67,7 @@ router.post('/', async(req, res) => {
 
 	newEvent.save()
 					.then(items=>res.json(items))
-					
+				//	.catch(err => res.status(400).json({msg:"Required Field is Missing, Required Fields are: name , date, location."}))
 
 });
 
@@ -95,19 +95,14 @@ router.put('/Events/:id', (req, res) => {
 
 
 // Delete event
-router.delete('/Events/:id', (req, res) => {
-	const found = events.some(event => event.id == (req.params.id));
-  
-	if (found) {
-	  events=events.filter(event => event.id != (req.params.id))
-	  res.json({
-		msg: 'event successfully deleted',
-		events }
-	  );
-	} else {
-	  res.status(400).json({ msg: 'No event with the id of ${req.params.id}' });
-	}
-  });
+router.delete('/:id', (req, res) => {
+	Event.findById(req.params.id)
+		.then(event=> Event.remove().then(()=> res.json({Msg: "Event Successfully Deleted"})))
+		.catch(err=>res.status(400).json({ msg: 'No event with the id of ${req.params.id}'}))
+});
+
+		
+
   
 
 
