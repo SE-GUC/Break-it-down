@@ -176,16 +176,20 @@ router.post('/joi', (req, res) => {
 
 //shaza
 //get the coworking space by id
-router.get('/PartnerCoworkingspaces/:id',(req,res)=>{
-	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
-	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
-	res.send(PartnerCoworkingspaces);
-});
+router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
+
+	const Users =await User.find({type:'coscoworkingspacepace',userID:parseInt(req.params.id)})
+	if({Users:[]}) return res.json('Coworking space does not exist')
+	res.json({ data: Users })
+}); 
 
 //view all coworking spaces
-router.get('/PartnerCoworkingspaces',(req,res)=>{
-	res.send(PartnerCoworkingSpace);
-}); 
+router.get('/PartnerCoworkingspaces',async (req, res) =>{
+	const Users = await User.find({type:'coworkingspace'})
+	 res.json({ data: Users })
+	});
+
+
 
 //nourhan
 //Get all bookings of a specific user
