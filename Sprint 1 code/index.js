@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 
 
     res.send(`<h1>Home page</h1>
-
+<p> REGISTER OR SIGN UP <p>
     <a href="/api/admin">Admin</a>
 
     <a href="/api/coworkingSpace">Partner Coworking Space</a>
