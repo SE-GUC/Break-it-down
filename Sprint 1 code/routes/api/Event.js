@@ -27,15 +27,11 @@ router.get('/', (req, res) => {
 		.then(items=>res.json(items))
 });
 
-//Get Specific event
+//Get Specific event MONGOUPDATED
 router.get('/:id', (req, res) => {
-	const found = events.some(event => event._id == (req.params.id));
-  
-	if (found) {
-	  res.json(events.filter(event => event._id == (req.params.id)));
-	} else {
-	  res.status(404).json({ msg: 'No event with the id of ${req.params.id} '});
-	}
+  Event.findById(req.params.id)
+		.then(event=> res.json(event))
+		.catch(err=>res.status(404).json({ msg: 'No event with the id of ${req.params.id}'}))
   });
 
 // Create a new event MONGOUPDATED
@@ -72,29 +68,23 @@ router.post('/', async(req, res) => {
 });
 
 
-// Update event
-router.put('/Events/:id', (req, res) => {
-	const found = events.some(event => event.id == (req.params.id));
-  
-	if (found) {
-	  const updevent = req.body;
-	  events.forEach(event => {
-		if (event.id == (req.params.id)) {
-		  event.name = updevent.name ? updevent.name : event.name;
-		  event.age = updevent.age ? updevent.age : event.age;
-		  event.email = updevent.email ? updevent.email : event.email; 
-		  event.phoneNumber = updevent.phoneNumber ? updevent.phoneNumber : event.phoneNumber;
-
-		  res.json({ msg: 'event successfully updated', event });
-		}
-	  });
-	} else {
-	  res.status(400).json({ msg: 'No event with the id of ${req.params.id}' });
-	}
-  });
+// Update event MONGOUPDATED
+router.put('/:id', (req, res) => {
+	const updevent = req.body;
+  Event.findById(req.params.id)
+		.then(event=> {
+			event.name = updevent.name ? updevent.name : event.name;
+		  event.description = updevent.description ? updevent.description : event.description;
+		  event.date = updevent.date ? updevent.date : event.date; 
+			event.location = updevent.location ? updevent.location : event.location;
+			event.save().then(res.json({ msg: 'Event successfully updated', event }));
+		} )
+		.catch(err=>res.status(404).json({ msg: 'No event with the id of ${req.params.id}'}))
+  });  
+	
 
 
-// Delete event
+// Delete event MONGOUPDATED
 router.delete('/:id', (req, res) => {
 	Event.findById(req.params.id)
 		.then(event=> event.remove().then(()=> res.json({Msg: "Event Successfully Deleted"})))
