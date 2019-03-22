@@ -13,10 +13,12 @@ const consultatns = require('./routes/api/consultancyAgency');
 
 const Joi = require('joi');
 
+const mongoose =require("mongoose");
 
 
 const member = require('../Sprint 1 code/routes/api/member');
 
+const Event = require('../Sprint 1 code/routes/api/Event')
 
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
@@ -51,6 +53,7 @@ app.get('/', (req, res) => {
 // Direct routes to appropriate files 
 
 app.use('/api/admins', admins)
+app.use('/api/Events', Event);
 
 app.use('/api/member', member);
 app.use('/api/coworkingSpace', coworkingSpace)
@@ -68,7 +71,17 @@ app.use((req, res) => {
 
  })
 
+
+ 
+// DB Config
+const db = require('./config/keys').mongoURI
+
+// Connect to mongo
+mongoose
+    .connect(db)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.log('Can not connect'))
+
 const port = 4000
 
-
-app.listen(port, () => console.log(`Server up and running on port ${port}`))
+app.listen(port, () => console.log(`Server up and running on port ${port}`));

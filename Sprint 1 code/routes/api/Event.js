@@ -4,67 +4,71 @@ const Joi = require('joi');
 const uuid = require('uuid');
 const router = express.Router();
 
+
 // Models
 const Event = require('../../Models/EventModel');
 
-// temporary arbitary data created as if it was pulled out of the database ...
+/*// temporary arbitary data created as if it was pulled out of the database ...
 var events = [
 	new Event('Orientation','New Dash', "2020-10-03",'GUC'),
 	new Event('Graduation','Bye Dash', "2020-11-03",'GUC'),
 	new Event('Employement Fair', 'Jobs',"2022-03-13",'GUC'),
 	new Event('Photo Day', 'Instagram',"2021-10-16",'GUC'),
 
-];
+];*/
 
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
 
-// Get all events
-router.get('/Events/', (req, res) => res.json({ data: events }));
+// Get all events MONGOUPDATED
+router.get('/', (req, res) => {
+	Event.find()
+		.then(items=>res.json(items))
+});
 
 //Get Specific event
-router.get('/Events/:id', (req, res) => {
-	const found = events.some(event => event.id == (req.params.id));
+router.get('/:id', (req, res) => {
+	const found = events.some(event => event._id == (req.params.id));
   
 	if (found) {
-	  res.json(events.filter(event => event.id == (req.params.id)));
+	  res.json(events.filter(event => event._id == (req.params.id)));
 	} else {
 	  res.status(404).json({ msg: 'No event with the id of ${req.params.id} '});
 	}
   });
 
-// Create a new event
-router.post('/Events', (req, res) => {
-	const name = req.body.name;
-	const description = req.body.description;
-    const date = req.body.date;
-    const location = req.body.location;
+// Create a new event MONGOUPDATED
+router.post('/', async(req, res) => {
+	const newEvent= new Event({
+		 name: req.body.name,
+		 description: req.body.description,
+		 date: req.body.date,
+		 location: req.body.location
+		 
+	});
+	
 
-	if (!name) return res.status(400).send({ err: 'Name field is required' });
-    if (typeof name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
+	if (!newEvent.name) return res.status(400).send({ err: 'Name field is required' });
+    if (typeof newEvent.name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
     
 
-	if (!description) return res.status(400).send({ err: 'Description field is required' });
-    if (typeof description !== 'string') return res.status(400).send({ err: 'Invalid value for description' });
+	if (newEvent.description) {
+    if (typeof newEvent.description !== 'string') return res.status(400).send({ err: 'Invalid value for description' });
+	}
+
+
+	if (!newEvent.date) return res.status(400).send({ err: 'Date field is required' });
+    if (typeof newEvent.date !== 'string') return res.status(400).send({ err: 'Invalid value for date' });
     
-	if (!date) return res.status(400).send({ err: 'Date field is required' });
-    if (typeof date !== 'string') return res.status(400).send({ err: 'Invalid value for date' });
-    
-	if (!location) return res.status(400).send({ err: 'Location field is required' });
-	if (typeof location !== 'string') return res.status(400).send({ err: 'Invalid value for location' });
+	if (!newEvent.location) return res.status(400).send({ err: 'Location field is required' });
+		if (typeof newEvent.location !== 'string') return res.status(400).send({ err: 'Invalid value for location' });
 
 
+	newEvent.save()
+					.then(items=>res.json(items))
+					
 
-	const newevent = {
-		name,
-		description,
-		date,
-		location,
-	};
-
-	events.push(newevent)
-	return res.json({ data: newevent });
 });
 
 
