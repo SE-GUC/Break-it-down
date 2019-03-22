@@ -8,47 +8,38 @@ const express = require('express')
 
 const mongoose = require('mongoose');
 
+var bodyParser = require('body-parser');
 const ProfilesAPI = require('./routes/api/Profiles');
 const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
+
+const cachat = require('./routes/api/consultancyAgencyChat');
 
 const Joi = require('joi');
 
 // DB Config
 
 const db = require('./config/keys').mongoURI;
-
-
-
-// Connect to mongo
-
-mongoose
-
-
-
-    .connect(db)
-
-
-
-    .then(() => console.log('Connected to MongoDB'))
-
-
-
-    .catch(err => console.log(err));
-
-
-
 const member = require('../Sprint 1 code/routes/api/member');
-
-
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
 
 const app = express()
 
+app.use(express.static(__dirname));
 
-app.use(express.json())
+app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({extended: false}))
+
+
+mongoose.connect(db,{ useNewUrlParser: true })
+
+    .then(() => console.log('Connected to MongoDB'))
+
+    .catch(err => console.log(err))
+
 
 
 
@@ -83,6 +74,7 @@ app.use('/api/notification',notification)
 app.use('/api/ca',consultatns);
 
 app.use('/api/CreateAccount', ProfilesAPI)
+app.use('/api/cachat',cachat);
 // Handling 404
 
 app.use((req, res) => {
