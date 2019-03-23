@@ -525,47 +525,46 @@ router.get('/TaskLifeCycle/:PID/:TID',async (req, res)=> {
 });
 
 
- /////////////choose and send the applicant to the admin to assign/////////////////// Janna
- router.put('/:idP/:idT',(req,res)=>{
-    const partnerID=parseInt(req.params.idP)
-    
-    const partner1= partner.find(partner1 => partner1.ID === partnerID)
+ //-------------------------choose and send the applicant to the admin to assign-------------------------//
 
-    const taskID=parseInt(req.params.idT)
-    
-    const task1= partner1.Tasks.find(task1 => task1.taskID === taskID)
+router.put('/AcceptApplicant/:idP/:idT',async(req,res)=>{
 
-    const index = partner.indexOf(partner1)
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
 
-    const index1=partner1.Tasks.indexOf(task1)
+    if(partner === null )
+    res.json("the partner id is not correct")
 
-    const tasks=partner[index].Tasks[index1].applicants
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
 
-   
-    const applicantID = req.body.applicantID
-    const schema = {
+      if(t === null) res,json("the task Id is not correct")
+      else{
+      const applicantID = req.body.applicantID
+      const schema = {
+          applicantID:Joi.number().required()
+         }
 
-        applicantID:Joi.number().required()
+      const result=Joi.validate(req.body,schema)
 
+      if(result.error)
+       return res.status(400).send(error.details[0].message);
+      else{
+     
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'applicants.applicantID':applicantID}, 
+      {$set:{"applicants.$.accepted":true}},
+      function(err, model){});
+
+      
+      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
+      res.json(partners)
+      }
     }
-    const result=Joi.validate(req.body,schema)
-   
-    if(result.error)
-     return res.status(400).send(error.details[0].message);
+}
 
     
-     const applicantq=partner[index].Tasks[index1].applicants.filter(applicantq=> applicantq.accepted===true)
-     if(applicantq.length===0){
-     const appl=partner[index].Tasks[index1].applicants.find(appl => appl.applicantID === applicantID && appl.accepted=== false)
-     const applicant=partner[index].Tasks[index1].applicants.indexOf(appl)
- 
-     partner[index].Tasks[index1].applicants[applicant].accepted= true
-     res.send(tasks);
-    }
-     else{
-         res.send("you already accepted a member")
-     }
-
  }); 
 
 
