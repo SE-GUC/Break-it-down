@@ -1,4 +1,12 @@
+//---------------------------nourhan-----------------------------------------
+var bodyParser = require('body-parser')
 
+var mongoose = require('mongoose');
+
+const Message = require('./models/Message')
+
+
+//-----------------------------------------------------------------------------
 
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
@@ -9,14 +17,21 @@ const express = require('express')
 
 const ProfilesAPI = require('./routes/api/Profiles');
 
+
+
+const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
 
+
 const Joi = require('joi');
+const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const notification = require('../Sprint 1 code/routes/api/notification');
+
+// DB Config
+
+const db = require('./config/keys').mongoURI;
 
 
-
-const mongoose = require('mongoose');
-const db = require('./config/keys_dev').mongoURI
 
 
 mongoose.connect(db,{ useNewUrlParser: true })
@@ -27,15 +42,38 @@ mongoose.connect(db,{ useNewUrlParser: true })
 
 const member = require('../Sprint 1 code/routes/api/member');
 
+const Event = require('../Sprint 1 code/routes/api/Event')
 
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
-const notification = require('../Sprint 1 code/routes/api/notification');
+// Connect to mongo
+
+mongoose
+
+    .connect(db)
 
 
-const app = express()
+
+    .then(() => console.log('Connected to MongoDB'))
 
 
-app.use(express.json())
+
+    .catch(err => console.log(err));
+
+
+
+const app = express();
+
+
+
+
+
+app.use(express.json());
+
+//nourhan
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+//-----------
+
+app.use(express.urlencoded({extended: false}))
 
 
 
@@ -43,15 +81,14 @@ app.get('/', (req, res) => {
 
 
     res.send(`<h1>Home page</h1>
-
+<p> REGISTER OR SIGN UP <p>
     <a href="/api/admin">Admin</a>
 
     <a href="/api/coworkingSpace">Partner Coworking Space</a>
     <a href="/api/member">Member</a>
     <a href="/api/rooms">Rooms</a>
-    <a href="/api/admin">admin</a>
     <a href="/api/notification">notfication</a>
-
+    <a href="/api/partner">Partner</a>
     `);
 
 
@@ -64,17 +101,19 @@ app.get('/', (req, res) => {
 
 app.use('/api/member', member);
 //app.use('/api/admin',admin)
+app.use('/api/admins', admins)
+app.use('/api/Events', Event);
+
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
-app.use('/api/notification',notification)
-<<<<<<< HEAD
-app.use('/api/ca',ca)
-=======
-app.use('/api/ca',consultatns);
+app.use('/api/notification',notification);
+app.use('/api/ca',ca);
+app.use('/api/CreateAccount', ProfilesAPI);
 
-app.use('/api/CreateAccount', ProfilesAPI)
->>>>>>> 90e36abd3a5965d00159cee1230edac9fb2019e2
+
+
+
 // Handling 404
 
 app.use((req, res) => {
@@ -83,7 +122,8 @@ app.use((req, res) => {
 
  })
 
-const port = 4000
+ const port = process.env.PORT || 4000;
 
 
-app.listen(port, () => console.log(`Server up and running on port ${port}`))
+
+app.listen(port, () => console.log(`Server up and running on port ${port}`));

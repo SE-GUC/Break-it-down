@@ -17,8 +17,15 @@ const User = require('../../models/UserProfile');
 const ConsultancyAgency = require('../../models/ConsultancyAgency');
 //const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
-const User = require('../../models/UserProfile');
 const Message = require('../../models/messages');
+
+
+
+
+//nourhan
+const user = require('../../models/UserProfile');
+ var mongoose = require('mongoose');
+ var objectid = require('mongodb').ObjectID
 
 // temporary arbitary data created as if it was pulled out of the database ...
 var consultancyAgencys = [
