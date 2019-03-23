@@ -196,61 +196,61 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 
 
 
-// //delete booking and set the reservation boolean to false so others can now book it
+//delete booking and set the reservation boolean to false so others can now book it
 
-// router.delete('/RoomBookings/:userID/:bookingID',async (req, res) => {
+router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
 
-//    // try{
+   // try{
 
-//         const test = await User.aggregate([
+        const test = await User.aggregate([
 
-//             {$unwind: "$RoomsBooked"},
+            {$unwind: "$RoomsBooked"},
 
-//             {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+            {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
 
-//             {$project: {'RoomsBooked.bookingID':1,_id:0}}
+            {$project: {'RoomsBooked.bookingID':1,_id:0}}
 
-//         ])
-
-
-
-
-
-//      if(test==0) return res.send({error:'booking does not exist.'})
+        ])
 
 
 
 
 
-//      const test1 = await User.aggregate([
+     if(test==0) return res.send({error:'booking does not exist.'})
 
-//         {$unwind: "$RoomsBooked"},
 
-//         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
 
-//         {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
 
-//     ])
 
-//     const test2 = await User.aggregate([
+     const test1 = await User.aggregate([
 
-//         {$unwind: "$RoomsBooked"},
+        {$unwind: "$RoomsBooked"},
 
-//         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
 
-//         {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+        {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
 
-//     ])
+    ])
 
-//     const test3 = await User.aggregate([
+    const test2 = await User.aggregate([
 
-//         {$unwind: "$RoomsBooked"},
+        {$unwind: "$RoomsBooked"},
 
-//         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
 
-//         {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+        {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
 
-//     ])
+    ])
+
+    const test3 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+
+    ])
 
 
 
@@ -258,51 +258,51 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 
 
 
-//     const f =await User.findOneAndUpdate({
+    const f =await User.findOneAndUpdate({
 
-//         'userID' : 3},
-
-    
-
-//     {
-
-//         $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
-
-//     },
-
-//     {
-
-//         arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
-
-//     }
+        'userID' : 3},
 
     
 
-//     )
+    {
+
+        $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
+
+    },
+
+    {
+
+        arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
+
+    }
+
+    
+
+    )
 
 
 
-//     const y =await User.update(
+    const y =await User.update(
 
-//         {userID : parseInt(req.params.userID)},
+        {userID : parseInt(req.params.userID)},
 
-//         {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
+        {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
 
                
 
-//             if(err)  return handleError(res, err)
+            if(err)  return handleError(res, err)
 
-//             else {
+            else {
 
                 
 
-//                 res.json({msg:'reservation was deleted successfully'})
+                res.json({msg:'reservation was deleted successfully'})
 
-//         }
+        }
 
-//          });
+         });
 
-// 	});
+	});
 
 
 
