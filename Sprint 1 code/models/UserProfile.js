@@ -49,7 +49,24 @@ const UserSchema = new Schema({
 },
 //attributes that not all users have 
 field:{type:String,required: false},
-memberTasks:{type:Array,required: false},
+memberTasks:{
+    type:Array,
+    required: false,
+    "items":[{
+       taskID:{
+           type:Number
+       },
+       partnerID:{type:Number},
+       accepted:{type:Boolean}
+
+    } ]
+
+
+},
+avgRating:{type:Number,required:false},
+allRatings:{
+    type:Array,required:false
+},
 activation:{type:Boolean,required: false},
 membershipExpiryDate:{type:Date,required: false},
 address:{type:String,required: false},
@@ -63,7 +80,83 @@ partners:{type:Array,required: false},
 boardMembers:{type:Array,required: false},
 events:{type:Array,required: false},
 reports:{type:Array,required: false},
-tasks:{type:Array,required: false},
+tasks:{
+    type:Array,
+    required: false,
+    "items":[
+        {
+        taskID:{
+            type:Array,
+            required:false,
+            "items":[
+                {
+                taskID:{
+                    type:Number
+                }
+                },{
+                name:{
+                    type:String,required:true
+                }
+                },{
+         description:{type:String,required:true}
+    },{
+        wantsConsultant:{type:Boolean,required:true}
+    },{
+        field:{type:String,required:true}
+    },{
+        approved:{type:Boolean,}
+    },{
+        applicants:{
+            type:Array,
+            "items":[{
+                applicantID:{type:Number,required:true} , 
+                accepted:{type:Boolean,required:false},
+                assigned:{type:Boolean,required:false}
+            }]
+            
+          }
+    },{
+         lifeCycle:{
+            type: Array,
+            "items":{
+                     type: Boolean
+                    }
+           }
+    },{
+        rate:{type:Number,required:false}
+    },{
+        review:{type:String,required:false}
+    },{
+        consultancies:{
+            type:Array,
+            "items":[{
+                consultancyID:{type:Number},
+                accepted:{type:Boolean},
+                assigned:{type:Boolean}
+
+            }]
+        }
+    },{
+       assignee:{
+           type:Number,required:false
+       }
+    },{
+        consultancyAssignedID:{type:Number,required:false}
+    }
+        
+
+]
+        }
+    },
+    {
+      skills:{
+          type:Array
+      }
+    }
+]
+
+}
+,
 certificates:{type:Array,required: false},
 website:{type:String,required: false},
 description:{type:String,required: false},
