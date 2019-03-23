@@ -14,10 +14,9 @@ const consultatns = require('./routes/api/consultancyAgency');
 
 const Joi = require('joi');
 
-
-
 const member = require('../Sprint 1 code/routes/api/member');
 
+const Event = require('../Sprint 1 code/routes/api/Event')
 
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
@@ -48,7 +47,7 @@ app.get('/', (req, res) => {
 
 
     res.send(`<h1>Home page</h1>
-
+<p> REGISTER OR SIGN UP <p>
     <a href="/api/admin">Admin</a>
 
     <a href="/api/coworkingSpace">Partner Coworking Space</a>
@@ -66,6 +65,7 @@ app.get('/', (req, res) => {
 // Direct routes to appropriate files 
 
 app.use('/api/admins', admins)
+app.use('/api/Events', Event);
 
 app.use('/api/member', member);
 app.use('/api/coworkingSpace', coworkingSpace)
@@ -86,4 +86,4 @@ app.use((req, res) => {
  const port = process.env.PORT || 4000
 
 
-app.listen(port, () => console.log(`Server up and running on port ${port}`))
+app.listen(port, () => console.log(`Server up and running on port ${port}`));
