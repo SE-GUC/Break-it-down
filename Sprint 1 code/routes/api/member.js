@@ -11,6 +11,8 @@ var partner = require('../../models/Partner');
 const PartnerCoworkingSpace = require('../../Models/Partner');
 const User = require('../../models/UserProfile');
 
+//nourhan
+var objectid = require('mongodb').ObjectID
 
 // Instead of app use route
 // No need to write the full route
@@ -31,6 +33,188 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 	 res.json({ data: Users })
 	});
 	
+
+
+	//--------------------------------nourhan----------------------------------------------
+
+
+//Get all bookings of a specific user
+
+router.get('/roombookings/:userID',async (req, res) => {
+
+  
+
+	var userID = parseInt(req.params.userID);
+
+
+
+	await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
+
+
+
+			res.send(roombookings);
+
+	})
+
+
+
+})
+
+
+
+//get a room in a specific coworking space by id
+
+router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
+
+	try{
+
+	const test = await User.aggregate([
+
+			{$unwind: "$rooms"},
+
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
+
+			 {$project: {schedule:'$rooms.schedule',_id:0}}
+
+	])
+	res.send(test.pop().schedule);
+
+}
+
+catch(error){
+
+		res.send("not found")
+
+		console.log("error")
+
+}
+
+
+
+});
+
+
+
+//book a room , append it to the array of bookings if it is not in my bookings
+
+router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
+
+const schedID = req.params.id3;
+
+const cospaceID = req.params.id;
+
+const roomID = req.params.id2;
+
+
+
+try{
+
+const test1 = await User.aggregate([
+
+		{$unwind: "$rooms"},
+
+		{$unwind: "$rooms.schedule"},
+
+		{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+		{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
+
+])
+
+
+
+//res.send(test1.pop().reserved == "true")
+
+if(test1.pop().reserved) return res.send({error:'already reserved'})
+
+
+
+const test = await User.aggregate([
+
+		{$unwind: "$rooms"},
+
+		{$unwind: "$rooms.schedule"},
+
+		{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+		{$project:{date:'$rooms.schedule.Date',_id:0}}
+
+])
+const test3 = await User.aggregate([
+
+	{$unwind: "$rooms"},
+
+	{$unwind: "$rooms.schedule"},
+
+	{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+	{$project:{time:'$rooms.schedule.time',_id:0}}
+
+])
+
+
+
+
+
+const f = await User.findOneAndUpdate({
+
+
+
+	'userID' : parseInt(req.params.id)},
+
+
+
+{
+
+	$set : {'rooms.$[i].schedule.$[j].reserved' : true, 'rooms.$[i].schedule.$[j].reservedBy' : {uid : parseInt(req.params.userID)}}
+
+},
+
+{
+
+	arrayFilters : [{"i.id" : parseInt(roomID)},{"j.id" : parseInt(schedID)}]
+
+}
+
+
+
+)
+
+
+
+await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
+
+{$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
+
+scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}}, 
+
+async function(err, model){
+
+				 
+
+	if(err)  return handleError(res, err)
+
+	else res.json({msg:'Room was reserved successfully'})
+
+});
+
+}
+
+catch(error){
+	console.log(error)
+
+			res.send("Not found")
+
+	}
+
+});
+
+
+
+//------------------------------------------------------------------------------------------
+
+
+
 
 // Get all Members (Malak&Nour)
 router.get('/', (req, res) => res.json({Members }));
