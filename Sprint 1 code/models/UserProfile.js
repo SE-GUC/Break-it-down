@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //to create an id that autoincrements each time a document is added
 autoIncrement=require('mongoose-auto-increment');
+<<<<<<< HEAD
 var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true", { useNewUrlParser: true })
+=======
+var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true")
+>>>>>>> 7a07011ccde3696cb3c8ca6261149b40b472ebc9
 autoIncrement.initialize(connection);
 // Create the schema
 

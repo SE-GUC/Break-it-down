@@ -6,12 +6,23 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Joi = require('joi');
 
+<<<<<<< HEAD
 
 
 // DB Config
 const db = require('./config/keys_dev').mongoURI
 
 // Connect to mongo
+=======
+const admins = require('./routes/api/admins');
+
+
+const Joi = require('joi');
+const mongoose = require('mongoose');
+const db = require('./config/keys_dev').mongoURI;
+
+mongoose.connect(db,{ useNewUrlParser: true }).then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
+>>>>>>> 7a07011ccde3696cb3c8ca6261149b40b472ebc9
 
 mongoose
     .connect(db)

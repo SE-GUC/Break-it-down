@@ -7,6 +7,7 @@ const Room = require('../../models/Room')
 var objectid = require('mongodb').ObjectID
 
 //const Json = require('json')
+<<<<<<< HEAD
 
 
 // View all coworking spaces -tested- ///TESTED
@@ -38,6 +39,29 @@ router.get('/:idC', async (req,res)=>{
     }  
   });
 
+=======
+const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const validator = require('../../validations/validations')
+const User = require('../../models/UserProfile');
+
+// View all coworking spaces -tested-
+router.get('/',async (req, res) =>{
+    const Users = await User.find({type:'coworkingspace'})
+     res.json({ data: Users })
+    });
+    
+    
+    // View all rooms in a specific coworking space\ View specific coworking spaces OK
+    router.get('/:idC',async(req,res)=>{
+    
+          const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.idC)})          
+          if({Users:[]}) return res.json('Coworking space does not exist')
+          res.json({ data: Users })
+      });
+/// View a specific room -tested-
+router.get('/:idC/:idR',(req,res)=>{
+    const cospace =PartnerCoworkingSpace.find(p=>p.id===parseInt(req.params.idC))
+>>>>>>> 7a07011ccde3696cb3c8ca6261149b40b472ebc9
 
 /// View a specific room OK /// TESTED
 router.get('/:idC/:idR', async (req,res)=>{
@@ -168,5 +192,8 @@ router.delete('/:idC/:idR', async (req, res) => {
 
 
  module.exports = router;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7a07011ccde3696cb3c8ca6261149b40b472ebc9
 
