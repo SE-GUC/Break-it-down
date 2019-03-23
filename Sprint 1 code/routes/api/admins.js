@@ -2,6 +2,8 @@ const express = require('express')
 
 const router = express.Router()
 
+const mongoose = require('mongoose')
+
 const validator = require('../../validations/updateValidations')
 
 // We will be connecting using database 
@@ -19,10 +21,10 @@ const Joi = require('joi');
 //------------------------------nourhan--------------------------------------------
 var bodyParser = require('body-parser')
 
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 
 const Message = require('../../models/Message')
-
+const message = require('../../models/messages');
 var http = require('http').Server(router);
 
 var io = require('socket.io')(http);
@@ -41,18 +43,18 @@ const admins = [
 
 ];
 
-const users=[
-    {id:1,firstname:"Nadia",lastname:"Talaat",age:36},
-    {id:2,firstname:"Khaled",lastname:"Tahawi",age:50},
-    {id:3,firstname:"Somaya",lastname:"Afifi",age:60}
-];
+// const users=[
+//     {id:1,firstname:"Nadia",lastname:"Talaat",age:36},
+//     {id:2,firstname:"Khaled",lastname:"Tahawi",age:50},
+//     {id:3,firstname:"Somaya",lastname:"Afifi",age:60}
+// ];
 
-const updates=[
-    {id:2,firstname:"Yara",status:"pending"},
-    {id:1,lastname:"Khaled",status:"pending"},
-    {id:3,lastname:"Khaled",status:"approved"}
+// const updates=[
+//     {id:2,firstname:"Yara",status:"pending"},
+//     {id:1,lastname:"Khaled",status:"pending"},
+//     {id:3,lastname:"Khaled",status:"approved"}
 
-];
+// ];
 
 router.get('/', (req, res) => res.json({ data: admins }));
 
@@ -87,59 +89,95 @@ router.get('/contact/:pid',async (req, res)=>{
 
 
 
-router.get('/viewUpdates', (req, res) => {
-    const updt=updates.filter(updt=>updt.status==="pending")
+// router.get('/viewUpdates', (req, res) => {
+//     const updt=updates.filter(updt=>updt.status==="pending")
+// =======
+//updates array in database has id of update, updated attributes  *tested*
+router.get('/viewUpdates', async (req, res) => {
+    const updt=await User.find()
     res.json({ data: updt })
 })
-
-router.put('/approveUpdates/:id',(req,res)=>{
+//id is the user id, uid is the id of the update, why does it delete      *tested*
+router.put('/approveUpdates/:id/:uid',async (req,res)=>{
      try {
-    
-         const id = parseInt(req.params.id)
-         const uid=parseInt(req.params.id)
-    
-         const user =  users.findIndex(user => user.id === id);
-         const update=updates.findIndex(update => update.id === uid);
-    
-         if(user===-1 || update===-1) return res.status(404).send({error: 'User does not exist'})
-         const isValidated = validator.updateValidation(req.body)
-         if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-    
-         const userid =  req.body.id   
-         const firstname= req.body.firstname
-         const lastname= req.body.lastname
-         const age= req.body.age 
+         const userid=parseInt(req.params.id)
 
-         if(userid !== undefined )   users[user].id=userid
-         if(firstname !== undefined )   users[user].firstname=firstname
-         if(lastname !== undefined )   users[user].lastname=lastname
-         if(age !== undefined )   users[user].age=age
-         updates[update].status="approved"
+         const updtid=parseInt(req.params.uid)
+
+         const user= await User.findById(userid)
+         if(!user)return res.status(404).send({error: 'User does not exist'})
+
+        const update=await User.find({'_id':userid,'updates._id':updtid},{'updates':1})
+        if(!update || !update[0] || !update[0].updates[0])return res.status(404).send({error: 'Update does not exist'})
+
+        const newUser={'type':(update[0].updates[0].type===undefined?user.type:update[0].updates[0].type),
+                        'name':(update[0].updates[0].name===undefined?user.name:update[0].updates[0].name),
+                        'password':(update[0].updates[0].password===undefined?user.password:update[0].updates[0].password),
+                        'email':(update[0].updates[0].email===undefined?user.email:update[0].updates[0].email),
+                        'phoneNumber':(update[0].updates[0].phoneNumber===undefined?user.phoneNumber:update[0].updates[0].phoneNumber),
+                        'field':(update[0].updates[0].field===undefined?user.field:update[0].updates[0].field),
+                        'memberTasks':(update[0].updates[0].memberTasks===undefined?user.memberTasks:update[0].updates[0].memberTasks),
+                        'activation':(update[0].updates[0].activation===undefined?user.activation:update[0].updates[0].activation),
+                        'address':(update[0].updates[0].address===undefined?user.address:update[0].updates[0].address),
+                        'birthday':(update[0].updates[0].birthday===undefined?user.birthday:update[0].updates[0].birthday),
+                        'skills':(update[0].updates[0].skills===undefined?user.skills:update[0].updates[0].skills),
+                        'interests':(update[0].updates[0].interests===undefined?user.interests:update[0].updates[0].interests),
+                        'accomplishments':(update[0].updates[0].accomplishments===undefined?user.accomplishments:update[0].updates[0].accomplishments),
+                        'trainers':(update[0].updates[0].trainers===undefined?user.trainers:update[0].updates[0].trainers),
+                        'trainingPrograms':(update[0].updates[0].trainingPrograms===undefined?user.trainingPrograms:update[0].updates[0].trainingPrograms),
+                        'partners':(update[0].updates[0].partners===undefined?user.partners:update[0].updates[0].partners),
+                        'boardMembers':(update[0].updates[0].boardMembers===undefined?user.boardMembers:update[0].updates[0].boardMembers),
+                        'events':(update[0].updates[0].events===undefined?user.events:update[0].updates[0].events),
+                        'reports':(update[0].updates[0].reports===undefined?user.reports:update[0].updates[0].reports),
+                        'tasks':(update[0].updates[0].tasks===undefined?user.tasks:update[0].updates[0].tasks),
+                        'certificates':(update[0].updates[0].certificates===undefined?user.certificates:update[0].updates[0].certificates),
+                        'website':(update[0].updates[0].website===undefined?user.website:update[0].updates[0].website),
+                        'description':(update[0].updates[0].description===undefined?user.description:update[0].updates[0].description),
+                        'facilities':(update[0].updates[0].facilities===undefined?user.facilities:update[0].updates[0].facilities),
+                        'rooms':(update[0].updates[0].rooms===undefined?user.rooms:update[0].updates[0].rooms)}
+        
+        const updatedUser=await User.update({'_id':userid},{$set:{type:newUser.type,name:newUser.name,password:newUser.password,
+        email:newUser.email,phoneNumber:newUser.phoneNumber,field:newUser.field,memberTasks:newUser.memberTasks,
+        activation:newUser.activation,address:newUser.address,birthday:newUser.birthday,skills:newUser.skills,
+        interests:newUser.interests,accomplishments:newUser.accomplishments,trainers:newUser.trainers,
+        trainingPrograms:newUser.trainingPrograms,partners:newUser.partners,boardMembers:newUser.boardMembers,events:newUser.events,
+        reports:newUser.reports,tasks:newUser.tasks,certificates:newUser.certificates,website:newUser.website,
+        description:newUser.description,facilities:newUser.facilities,rooms:newUser.rooms}})
+
+        const approve=await User.update( { '_id':userid,'updates._id':updtid}, {$pull: {updates:{_id:updtid}}});
     
          res.json({msg: 'User updated successfully'})
-    
         }
-    
         catch(error) {
-    
             // We will be handling the error later
-    
             console.log(error)  
-    
         }  
-
 });
 
-router.delete('/disapproveUpdates/:id',(req,res)=>{
-         const uid=req.params.id
+//id is the user id, uid is the id of the update    *tested*
+router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
+     try {
+            const userid=parseInt(req.params.id)
+
+            const updtid=parseInt(req.params.uid)
+
+            const user= await User.findById(userid)
+            if(!user)return res.status(404).send({error: 'User does not exist'})
+
+            const update=await User.find({'updates._id':updtid},{'updates':1})
+            if(!update)return res.status(404).send({error: 'Update does not exist'})
+
+            const del=await User.update( { '_id':userid,'updates._id':updtid}, {$pull: {updates:{_id:updtid}} } );
     
-         const update=updates.findIndex(update => update.id === uid);
-
-         updates.splice(update,1)
-
-         res.json({msg: 'Sorry your update request was disapproved by an admin'})
-
-
+            res.json({msg: 'Sorry your update request was disapproved by an admin'})
+       
+           }catch(error) {
+       
+               // We will be handling the error later
+       
+               console.log(error)
+       
+           }  
 });
 
 
@@ -388,6 +426,11 @@ router.put('/:MID', (req, res)=> {
 //     console.log('a user is connected')
   
 //   })
+
+  router.get('/viewmessages', async (req, res) => {
+    const updt=await message.find()
+    res.json({ data: updt })
+})
 
 //------------------------------------------------------------------------------------------------------
 

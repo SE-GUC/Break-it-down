@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //to create an id that autoincrements each time a document is added
 autoIncrement=require('mongoose-auto-increment');
+<<<<<<< HEAD
 var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true",{ useNewUrlParser: true })
 autoIncrement.initialize(connection);
 
@@ -22,6 +23,14 @@ const UserSchema = new Schema({
     //     type : Number,
     //     required :true
     // },
+=======
+var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true")
+autoIncrement.initialize(connection);
+// Create the schema
+
+const UserSchema = new Schema({
+    //attributes that all users have in common
+>>>>>>> 363d27c5e4321ec6e70f53142a2cbe47a212f792
     type: {
 
         type: String,
@@ -76,15 +85,18 @@ partners:{type:Array,required: false},
 boardMembers:{type:Array,required: false},
 events:{type:Array,required: false},
 reports:{type:Array,required: false},
-tasks:{type : Array, required:false},
+
+tasks:{type:Array,required: false},
 certificates:{type:Array,required: false},
 website:{type:String,required: false},
 description:{type:String,required: false},
 facilities:{type:Array,required: false},
 rooms:{type:Array,required: false},
-updates:{type:Array,required: false},
+
 RoomsBooked:{type:Array,required:false},
-agency:{type:Array,required:false}
+agency:{type:Array,required:false},
+updates:{type:Array,required: false}
+
 });
 
 
