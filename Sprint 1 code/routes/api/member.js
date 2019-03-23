@@ -5,9 +5,13 @@ const uuid = require('uuid');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+
+const users = require('../../models/UserProfile')
+
+
 // Models
-var Members = require('../../models/Member');
-var partner = require('../../models/Partner');
+var Members = require('../../models/Member');   //should be removed 
+var partner = require('../../models/Partner');  //should ne removed
 
 const User = require('../../models/UserProfile');
 
@@ -38,17 +42,19 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 router.get('/', (req, res) => res.json({Members }));
 
 
-///////////////////////Get all approved tasks////////////////////////////  LINA
-router.get('/Tasks',(req,res)=>{
-	var tasks=[];
-	 for(var i=0;i<partner.length;i++){
-			 for(var j=0;j<partner[i].Tasks.length;j++){
-					 if(partner[i].Tasks[j].approved=== true)
-					 tasks.push(partner[i].Tasks[j])
-			 }
-	 }
+//------------------------get all approved tasks------------------------------//
+router.get('/allTasks',async (req,res)=>{
+    //const member = await  users.find({type:"member"})
+    const partner=await  users.find({type:"partner"})
+    var tasks=[];
+    for(var i=0;i<partner.length;i++){
+        for(var j=0;j<partner[i].tasks.length;j++){
+            if(partner[i].tasks[j].approved=== true)
+            tasks.push(partner[i].tasks[j])
+        }
+    }
 
-	 
+    
 
 res.send(tasks);
 
@@ -66,44 +72,80 @@ router.get('/:ID', (req, res) => {
 	});
 
 
-	//////////// member view his tasks////////////////////////////// EMAN
-router.get('/:id/Tasks/', (request, response) => {
-	var data = "";
-	Members.forEach((value) => {
-			if(value.ID === parseInt(request.params.id)) {
-					data = `Id: ${value.ID}<br>MemberName: ${value.name}<br>MemberTaks:${value.MemberTasks}`;
-					return;
-			}
-	});
-	response.send(data || 'No member matches the requested id');
+//---------------------------- member view his tasks------------------------// 
+router.get('/view/:id',async (req, response) => {
+    var data = "";
+    const memID= parseInt(req.params.id)
+    const member = await  users.findOne({type:"member",userID:memID})
+   console.log(member)
+    if(member===null) {
+         response.send("the databsae has no member with the given ID")
+    } else {
+        // Object is NOT empty
+        data=member.memberTasks
+         response.send(data);
+    }
+   
 });
 	
 
 
-	////////get the recommended tasks based on my field//////////////// JANNA
+//---------------------------get the recommended tasks based on my field---------------------// 
 
-router.get('/:idM/Tasks/Rec',(req,res)=>{
-	const memID= parseInt(req.params.idM)
-	const member1= Members.find(member1 => member1.ID === memID)
-	var tasks=[];
+router.get('/recoTasks/:idM',async(req,res)=>{
+    const memID= parseInt(req.params.idM)
+    const member = await  users.findOne({type:"member", userID:memID})
+    const partner=await  users.find({type:"partner"})
+    var tasks=[];
+   // findOne()
+ 
 
-	let data=""
+  let data=""
+     for(var i=0;i<partner.length;i++){
+         for(var j=0;j<partner[i].tasks.length;j++){
+             if(partner[i].tasks[j].field=== member.field && partner[i].tasks[j].approved=== true){
+             tasks.push(partner[i].tasks[j])
+             /*console.log(partner[i].tasks[j].field)
+             console.log(partner[i].tasks[j].taskID)
+             console.log(partner[i].tasks[j].name)
+             console.log(partner[i].tasks[j].description)
+             console.log(partner[i].userID)*/
+             
+                data += `<a href="/api/member/memID/${partner[i].tasks[j].taskID}">${partner[i].tasks[j].name}<br> ${partner[i].tasks[j].description}<br>${partner[i].name}</a><br>`;
 
-	 for(var i=0;i<partner.length;i++){
-			 for(var j=0;j<partner[i].Tasks.length;j++){
-					 if((partner[i].Tasks[j].field=== member1.field &&   partner[i].Tasks[j].approved=== true) )
-					 {tasks.push(partner[i].Tasks[j])
-							data += `<a href="/api/member/memID/${partner[i].ID}/${partner[i].Tasks[j].taskID}">${partner[i].Tasks[j].name}<br> ${partner[i].Tasks[j].description}<br>${partner[i].name}</a><br>`;
-						
-					}
-			 }
-	 }
+             console.log(data)
+            }
+         }
+        }
 
+ res.send(data);
 
-res.send(data);
+ 
+ });  
+//------------------------------- member gets his average rating  -----------------------------------//
 
+router.get('/MyRating/:MID', async(req, response) => {
+   
+    const MID = parseInt(req.params.MID)
+    const member= await users.findOne({type:'member',userID:MID})
+    const AllMyRatings = member.allRatings
+    const Rlength = AllMyRatings.length
+    //console.log(Rlength)
+     var sum = 0;
+     var avg = 0;
 
-});  
+    if (Rlength !== 0)
+    {
+        sum = AllMyRatings.reduce(function(sum, b) { return sum + b; });
+        //console.log(sum)
+        avg = sum / Rlength
+       // console.log(avg)
+        response.json(avg)
+    }
+    else response.json(0)
+
+});
+
 
 
 
