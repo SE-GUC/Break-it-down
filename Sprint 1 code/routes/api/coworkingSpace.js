@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const Joi = require('joi');
 const users = require('../../models/UserProfile');
+const mongoose = require('mongoose')
+const User = require('../../models/UserProfile')
 const validator = require('../../validations/CoworkingSpaceValidations')
 const Room = require('../../models/Room')
 var objectid = require('mongodb').ObjectID
@@ -186,6 +188,63 @@ router.delete('/:idC/:idR', async (req, res) => {
     console.log(error)
 }  
 });
+
+
+//Update coworking space booking, to request a larger room   *Needs reviewing when updating mongodb*
+router.put('/update/booking/:bid', async(req, res)=>{
+    try
+    {
+        const bookingid=parseInt(req.params.bid);
+
+        const newCapacity=parseInt(req.body.capacity);
+
+        const booking=await User.find({'RoomsBooked.bookingID':bookingid},{RoomsBooked:{$elemMatch:{bookingID:bookingid}}}).lean()
+
+        //find empty room in same coworking space with same date and with specified capacity or greater
+        const room= await User.findOne({$and:[{'_id':booking[0].RoomsBooked[0].coworkingSpaceID},
+        {'rooms.schedule.reserved':false},{'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},
+        {'rooms.capacity':{$gte:newCapacity}},{'rooms.schedule.time':booking[0].RoomsBooked[0].time}]},{rooms:1,_id:0}).lean()
+
+        if(!room) return res.json({msg:'Could not find an empty room with the desired capacity in the same coworking space'})
+    
+        const updtbooking=await User.update({'RoomsBooked.bookingID':bookingID}, {$set:{RoomsBooked:{roomID:room.rooms[0].id}}});
+
+        const updtOldRoom=await User.update({'rooms.id':booking[0].RoomsBooked[0].roomID,
+        'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},{$set:{rooms:{schedule:{reserved:false}}}})
+
+        const updtNewRoom=await User.update({'rooms.id':room.rooms[0].id,
+        'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},{$set:{rooms:{schedule:{time:booking[0].RoomsBooked[0].time}},
+        rooms:{schedule:{userID:booking[0]._id}}, rooms:{schedule:{Date:booking[0].RoomsBooked[0].Date}}, rooms:{schedule:{reserved:true}}}});
+      
+        res.json({msg:'Your room booking is successfully updated.', data: cospace})
+
+    }
+    catch(error) {
+        // We will be handling the error later
+        console.log(error)
+    }  
+});
+
+
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//get only empty rooms?
+router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
+    try{
+    const eventid=parseInt(req.params.eid)
+
+    const event=await User.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+
+    const suggestions=await User.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
+    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
+    'address':event[0].events[0].location},
+    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+
+    res.json(suggestions)
+ 
+    }catch(error){
+        console.log(error)
+    }
+})
 
     
 
