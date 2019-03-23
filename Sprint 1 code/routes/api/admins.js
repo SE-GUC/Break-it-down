@@ -22,6 +22,8 @@ const express = require('express')
 const users = require('../../models/UserProfile')
 
 
+
+
 //------------------------------nourhan--------------------------------------------
 var bodyParser = require('body-parser')
 
@@ -200,36 +202,88 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
 //   })
 //--------------------------------------------------------------------------------------
 
+//--------------------------- admin check task description ---------------------------------------------
 
+router.get('/CheckTaskDescriptions/:PID/:TID', async(req, res)=> {
 
+    const PartID = parseInt(req.params.PID)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+    const Task_id = parseInt(req.params.TID)
 
+    if(partner===null) {
+        res.send("the database has no partner with the given ID")
+   } 
+   else {
+      const task = partner.tasks
+      const task_to_check = task.find(task => task.taskID === Task_id)
+      res.send(task_to_check);
+   }
+     
+});
+//-------------------------- admin post task on main ----------------------------------------------------------
+// partner id and task id are passed to the method to be able to access the required task to be checked  whether its approved or not 
+router.put('/ApproveTasks/:PID/:TID', async(req, res)=> {
 
-// //--------------------------- admin check task description --------------------------------------------- LINA
+    const PartID = parseInt(req.params.PID)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+    const Task_id = parseInt(req.params.TID)
 
+    if(partner===null ) {
+        res.json("the database has no partner with the given ID")
+   } 
+   else {
+      const task = partner.tasks
+      const task_to_post = task.find(task => task.taskID === Task_id)
 
+      if(task_to_post === null) 
+      res.json("this partner has no task with the given ID")
 
-router.get('/:PID/:TID', (req, res)=> {
-    const PartID = req.params.PID
+      else{
+      const approval = req.body.approval;
+  
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set: {'tasks.$.approved':approval}}, function(err, model){});
+     
 
-    const Part = Partners.find(Partner => Partner.ID === parseInt(PartID))
+      if(approval === true)
+      {
+     //set life cycle 'posted' stage to true
+     users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
+     {$set: {'tasks.$.lifeCycle.0':true}}, function(err, model){});
+     
+    // const partners = await users.findOne({type:"partner",userID:PartID})
 
+    // res.json(partners)
+      }
+      else
+        { res.json( `${Task_id} not approved`) }
+  
+    
+   }
+  
+   }
 
-
-    const Task_id = req.params.TID
-
-    const Task_Array = Part.Tasks
-
-    const task_to_check = Task_Array.find(Tasks => Tasks.taskID === parseInt(Task_id))
-
-
-
-
-
-    res.send(task_to_check)
 
    
-
 });
+
+//----------------------------- admin activate Member's account---------------------------------------------
+
+
+router.put('/ActivateAccounts/:MID', async (req, res)=> {
+    const MemID = parseInt(req.params.MID)
+    const member = await users.findOne({type:"member",userID:MemID})
+
+    const activate = req.body.activate 
+  
+    users.update({'userID':MemID}, 
+    {$set: {'activation':activate}}, function(err, model){}); 
+ //   const members = await users.findOne({type:"member",userID:MemID})
+
+ //   res.json(members)
+});
+
+
 
 // //----------------------------get all applicants of a task that belongs to partner----------------------------- Janna
 
@@ -248,109 +302,95 @@ router.get('/viewApplicants/:PID/:TID', (req, res)=> {
 
 });
 
- //------------------------------------------------------admin assigning the chosen member by partner-------------------- EMAN
+//------------------------------------------------------admin assigning the chosen member by partner-------------------- 
 
 
 
-router.put('/assign/:idP/:idT',(req,res)=>{
+router.put('/AssignMember/:idP/:idT', async(req,res)=>{
 
-    const partnerID=parseInt(req.params.idP)
 
-    const partner1= Partners.find(partner1 => partner1.ID === partnerID)
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
 
-    const taskID=parseInt(req.params.idT)
+    //const partner = await users.findOne({'userID':PartID,'tasks.taskID':Task_id })
 
-    const task1= partner1.Tasks.find(task1 => task1.taskID === taskID)
+    if(partner === null )
+    res.json("either the partner or the task id is not correct")
 
-    const index = Partners.indexOf(partner1)
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+      const applicants = t.applicants
+      const acc = applicants.find(applicants=> applicants.accepted === true)
 
-    const index1=partner1.Tasks.indexOf(task1)
+      const ID = acc.applicantID
 
-    const applicants=Partners[index].Tasks[index1].applicants
+   
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set: {'tasks.$.assigneeID':ID}}, function(err, model){});
+   
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'applicants.applicantID':ID}, 
+      {$set:{"applicants.$.assigned":true}},
+      function(err, model){});
+      
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
+       
+      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
+      res.json(partners)
 
-    const assigned = req.body.assigned
-
-    const schema = {
-        assigned:Joi.boolean().required()
-     }
-
-    const result=Joi.validate(req.body,schema)
-
-    if(result.error)
-
-     return res.status(400).send(error.details[0].message);
-
-     const applicant=applicants.filter(applicant=> applicant.accepted===true)
-
-     if(applicant.length==!0){
-
-     const appl=Partners[index].Tasks[index1].applicants.find(appl => appl.accepted === true)
-
-     const applicant2=Partners[index].Tasks[index1].applicants.indexOf(appl)
+    }
+   
 
  
 
-     Partners[index].Tasks[index1].applicants[applicant2].assigned= assigned
+ }); 
+//------------------------------------------------------admin assigning the chosen consultancy agency by partner-------------------- 
 
-     res.send(applicants);}
 
-     else{
 
-         res.send("partner didn't choose or Sorry you already assigning again")
+router.put('/AssignConsultancyAgency/:idP/:idT', async(req,res)=>{
+    
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
 
-     }
+    //const partner = await users.findOne({'userID':PartID,'tasks.taskID':Task_id })
+
+    if(partner === null )
+    res.json("either the partner or the task id is not correct")
+
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+      const consultancies = t.consultancies
+      const acc = consultancies.find(consultancies=> consultancies.accepted === true)
+
+      const ID = acc.consultancyID
+
+   
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set: {'tasks.$.consultancyAssignedID':ID}}, function(err, model){});
+   
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'consultancies.consultancyID':ID}, 
+      {$set: {'consultancies.$.assigned':true}}, function(err, model){});
+      
+
+      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
+      res.json(partners)
+
+    }
+   
 
  }); 
 
 
-//-------------------------- admin post task description ----------------------------------------------- LINA
 
-
-
-router.put('/:PID/:TID', (req, res)=> {
-
-    const PartID = req.params.PID
-
-    const Part = Partners.find(Partner => Partner.ID === parseInt(PartID))
-
-    const Task_id = req.params.TID
-
-    const Task_Array = Part.Tasks
-
-    const task_to_post = Task_Array.find(Tasks => Tasks.taskID === parseInt(Task_id))
-
-    const approval = req.body.approval;
-
-    task_to_post.approved= approval;
-
-    if(approval === true) {
-        res.send(task_to_post)
-    }else
-        res.send('not approved') 
-
-    }
-);
 
       
 
-//----------------------------- admin activate Member's account--------------------------------------------- JANNA
 
-
-router.put('/:MID', (req, res)=> {
-
-    const MemID = req.params.MID
-
-    const Mem = Members.find(Member => Member.ID === parseInt(MemID))
-
-
-
-    const activation = req.body.activation;
-
-    Mem.activated = activation;
-
-    res.send(Mem)
-
-});
 //------------------------------------------------------nourhan-----------------------------------------
 
 // router.get('/', function(req, res){
@@ -438,7 +478,9 @@ router.put('/:MID', (req, res)=> {
 
 //------------------------------------------------------------------------------------------------------
 
-//router.get('/', (req, res) => res.json("admin profile default route"));
-
+router.get('/', async(req, res) =>{ 
+     const admins = await users.find({type:"admin"})
+     res.json(admins)
+ });
 
 module.exports = router
