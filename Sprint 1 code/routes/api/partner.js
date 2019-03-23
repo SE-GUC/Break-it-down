@@ -497,6 +497,33 @@ router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
 }
 });
 
+ //-----------------------------------partner view a task's life cycle -------------------------------------------//
+
+
+router.get('/TaskLifeCycle/:PID/:TID',async (req, res)=> {
+    const partnerID  = parseInt(req.params.PID)
+    const Task_id =parseInt( req.params.TID)
+
+    const partner= await users.findOne({type:'partner',userID:partnerID})
+   // console.log(partner)
+    const Task_Array = partner.tasks
+    //console.log(partner.tasks)
+    
+    var lifeCyc=[]
+    let data=""
+    for(var i=0;i<Task_Array.length;i++){
+       if(Task_Array[i].taskID===Task_id ){
+
+         lifeCyc = Task_Array[i].lifeCycle   
+         data="the life cycle of your task is below"+"      "+"name of task:"+Task_Array[i].name
+       }
+    }
+ 
+    res.send({data,lifeCyc})
+
+
+});
+
 
  /////////////choose and send the applicant to the admin to assign/////////////////// Janna
  router.put('/:idP/:idT',(req,res)=>{
