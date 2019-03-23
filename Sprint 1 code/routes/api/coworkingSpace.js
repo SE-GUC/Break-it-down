@@ -4,19 +4,96 @@ const Joi = require('joi');
 //const Json = require('json')
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const validator = require('../../validations/validations')
+const User = require('../../models/UserProfile');
+
+// View all coworking spaces -tested- MONGOUPDATED
+router.get('/', async (req,res) => {
+	const coworkingSpace = await PartnerCoworkingSpace.find()
+	res.json({data: coworkingSpace})
+})
+
+
+  // Create a new PartnerCoworkingSpace (Malak&Nour) MONGOUPDATED
+router.post('/pcs', async(req, res) => {
+    const {type,name,email ,address ,phoneNumber ,description, facilities,rooms }=req.body
+    const CoworkingSpace = await PartnerCoworkingSpace.findOne({email})
+    if(CoworkingSpace) return res.status(400).json({error: 'Email already exists'})
+    
+        const newPartnerCoworkingSpace = new PartnerCoworkingSpace({
+            name,
+            email,
+            type,
+            phoneNumber,
+            address,
+            description,
+            facilities,
+            rooms
+        })
+        newPartnerCoworkingSpace
+        .save()
+        .then(CoworkingSpace => res.json({data :CoworkingSpace}))
+        .catch(err => res.json({error: 'Can not create PartnerCoworkingSpace'}))
+     //catch (error){
+    //console.log("can not create")}
+    });
+// Update PartnerCoworkingSpace (Malak&Nour) done except id non existent case
+router.put('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+     const CoworkingSpace = await PartnerCoworkingSpace.findOne({id})
+    // if(!CoworkingSpace) return res.status(404).send({error: 'PartnerCoworkingSpace does not exist'})
+	// const isValidated = validator.updateValidation(req.body)
+	 //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+     
+     const updatedPartnerCoworkingSpace = await PartnerCoworkingSpace.updateOne(req.body)
+
+	 res.json({msg: 'CowrkingSpace updated successfully'})
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
+
+// Delete PartnerCoworkingSpace (Malak&Nour) MONGOUPDATED
+router.delete('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const deletedPartnerCoworkingSpace = await PartnerCoworkingSpace.findByIdAndRemove(id)
+	 res.json({msg:'PartnerCoworkingSpace was deleted successfully', data: deletedPartnerCoworkingSpace})
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
+  
+
+
+
+
+
+
+
+
+
 
 
 // View all coworking spaces -tested-
-router.get('/', (req, res) => res.json({ data: PartnerCoworkingSpace }));
-
-// View all rooms in a specific coworking space\ View specific coworking spaces OK
-router.get('/:idC',(req,res)=>{
-
-      const cospace = PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.idC))
-      if(!cospace) return res.json('Coworking space does not exist')
-      res.json({ data: cospace })
-  });
-
+router.get('/',async (req, res) =>{
+    const Users = await User.find({type:'coworkingspace'})
+     res.json({ data: Users })
+    });
+    
+    
+    // View all rooms in a specific coworking space\ View specific coworking spaces OK
+    router.get('/:idC',async(req,res)=>{
+    
+          const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.idC)})
+          
+         
+          res.json({ data: Users })
+      });
 /// View a specific room -tested-
 router.get('/:idC/:idR',(req,res)=>{
     const cospace =PartnerCoworkingSpace.find(p=>p.id===parseInt(req.params.idC))
@@ -106,6 +183,26 @@ router.delete('/:id/:idr', (req, res) => {
     const index = cospace.rooms.indexOf(room)
     cospace.rooms.splice(index,1)
     res.json(cospace.rooms)
+})
+
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//get only empty rooms?
+router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
+    try{
+    const eventid=parseInt(req.params.eid)
+
+    const event=await User.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+
+    const suggestions=await User.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
+    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
+    'address':event[0].events[0].location},
+    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+
+    res.json(suggestions)
+ 
+    }catch(error){
+        console.log(error)
+    }
 })
 
     

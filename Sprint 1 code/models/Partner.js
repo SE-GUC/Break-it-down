@@ -1,13 +1,20 @@
-module.exports= Partner=[
-    {name:'partner1' , ID:1, Tasks:[  
-          {taskID: 1, name: 'z', description:'zzzzzzzzz', wantsConsultant:false,field:'ENG' ,approved:true, applicants:[] },
-          {taskID: 2, name: 'w', description:'wwwwwwwww', wantsConsultant:true,field:'PHARM', approved:true, applicants:[{applicantID: 1, accepted:false,assigned:false}, {applicantID:2 , accepted:true,assigned:false}] }
-            ]},
-    {name:'partner2' , ID:2, Tasks:[
-      {taskID: 1, name: 's', description:'zzzzzzzzz', wantsConsultant:false,field:'ENG' ,approved:true, applicants:[] }
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
+const PartnerSchema= new Schema({ 
+    type:{String,required: false},
+    name:{type:String,required: false},
+    email:{type:String,required: false},
+    address:{type:String,required: false},
+    phoneNumber:{type:Number,required: false},
+    field:{type:String,required: false},
+    partners:{type:Array,required: false},
+    description:{type:String,required: false},
+    boardMembers:{type:Array,required: false},
+    events:{type:Array,required: false}
+},
+{ versionKey: false}
 
+);
+module.exports = Partner = mongoose.model('Partner', PartnerSchema)
 
-    ]},
-    {name:'partner3' , ID:3, Tasks:[]}
-];
