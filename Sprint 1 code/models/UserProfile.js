@@ -137,7 +137,7 @@ tasks:{
             }]
         }
     },{
-       assignee:{
+       assignee:{      //for the admin to use
            type:Number,required:false
        }
     },{
