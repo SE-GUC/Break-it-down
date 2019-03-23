@@ -1,4 +1,5 @@
 
+
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
 
@@ -6,32 +7,16 @@ const validator = require('./validations/validations')
 
 const express = require('express')
 
-const mongoose = require('mongoose');
-
-var bodyParser = require('body-parser');
 const ProfilesAPI = require('./routes/api/Profiles');
-const admins = require('./routes/api/admins')
-const consultatns = require('./routes/api/consultancyAgency');
 
-const cachat = require('./routes/api/consultancyAgencyChat');
+const consultatns = require('./routes/api/consultancyAgency');
 
 const Joi = require('joi');
 
-// DB Config
-
-const db = require('./config/keys').mongoURI;
-const member = require('../Sprint 1 code/routes/api/member');
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
-const notification = require('../Sprint 1 code/routes/api/notification');
 
 
-const app = express()
-
-app.use(express.static(__dirname));
-
-app.use(bodyParser.json());
-
-app.use(bodyParser.urlencoded({extended: false}))
+const mongoose = require('mongoose');
+const db = require('./config/keys_dev').mongoURI
 
 
 mongoose.connect(db,{ useNewUrlParser: true })
@@ -40,6 +25,17 @@ mongoose.connect(db,{ useNewUrlParser: true })
 
     .catch(err => console.log(err))
 
+const member = require('../Sprint 1 code/routes/api/member');
+
+
+const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const notification = require('../Sprint 1 code/routes/api/notification');
+
+
+const app = express()
+
+
+app.use(express.json())
 
 
 
@@ -64,9 +60,10 @@ app.get('/', (req, res) => {
 
 // Direct routes to appropriate files 
 
-app.use('/api/admins', admins)
+
 
 app.use('/api/member', member);
+//app.use('/api/admin',admin)
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
@@ -74,7 +71,6 @@ app.use('/api/notification',notification)
 app.use('/api/ca',consultatns);
 
 app.use('/api/CreateAccount', ProfilesAPI)
-app.use('/api/cachat',cachat);
 // Handling 404
 
 app.use((req, res) => {
