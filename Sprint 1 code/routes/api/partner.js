@@ -15,7 +15,7 @@ router.get('/roombookings/:userID',async (req, res) => {
   
     var userID = parseInt(req.params.userID);
 
-    await user.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
+    await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
 
         res.send(roombookings);
     })
@@ -25,7 +25,7 @@ router.get('/roombookings/:userID',async (req, res) => {
 //get a room in a specific coworking space by id
 router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
     try{
-    const test = await user.aggregate([
+    const test = await User.aggregate([
         {$unwind: "$rooms"},
         {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
          {$project: {schedule:'$rooms.schedule',_id:0}}
@@ -46,7 +46,7 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     const roomID = req.params.id2;
 
     try{
-    const test1 = await user.aggregate([
+    const test1 = await User.aggregate([
         {$unwind: "$rooms"},
         {$unwind: "$rooms.schedule"},
         {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
@@ -56,14 +56,14 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     //res.send(test1.pop().reserved == "true")
    if(test1.pop().reserved) return res.send({error:'already reserved'})
 
-    const test = await user.aggregate([
+    const test = await User.aggregate([
         {$unwind: "$rooms"},
         {$unwind: "$rooms.schedule"},
         {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
         {$project:{date:'$rooms.schedule.Date',_id:0}}
     ])
 
-    const test3 = await user.aggregate([
+    const test3 = await User.aggregate([
         {$unwind: "$rooms"},
         {$unwind: "$rooms.schedule"},
         {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
@@ -71,7 +71,7 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     ])
 
 
-    const f = await user.findOneAndUpdate({
+    const f = await User.findOneAndUpdate({
 
         'userID' : parseInt(req.params.id)},
     
@@ -84,7 +84,7 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     
     )
 
-    await user.findOneAndUpdate({userID : parseInt(req.params.userID)},
+    await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
     {$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
     scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}}, 
     async function(err, model){
@@ -102,7 +102,7 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 //delete booking and set the reservation boolean to false so others can now book it
 router.delete('/RoomBookings/:userID/:bookingID',async (req, res) => {
    // try{
-        const test = await user.aggregate([
+        const test = await User.aggregate([
             {$unwind: "$RoomsBooked"},
             {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
             {$project: {'RoomsBooked.bookingID':1,_id:0}}
@@ -112,17 +112,17 @@ router.delete('/RoomBookings/:userID/:bookingID',async (req, res) => {
      if(test==0) return res.send({error:'booking does not exist.'})
 
 
-     const test1 = await user.aggregate([
+     const test1 = await User.aggregate([
         {$unwind: "$RoomsBooked"},
         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
         {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
     ])
-    const test2 = await user.aggregate([
+    const test2 = await User.aggregate([
         {$unwind: "$RoomsBooked"},
         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
         {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
     ])
-    const test3 = await user.aggregate([
+    const test3 = await User.aggregate([
         {$unwind: "$RoomsBooked"},
         {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
         {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
@@ -130,7 +130,7 @@ router.delete('/RoomBookings/:userID/:bookingID',async (req, res) => {
 
     
 
-    const f =await user.findOneAndUpdate({
+    const f =await User.findOneAndUpdate({
         'userID' : 3},
     
     {
@@ -142,7 +142,7 @@ router.delete('/RoomBookings/:userID/:bookingID',async (req, res) => {
     
     )
 
-    const y =await user.update(
+    const y =await User.update(
         {userID : parseInt(req.params.userID)},
         {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
                
