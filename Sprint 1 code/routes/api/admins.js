@@ -8,7 +8,7 @@ const validator = require('../../validations/updateValidations')
 
 const Admin = require('../../models/Admin')
 
-const User = require('../../models/User')
+const User = require('../../models/UserProfile')
 
 const Partners = require('../../models/Partner');
 
@@ -54,7 +54,38 @@ const updates=[
 
 ];
 
-//router.get('/', (req, res) => res.json({ data: admins }));
+router.get('/', (req, res) => res.json({ data: admins }));
+
+
+// router.get('/messages/:user',async (req, res) => {
+  
+//     var user = req.params.user
+  
+//     Message.find({name: user},(err, messages)=> {
+  
+//       res.send(messages);
+  
+//     })
+  
+//   })
+
+
+
+//----------------------------------------------------------nourhan------------------------------------------------------
+router.get('/contact/:pid',async (req, res)=>{
+
+    var partner = parseInt(req.params.pid)
+  
+    await User.find({userID : partner},{email : 1,phoneNumber:1, _id :0},(err, r)=>{
+
+        res.send(r);
+    })
+  
+
+})
+//--------------------------------------------------------------------------------------------------------------------------
+
+
 
 router.get('/viewUpdates', (req, res) => {
     const updt=updates.filter(updt=>updt.status==="pending")
@@ -113,7 +144,18 @@ router.delete('/disapproveUpdates/:id',(req,res)=>{
 
 
 
-
+//nourhan 
+// router.get('/messages/:user',async (req, res) => {
+  
+//     var user = req.params.user
+  
+//     Message.find({name: user},(err, messages)=> {
+  
+//       res.send(messages);
+  
+//     })
+  
+//   })
 //--------------------------------------------------------------------------------------
 
 
@@ -269,81 +311,83 @@ router.put('/:MID', (req, res)=> {
 });
 //------------------------------------------------------nourhan-----------------------------------------
 
-router.get('/', function(req, res){
-    res.sendFile(path.resolve('./index.html'));
-  });
-
-  router.get('/sent',(req, res)=>{
-    res.sendFile(path.resolve('./index2.html'));
-  })
-
-  router.get('/messages', (req, res) => {
-
-    Message.find({},(err, messages)=> {
-  
-      res.send(messages);
-  
-    })
-  
-  })
-  
+// router.get('/', function(req, res){
+//     res.sendFile(path.resolve('./index.html'));
+//   });
 
 
-  router.post('/messages', async (req, res) => {
+
+//   router.get('/sent',(req, res)=>{
+//     res.sendFile(path.resolve('./index2.html'));
+//   })
+
+//   router.get('/messages', (req, res) => {
+
+//     Message.find({},(err, messages)=> {
   
-    try{
+//       res.send(messages);
   
-      var message = new Message(req.body);
+//     })
   
+//   })
   
+
+
+//   router.post('/messages', async (req, res) => {
   
-      var savedMessage = await message.save()
+//     try{
   
-        console.log('saved');
-  
-  
-  
-      var censored = await Message.findOne({message:'badword'});
-  
-        if(censored)
-  
-          await Message.remove({_id: censored.id})
-  
-        else
-  
-          io.emit('message', req.body);
-  
-        res.sendStatus(200);
-  
-    }
-  
-    catch (error){
-  
-      res.sendStatus(500);
-  
-      return console.log('error',error);
-  
-    }
-  
-    finally{
-  
-      console.log('Message Posted')
-  
-    }
+//       var message = new Message(req.body);
   
   
   
-  })
+//       var savedMessage = await message.save()
+  
+//         console.log('saved');
+  
+  
+  
+//       var censored = await Message.findOne({message:'badword'});
+  
+//         if(censored)
+  
+//           await Message.remove({_id: censored.id})
+  
+//         else
+  
+//           io.emit('message', req.body);
+  
+//         res.sendStatus(200);
+  
+//     }
+  
+//     catch (error){
+  
+//       res.sendStatus(500);
+  
+//       return console.log('error',error);
+  
+//     }
+  
+//     finally{
+  
+//       console.log('Message Posted')
+  
+//     }
+  
+  
+  
+//   })
   
 
   
   
   
-  io.on('connection', () =>{
+//   io.on('connection', () =>{
   
-    console.log('a user is connected')
+//     console.log('a user is connected')
   
-  })
+//   })
 
 //------------------------------------------------------------------------------------------------------
 
