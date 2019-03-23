@@ -1,28 +1,38 @@
 
 
-const coworkingSpace = require('./routes/api/coworkingSpace')
-const coworkingSpace2 = require('./routes/api/coworkingSpace2')
 
 const validator = require('./validations/validations')
-
 const express = require('express')
-
-const ProfilesAPI = require('./routes/api/Profiles');
-const admins = require('./routes/api/admins')
-const consultatns = require('./routes/api/consultancyAgency');
-
+const mongoose = require('mongoose')
 const Joi = require('joi');
 
 
 
-const member = require('../Sprint 1 code/routes/api/member');
+// DB Config
+const db = require('./config/keys_dev').mongoURI
 
+// Connect to mongo
 
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
-const notification = require('../Sprint 1 code/routes/api/notification');
+mongoose
+    .connect(db)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.log(err))
 
 
 const app = express()
+
+// Init middleware
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
+
+
+
+
+const coworkingSpace = require('../Sprint 1 code/routes/api/coworkingSpace')
+const coworkingSpace2 = require('../Sprint 1 code/routes/api/coworkingSpace2')
+const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
+
+
 
 
 app.use(express.json())
@@ -50,16 +60,9 @@ app.get('/', (req, res) => {
 
 // Direct routes to appropriate files 
 
-app.use('/api/admins', admins)
-
-app.use('/api/member', member);
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
-app.use('/api/partner',partner)
-app.use('/api/notification',notification)
-app.use('/api/ca',consultatns);
-
-app.use('/api/CreateAccount', ProfilesAPI)
+app.use('/api/consultancyAgency', consultancyAgency);
 // Handling 404
 
 app.use((req, res) => {
