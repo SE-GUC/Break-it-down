@@ -227,10 +227,19 @@ catch(error){
 
 
 
-// Get all Members (Malak&Nour)
-router.get('/', (req, res) => res.json({Members }));
+// Get all Members (Malak&Nour) MONGOUPDATED
+router.get('/', (req, res) =>{	
+	Members.find()
+	.then(items=>res.json(items))});
 
 
+
+//Get Specific Member (Malak&Nour) MONGOUPDATED
+router.get('/:id', (req, res) => {
+  Members.findById(req.params.id)
+		.then(member=> res.json(member))
+		.catch(err=>res.status(404).json({ msg: 'No Member with the id of ${req.params.id}'}))
+});
 //------------------------get all approved tasks------------------------------//
 router.get('/allTasks',async (req,res)=>{
     //const member = await  users.find({type:"member"})
@@ -245,21 +254,79 @@ router.get('/allTasks',async (req,res)=>{
 
     
 
-res.send(tasks);
 
-}); 
+// Create a new member (Malak&Nour) MONGOUPDATED
+router.post('/', async(req, res) => {
+const {type,name, birthday,email ,SSN ,phoneNumber ,field, skills,interests ,jobsCompleted,certificates }=req.body
+const member = await Members.findOne({email})
+if(member) return res.status(400).json({error: 'Email already exists'})
 
-//Get Specific Member (Malak&Nour)
-router.get('/:ID', (req, res) => {
-	const found = Members.some(member => member.ID == (req.params.ID));
-  
-	if (found) {
-	  res.json(Members.filter(member => member.ID == (req.params.ID)));
-	} else {
-	  res.status(404).json({ msg: `No member with the ID of ${req.params.ID}` });
+	const newMember = new Member({
+		name,
+		birthday,
+		email,
+		SSN,
+		phoneNumber,
+		field,
+		skills,
+		interests,
+		jobsCompleted,
+		certificates,
+		MemberTasks:[],
+		activation:false,
+	})
+	newMember
+	.save()
+	.then(member => res.json({data :member}))
+	.catch(err => res.json({error: 'Can not create member'}))
+});
+/*router.put('/:id', async (req,res) => {
+    try {
+     const id = req.params.id
+     const book = await Book.findOne({id})
+     if(!book) return res.status(404).send({error: 'Book does not exist'})
+     const isValidated = validator.updateValidation(req.body)
+     if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+     const updatedBook = await Book.updateOne(req.body)
+     res.json({msg: 'Book updated successfully'})
+    }
+    catch(error) {
+        // We will be handling the error later
+        console.log(error)
+    }  
+ })
+*/
+// Update member (Malak&Nour) done except id non existent case
+router.put('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const member = await Members.findOne({id})
+	 //if(!member) return res.status(404).send({error: 'Member does not exist'})
+	// const isValidated = validator.updateValidation(req.body)
+	 //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+	 const updatedMember = await Members.updateOne(req.body)
+	 res.json({msg: 'Member updated successfully'})
 	}
-	});
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
 
+
+// Delete Member (Malak&Nour) MONGOUPDATED
+router.delete('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const deletedMember = await Members.findByIdAndRemove(id)
+	 res.json({msg:'Member was deleted successfully', data: deletedMember})
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
+  
 
 //---------------------------- member view his tasks------------------------// 
 router.get('/view/:id',async (req, response) => {
@@ -382,7 +449,17 @@ router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
 
 
 });
+///////////////////////Get all approved tasks////////////////////////////  LINA
+router.get('/Tasks',(req,res)=>{
+	var tasks=[];
+	 for(var i=0;i<partner.length;i++){
+			 for(var j=0;j<partner[i].Tasks.length;j++){
+					 if(partner[i].Tasks[j].approved=== true)
+					 tasks.push(partner[i].Tasks[j])
+			 }
+	 }
 
+	 
 
 // Create a new member (Malak&Nour)
 router.post('/', (req, res) => {
@@ -430,49 +507,10 @@ router.post('/', (req, res) => {
 	return res.json({ data: newMember });
 });
 
-
-// Update member (Malak&Nour)
-router.put('/:ID', (req, res) => {
-	const found = Members.some(member => member.ID == (req.params.ID));
-  
-	if (found) {
-	  const updMember = req.body;
-	  Members.forEach(member => {
-		if (member.ID == (req.params.ID)) {
-		  member.name = updMember.name ? updMember.name : member.name;
-		  member.age = updMember.age ? updMember.age : member.age;
-		  member.email = updMember.email ? updMember.email : member.email; 
-		  member.SSN = updMember.SSN ? updMember.SSN : member.SSN;
-		  member.phoneNumber = updMember.phoneNumber ? updMember.phoneNumber : member.phoneNumber;
-		  member.skills = updMember.skills ? updMember.skills : member.skills;
-		  member.interests = updMember.interests ? updMember.interests : member.interests;
-		  member.jobsCompleted = updMember.jobsCompleted ? updMember.jobsCompleted : member.jobsCompleted;
-		  member.certificates = updMember.certificates ? updMember.certificates : member.certificates;
-
-		  res.json({ msg: 'Member successfully updated', member });
-		}
-	  });
-	} else {
-	  res.status(400).json({ msg: `No member with the ID of ${req.params.ID}` });
-	}
-  });
+}); 
 
 
-// Delete Member (Malak&Nour)
-router.delete('/:ID', (req, res) => {
-	const found = Members.some(member => member.ID == (req.params.ID));
-  
-	if (found) {
-	  Members=Members.filter(member => member.ID != (req.params.ID))
-	  res.json({
-		msg: 'Member successfully deleted',
-		Members }
-	  );
-	} else {
-	  res.status(400).json({ msg: `No member with the ID of ${req.params.ID}` });
-	}
-  });
-  
+
 //JOI later
 
 /*

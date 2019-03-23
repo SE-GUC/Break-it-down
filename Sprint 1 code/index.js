@@ -15,58 +15,48 @@ const ca = require('./routes/api/consultancyAgency')
 
 const validator = require('./validations/validations')
 const express = require('express')
-const mongoose = require('mongoose')
 const Joi = require('joi');
 
 
 // DB Config
 const db = require('./config/keys_dev').mongoURI
 
-// Connect to mongo
+
 
 const admins = require('./routes/api/admins');
 
 
-const Joi = require('joi');
-const mongoose = require('mongoose');
-const db = require('./config/keys_dev').mongoURI;
-
-
-mongoose
-    .connect(db,{ useNewUrlParser: true })
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.log(err))
-
 const ProfilesAPI = require('./routes/api/Profiles');
 
-
-
-const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
 
 
-const Joi = require('joi');
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
-// DB Config
 
-const db = require('./config/keys').mongoURI;
+// Connect to mongo
+
+mongoose
 
 
 
+    .connect(db)
 
-mongoose.connect(db,{ useNewUrlParser: true })
+
 
     .then(() => console.log('Connected to MongoDB'))
 
-    .catch(err => console.log(err))
+
+
+    .catch(err => console.log(err));
+
 
 const member = require('../Sprint 1 code/routes/api/member');
 
 const Event = require('../Sprint 1 code/routes/api/Event')
 
-// Connect to mongo
+
 
 
 
@@ -74,28 +64,8 @@ const Event = require('../Sprint 1 code/routes/api/Event')
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-
-
-
-const coworkingSpace = require('../Sprint 1 code/routes/api/coworkingSpace')
-const coworkingSpace2 = require('../Sprint 1 code/routes/api/coworkingSpace2')
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
 
-
-
-
-
-
-
-
-
-const app = express();
-
-
-
-
-
-app.use(express.json());
 
 //nourhan
 var http = require('http').Server(app);
