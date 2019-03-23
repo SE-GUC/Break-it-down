@@ -36,4 +36,40 @@ module.exports = {
 
         return Joi.validate(request, updateSchema)
     }, 
+
+    createAccountValidation: request => {
+        const createSchema = {
+        type:Joi.string(),
+        name:Joi.string().required() ,
+        password:Joi.string().required(),
+        email:Joi.string().required().email(),
+        phoneNumber:Joi.number().required() ,
+        field:Joi.string(),
+        memberTasks:Joi.array(),
+        activation:Joi.boolean(),
+        membershipExpiryDate:Joi.date(),
+        address:Joi.string(),
+        birthday:Joi.date(),
+        skills:Joi.array(),
+        interests:Joi.array(),
+        accomplishments:Joi.array(),
+        trainers:Joi.array(),
+        trainingPrograms:Joi.array(),
+        partners:Joi.array(),
+        boardMembers:Joi.array(),
+        events:Joi.array(),
+        reports:Joi.array(),
+        tasks:Joi.array(),
+        certificates:Joi.array(),
+        website:Joi.string(),
+        description:Joi.string(),
+        facilities:Joi.array(),
+        rooms:Joi.array(),
+        updates:Joi.array()
+        }
+
+        return Joi.validate(request, createSchema)
+    }
+
+
 }

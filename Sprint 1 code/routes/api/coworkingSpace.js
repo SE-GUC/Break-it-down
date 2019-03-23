@@ -10,6 +10,7 @@ var objectid = require('mongodb').ObjectID
 
 //const Json = require('json')
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 // View all coworking spaces -tested- ///TESTED
@@ -46,6 +47,12 @@ const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const validator = require('../../validations/validations')
 const User = require('../../models/UserProfile');
 
+=======
+const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const validator = require('../../validations/validations')
+const User = require('../../models/UserProfile');
+
+>>>>>>> 46d38e5ed3faa24dc0faeb7bbd5d2a70cf4340de
 // View all coworking spaces -tested-
 router.get('/',async (req, res) =>{
     const Users = await User.find({type:'coworkingspace'})
@@ -56,8 +63,14 @@ router.get('/',async (req, res) =>{
     // View all rooms in a specific coworking space\ View specific coworking spaces OK
     router.get('/:idC',async(req,res)=>{
     
+<<<<<<< HEAD
           const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.idC)})          
           if({Users:[]}) return res.json('Coworking space does not exist')
+=======
+          const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.idC)})
+          
+         
+>>>>>>> 46d38e5ed3faa24dc0faeb7bbd5d2a70cf4340de
           res.json({ data: Users })
       });
 /// View a specific room -tested-
@@ -225,6 +238,26 @@ router.put('/update/booking/:bid', async(req, res)=>{
     }  
 });
 
+
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//get only empty rooms?
+router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
+    try{
+    const eventid=parseInt(req.params.eid)
+
+    const event=await User.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+
+    const suggestions=await User.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
+    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
+    'address':event[0].events[0].location},
+    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+
+    res.json(suggestions)
+ 
+    }catch(error){
+        console.log(error)
+    }
+})
 
 //view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
 //get only empty rooms?
