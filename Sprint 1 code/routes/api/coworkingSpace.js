@@ -6,6 +6,79 @@ const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const validator = require('../../validations/validations')
 const User = require('../../models/UserProfile');
 
+// View all coworking spaces -tested- MONGOUPDATED
+router.get('/', async (req,res) => {
+	const coworkingSpace = await PartnerCoworkingSpace.find()
+	res.json({data: coworkingSpace})
+})
+
+
+  // Create a new PartnerCoworkingSpace (Malak&Nour) MONGOUPDATED
+router.post('/pcs', async(req, res) => {
+    const {type,name,email ,address ,phoneNumber ,description, facilities,rooms }=req.body
+    const CoworkingSpace = await PartnerCoworkingSpace.findOne({email})
+    if(CoworkingSpace) return res.status(400).json({error: 'Email already exists'})
+    
+        const newPartnerCoworkingSpace = new PartnerCoworkingSpace({
+            name,
+            email,
+            type,
+            phoneNumber,
+            address,
+            description,
+            facilities,
+            rooms
+        })
+        newPartnerCoworkingSpace
+        .save()
+        .then(CoworkingSpace => res.json({data :CoworkingSpace}))
+        .catch(err => res.json({error: 'Can not create PartnerCoworkingSpace'}))
+     //catch (error){
+    //console.log("can not create")}
+    });
+// Update PartnerCoworkingSpace (Malak&Nour) done except id non existent case
+router.put('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+     const CoworkingSpace = await PartnerCoworkingSpace.findOne({id})
+    // if(!CoworkingSpace) return res.status(404).send({error: 'PartnerCoworkingSpace does not exist'})
+	// const isValidated = validator.updateValidation(req.body)
+	 //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+     
+     const updatedPartnerCoworkingSpace = await PartnerCoworkingSpace.updateOne(req.body)
+
+	 res.json({msg: 'CowrkingSpace updated successfully'})
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
+
+// Delete PartnerCoworkingSpace (Malak&Nour) MONGOUPDATED
+router.delete('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const deletedPartnerCoworkingSpace = await PartnerCoworkingSpace.findByIdAndRemove(id)
+	 res.json({msg:'PartnerCoworkingSpace was deleted successfully', data: deletedPartnerCoworkingSpace})
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
+  
+
+
+
+
+
+
+
+
+
+
+
 // View all coworking spaces -tested-
 router.get('/',async (req, res) =>{
     const Users = await User.find({type:'coworkingspace'})
