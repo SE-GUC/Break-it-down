@@ -34,7 +34,7 @@ const consultatns = require('./routes/api/consultancyAgency');
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
 
-
+const app = express()
 // Connect to mongo
 
 mongoose

@@ -332,11 +332,11 @@ router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
     }catch(error){
         console.log(error)
     }
+
+});
 })
 
-    
 
 
 
  module.exports = router;
-

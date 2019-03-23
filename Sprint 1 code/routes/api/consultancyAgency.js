@@ -2,7 +2,7 @@
 const express = require('express');
 const Joi = require('joi');
 const router = express.Router();
-<<<<<<< HEAD
+
 const User = require('../../models/UserProfile');
 
 
@@ -48,14 +48,14 @@ function groupBy2(xs, prop) {
 }
 
 
-=======
+
 
 // Models
 
 const PartnerCoworkingSpace = require('../../Models/Partner');
 
 //nourhan
-const User = require('../../models/UserProfile');
+//const User = require('../../models/UserProfile');
  var mongoose = require('mongoose');
  var objectid = require('mongodb').ObjectID
 
@@ -466,7 +466,7 @@ router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
 	}  
 
 })
->>>>>>> 46d38e5ed3faa24dc0faeb7bbd5d2a70cf4340de
+})
 
 
 
