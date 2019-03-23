@@ -145,7 +145,7 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 	//res.send(test1.pop().reserved == "true")
  if(test1.pop().reserved) return res.send({error:'already reserved'})
 
-	const test = await user.aggregate([
+	const test = await User.aggregate([
 			{$unwind: "$rooms"},
 			{$unwind: "$rooms.schedule"},
 			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
