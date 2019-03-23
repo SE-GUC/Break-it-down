@@ -567,6 +567,50 @@ router.put('/AcceptApplicant/:idP/:idT',async(req,res)=>{
     
  }); 
 
+//-----------------------------------partner choose a consultancy agency -------------------------------------------//
+
+
+router.put('/ChooseConsultacyAgency/:idP/:idT',async(req,res)=>{
+
+
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+
+    if(partner === null )
+    res.json("the partner id is not correct")
+
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+
+      if(t === null) res,json("the task Id is not correct")
+      else{
+      const consultancyID = req.body.consultancyID
+      const schema = {
+        consultancyID:Joi.number().required()
+         }
+
+      const result=Joi.validate(req.body,schema)
+
+      if(result.error)
+       return res.status(400).send(error.details[0].message);
+      else{
+     
+      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'consultancies.consultancyID':consultancyID}, 
+      {$set:{"consultancies.$.accepted":true}},
+      function(err, model){});
+
+       
+      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
+      res.json(partners)
+      }
+    }
+}
+
+
+
+});
 
  
 
