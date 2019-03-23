@@ -1,259 +1,262 @@
 const express = require('express');
+
+const bcrypt = require('bcryptjs');
+
 const router = express.Router();
-const Joi = require('joi');
-const uuid = require('uuid');
 
+const User = require('../../models/UserProfile');
 
-const Profiles = require('../../models/UserProfile');
+const validator = require('../../Validations/validations')
 
-router.get('/Users', (req, res) => res.json({ data: Profiles }));
+router.get('/', (req,res) => res.json({data: 'Users working'}));
 
+router.post('/member', async (req,res) => {
 
-//member
-router.post('/member', (req, res) => {
+    const {field,memberTasks,name,password,birthday,email,phoneNumber,skills,interests,accomplishments,certificates }  = req.body;
 
-	const name = req.body.name
-    const birthday = req.body.birthday
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const skills=req.body.skills;
-    const interests=req.body.interests;
-    const accomplishments=req.body.accomplishments;
-    const certificates=req.body.certificates;
-   
-	const schema = {
+    const isValidated = validator.createAccountValidation(req.body)
 
-		name: Joi.string().min(3).required(),
-        birthday: Joi.date(),
-        email:Joi.string().required().email(),
-        phoneNumber:Joi.number().required(),
-        skills:Joi.array(),
-        interests:Joi.array(),
-        accomplishments:Joi.array(),
-        certificates:Joi.array()
-   
-	}
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
 
-	const result = Joi.validate(req.body, schema);
+    const user = await User.findOne({email});
 
-	if (result.error) return res.status(400).send({ error: result.error.details[0].message });
+    if(user) return res.status(400).json({error: 'Email already exists'});
 
-	const newUser = {
+    const salt = bcrypt.genSaltSync(10);
 
-         id:uuid.v4(),
-         type:'member',
-         name,
-         birthday,
-         email,
-         phoneNumber,
-         skills,
-         interests,
-         accomplishments,
-         certificates
+    const hashedPassword = bcrypt.hashSync(password,salt);
 
-    };
-    Profiles.push(newUser);
+    const newUser = new User({
+            type:"member",
+            field,
+            memberTasks,
+            activation:false,
+            name,
+            password:hashedPassword,
+            birthday,
+            email,
+            phoneNumber,
+            skills,
+            interests,
+            accomplishments,
+            certificates,
+            updates:[]
+        });
 
-	return res.json({ data: Profiles });
+    newUser
 
-});
+    .save()
 
-//consultancyAgency
-router.post('/consultancyAgency', (req, res) => {
-	const name = req.body.name
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const address=req.body.address;
-    const description=req.body.description;
-    const partners=req.body.partners;
-    const boardMembers=req.body.boardMembers;
-    const events=req.body.events;
-    const reports=req.body.reports;
-   
-	const schema = {
+    .then(user => res.json({data: user}))
 
-		name: Joi.string().min(3).required(),
-        email:Joi.string().required().email(),
-        phoneNumber:Joi.number().required(),
-        address:Joi.string().required(),
-        description:Joi.string(),
-        partners:Joi.array(),
-        boardMembers:Joi.array(),
-        events:Joi.array(),
-        reports:Joi.array()
-	}
+    .catch(err => res.json({error: 'Can not create user'}));
 
-	const result = Joi.validate(req.body, schema);
+})
 
-	if (result.error) return res.status(400).send({ error: result.error.details[0].message });
+router.post('/partner', async (req,res) => {
 
-	const newUser = {
+    const {name,tasks,password,email,address,website,phoneNumber,field,description,partners,boardMembers,events }  = req.body;
 
-         id:uuid.v4(),
-         type:'consultancyAgency',
-         name,
-         email,
-         phoneNumber,
-         address,
-         description,
-         partners:partners,
-         boardMembers:boardMembers,
-         events:events,
-         reports:reports
+    const isValidated = validator.createAccountValidation(req.body)
 
-    };
-    Profiles.push(newUser);
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
 
-	return res.json({ data: Profiles });
+    const user = await User.findOne({email});
 
-});
+    if(user) return res.status(400).json({error: 'Email already exists'});
 
-//partner
-router.post('/partner', (req, res) => {
+    const salt = bcrypt.genSaltSync(10);
 
-	const name = req.body.name
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const address=req.body.address;
-    const description=req.body.description;
-    const field=req.body.field;
-    const partners=req.body.partners;
-    const boardMembers=req.body.boardMembers;
-    const events=req.body.events;
-   
-	const schema = {
+    const hashedPassword = bcrypt.hashSync(password,salt);
 
-		name: Joi.string().min(3).required(),
-        email:Joi.string().required().email(),
-        phoneNumber:Joi.number().required(),
-        address:Joi.string().required(),
-        description:Joi.string(),
-        field:Joi.string(),
-        partners:Joi.array(),
-        boardMembers:Joi.array(),
-        events:Joi.array()
-	}
+    const newUser = new User({
+            type:"partner",
+            name,
+            activation:false,
+            tasks,
+            password:hashedPassword,
+            email,
+            address,
+            website,
+            phoneNumber,
+            field,
+            description,
+            partners,
+            boardMembers,
+            events,
+            updates:[]
+        });
 
-	const result = Joi.validate(req.body, schema);
+    newUser
 
-	if (result.error) return res.status(400).send({ error: result.error.details[0].message });
+    .save()
 
-	const newUser = {
+    .then(user => res.json({data: user}))
 
-         id:uuid.v4(),
-         type:'partner',
-         name,
-         email,
-         phoneNumber,
-         address,
-         description,
-         field,
-         partners:partners,
-         boardMembers:boardMembers,
-         events:events
+    .catch(err => res.json({error: 'Can not create user'}));
 
-    };
-    Profiles.push(newUser);
+})
 
-	return res.json({ data: Profiles });
+router.post('/coworkingSpace', async (req,res) => {
 
-});
+    const {name,password,email,address,website,phoneNumber,description,facilities,rooms }  = req.body;
 
-//coworkingSpace
-router.post('/coworkingSpace', (req, res) => {
-   
-	const name = req.body.name
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const address=req.body.address;
-    const description=req.body.description;
-    const facilities=req.body.facilities;
-    const rooms=req.body.rooms;
-   
-	const schema = {
+    const isValidated = validator.createAccountValidation(req.body)
 
-		name: Joi.string().min(3).required(),
-        email:Joi.string().required().email(),
-        phoneNumber:Joi.number().required(),
-        address:Joi.string().required(),
-        description:Joi.string(),
-        facilities:Joi.array(),
-        rooms:Joi.array()
-	}
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
 
-	const result = Joi.validate(req.body, schema);
+    const user = await User.findOne({email});
 
-	if (result.error) return res.status(400).send({ error: result.error.details[0].message });
+    if(user) return res.status(400).json({error: 'Email already exists'});
 
-	const newUser = {
+    const salt = bcrypt.genSaltSync(10);
 
-         id:uuid.v4(),
-         type:'coworkingSpace',
-         name,
-         email,
-         phoneNumber,
-         address,
-         description,
-         facilities,
-         rooms
+    const hashedPassword = bcrypt.hashSync(password,salt);
 
-    };
-    Profiles.push(newUser);
+    const newUser = new User({
+            type:"coworkingSpace",
+            name,
+            activation:false,
+            password:hashedPassword,
+            email,
+            address,
+            website,
+            phoneNumber,
+            description,
+            facilities,
+            rooms,
+            updates:[]
+        });
 
-	return res.json({ data: Profiles });
+    newUser
 
-});
+    .save()
 
-//educationalOrganization
-router.post('/educationalOrganization', (req, res) => {
-   
-	const name = req.body.name
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const address=req.body.address;
-    const description=req.body.description;
-    const trainers=req.body.trainers;
-    const trainingPrograms=req.body.trainingPrograms;
-    const certificates=req.body.certificates;
+    .then(user => res.json({data: user}))
 
-	const schema = {
+    .catch(err => res.json({error: 'Can not create user'}));
 
-		name: Joi.string().min(3).required(),
-        email:Joi.string().required().email(),
-        phoneNumber:Joi.number().required(),
-        address:Joi.string().required(),
-        description:Joi.string(),
-        trainers:Joi.array(),
-        trainingPrograms:Joi.array(),
-        certificates:Joi.array()
-	}
+})
 
-	const result = Joi.validate(req.body, schema);
+router.post('/educationalOrganization', async (req,res) => {
 
-	if (result.error) return res.status(400).send({ error: result.error.details[0].message });
+    const {name,password,email,address,website,phoneNumber,description,trainers,trainingPrograms,certificates }  = req.body;
 
-	const newUser = {
+    const isValidated = validator.createAccountValidation(req.body)
 
-         id:uuid.v4(),
-         type:'educationalOrganization',
-         name,
-         email,
-         phoneNumber,
-         address,
-         description,
-         trainers,
-         trainingPrograms,
-         certificates
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
 
-    };
-    Profiles.push(newUser);
+    const user = await User.findOne({email});
 
-	return res.json({ data: Profiles });
+    if(user) return res.status(400).json({error: 'Email already exists'});
 
-});
+    const salt = bcrypt.genSaltSync(10);
 
+    const hashedPassword = bcrypt.hashSync(password,salt);
 
+    const newUser = new User({
+            type:"educationalOrganization",
+            name,
+            activation:false,
+            password:hashedPassword,
+            email,
+            address,
+            website,
+            phoneNumber,
+            description,
+            trainers,
+            trainingPrograms,
+            certificates,
+            updates:[]
 
+        });
+
+    newUser
+
+    .save()
+
+    .then(user => res.json({data: user}))
+
+    .catch(err => res.json({error: 'Can not create user'}));
+
+})
+
+router.post('/consultancyAgency', async (req,res) => {
+
+    const {name,password,email,address,website,phoneNumber,description,partners,boardMembers,events,reports }  = req.body;
+
+    const isValidated = validator.createAccountValidation(req.body)
+
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+
+    const user = await User.findOne({email});
+
+    if(user) return res.status(400).json({error: 'Email already exists'});
+
+    const salt = bcrypt.genSaltSync(10);
+
+    const hashedPassword = bcrypt.hashSync(password,salt);
+
+    const newUser = new User({
+            type:"consultancyAgency",
+            name,
+            activation:false,
+            password:hashedPassword,
+            email,
+            address,
+            website,
+            phoneNumber,
+            description,
+            partners,
+            boardMembers,
+            events,
+            reports,
+            updates:[]
+        });
+
+    newUser
+
+    .save()
+
+    .then(user => res.json({data: user}))
+
+    .catch(err => res.json({error: 'Can not create user'}));
+
+})
+
+router.post('/admin', async (req,res) => {
+
+    const {name,password,email,address,phoneNumber}  = req.body;
+
+    const isValidated = validator.createAccountValidation(req.body)
+
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+
+    const user = await User.findOne({email});
+
+    if(user) return res.status(400).json({error: 'Email already exists'});
+
+    const salt = bcrypt.genSaltSync(10);
+
+    const hashedPassword = bcrypt.hashSync(password,salt);
+
+    const newUser = new User({
+            type:"admin",
+            name,
+            password:hashedPassword,
+            email,
+            phoneNumber
+        });
+
+    newUser
+
+    .save()
+
+    .then(user => res.json({data: user}))
+
+    .catch(err => res.json({error: 'Can not create user'}));
+
+})
 
 
 module.exports = router;
