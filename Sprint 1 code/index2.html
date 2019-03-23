@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+        <div id="messages">
+        </div>
+
+
+<script>
+    var socket = io();
+$(() => {
+    getMessages();
+})
+
+    socket.on('message', addMessages)
+
+    function addMessages(message){
+
+        $("#messages").append(`<h4> ${message.name} </h4> <p> ${message.message} </p>`)
+
+    }
+
+
+
+    function getMessages(){
+
+      $.get('http://localhost:4000/api/admins/messages', (data) => {
+
+        data.forEach(addMessages);
+
+      })
+
+    }
+
+
+
+</script>
+
+</body>
+
+</html>

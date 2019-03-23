@@ -10,8 +10,7 @@ const users = require('../../models/UserProfile')
 
 
 // Models
-var Members = require('../../models/Member');   //should be removed 
-var partner = require('../../models/Partner');  //should ne removed
+  //should ne removed
 
 const User = require('../../models/UserProfile');
 
@@ -19,7 +18,10 @@ const User = require('../../models/UserProfile');
 //nourhan
 var objectid = require('mongodb').ObjectID
 
-const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+
+var Members = require('../../models/Member');
+var partner = require('../../models/Partner');
+const PartnerCoworkingSpace = require('../../models/cospaceMtest');
 const RoomBookings = require('../../models/RoomBookings');
 
 
@@ -490,6 +492,19 @@ router.post('/joi', (req, res) => {
 	};
 	return res.json({ data: newMember });
 });*/
+
+//Search  coworking spaces by location and capacity
+router.get('/PartnerCoworkingspaces/Filter',(req,res)=>{
+	if(req.body.location&&req.body.capacity)
+	PartnerCoworkingSpace.find( {$and: [{"address":req.body.location},{"rooms.capacity":req.body.capacity}]})
+	.then(p=> (!p)? res.json({msg:'No coworking space with your specifications found'}) : res.json(p));
+	if(req.body.location&&!req.body.capacity)
+	PartnerCoworkingSpace.find( {"address":req.body.location})
+	.then(p=> (!p)? res.json({msg:'No coworking space with your specifications found'}): res.json(p));
+	if(!req.body.location&&req.body.capacity)
+	PartnerCoworkingSpace.find( {"rooms.capacity":req.body.capacity})
+	.then(p=> (!p)? res.json({msg:'No coworking space with your specifications found'}): res.json(p));
+});
 
 
 //shaza
