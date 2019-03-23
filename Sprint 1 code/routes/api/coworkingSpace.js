@@ -112,6 +112,26 @@ router.delete('/:id/:idr', (req, res) => {
     res.json(cospace.rooms)
 })
 
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//get only empty rooms?
+router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
+    try{
+    const eventid=parseInt(req.params.eid)
+
+    const event=await User.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+
+    const suggestions=await User.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
+    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
+    'address':event[0].events[0].location},
+    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+
+    res.json(suggestions)
+ 
+    }catch(error){
+        console.log(error)
+    }
+})
+
     
 
  module.exports = router;
