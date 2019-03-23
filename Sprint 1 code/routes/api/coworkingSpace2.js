@@ -1,156 +1,173 @@
-const express = require('express')
-const router = express.Router()
 
-const Joi = require('joi');
 //const Json = require('json');
 
-
-const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const express = require('express')
+const router = express.Router()
+const users = require('../../models/UserProfile');
 const validator = require('../../validations/validations')
+const Room = require('../../models/Room')
+const Schedule = require('../../models/Schedule')
+const validatorSchedule = require('../../validations/ScheduleValidate')
+const validatorRoom = require('../../Validations/RoomValudate')
 
-
-// View a room schedule OK
-router.get('/:idC/:idR',(req,res)=>{
-    const cospace=PartnerCoworkingSpace.find(p=>p.id===parseInt(req.params.idC))
-    if(!cospace)  return res.send('Coworking Space not found.')
-    const requestedRoom = cospace.rooms.find(r=>r.id === parseInt(req.params.idR))
-    if(!requestedRoom)  return res.send('No room with this id is found.')
-    const roomSchedule= requestedRoom.schedule
-   
-    res.json({data: roomSchedule})
-
-});
-
-//Create a new schedule for a room OK
-router.post('/',(req,res)=>{
-    const cospace=PartnerCoworkingSpace.find(p=>p.id===parseInt(req.body.idC))
-    if(!cospace)  return res.send('Coworking Space not found.')
-
-    const requestedRoom = cospace.rooms.find(r=>r.id === parseInt(req.body.idR))
-    
-    if(!requestedRoom)  return res.send('No room with this id is found.')
-
-    var roomSchedule= requestedRoom.schedule
-    const schema={
-        idC: Joi.number().required(),
-        idR: Joi.number().required(),
-        idS: Joi.number().required(),
-        Date: Joi.date().required(),
-        time: Joi.number().required()
-
-    }
-    const result = Joi.validate(req.body, schema);
-    if(result.error){
-      return  res.send(result.error.details[0].message)
-     }
-
-    const newSchedule = {id: req.body.idS, user: {}, Date: req.body.Date, time: req.body.time, reserved: false}
-    
-    roomSchedule.push(newSchedule)
-
-    res.json({data: roomSchedule})
-
-});
-
-
-
- // Reserve a room /UUpdate this room's schedule reservation   -tested-
- router.put('/:idC/:idR/:idS/:id' ,(req, res)=>{
+// View a room schedule OK  //TESTED
+router.get('/:idC/:idR', async (req,res)=>{
     try{
-       const schema = {
-           idC: Joi.number().required(),
-           idR: Joi.number().required(),
-           idS: Joi.number().required(),
-           user: Joi.object().required()
-       };
-       const result = Joi.validate(req.body, schema);
+    const cospace= await users.findOne({type:"coworkingSpace",_id:parseInt(req.params.idC)})
+    if(cospace===undefined || cospace.length==0)  return res.send('Coworking Space not found.')
 
-       if(result.error){
-           return res.status(400).send(result.error.details[0].message)
-       }
-
-       const userSchema = {
-           name: Joi.string().required(),
-           id: Joi.number().required(),
-           field: Joi.string(),
-           MemberTasks: Joi.array()
-       
-        }
-       
-        const result2 = Joi.validate(req.body.user, userSchema);
-
-       
-        if(result2.error){
-           return res.status(400).send(result2.error.details[0].message)
-       }
-   var cospace = PartnerCoworkingSpace.find(p => p.id === parseInt(req.body.idC))
-   if(!cospace){
-    return res.status(404).send('Coworking space does not exist');
-       
-   };
-   
-   var scheduleroom = cospace.rooms.find(s => s.id === parseInt(req.body.idR));
-   if(!scheduleroom){
-      return res.status(404).send('Room does not exist.');
-       
-   };
     
-   var scheduleOfRoom = scheduleroom.schedule.find(s => s.id === parseInt(req.body.idS));;
-   if(!scheduleOfRoom){
-       return res.status(404).send('This schedule is not assigned to this room.');
-        
-    };
+    const requestedSchedule = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$match: {_id:parseInt(req.params.idC), type:"coworkingSpace","rooms.id":parseInt(req.params.idR)}},
+        {$project: {"rooms.schedule": 1, _id:0}}
+    ])
+
+if(requestedSchedule===undefined || requestedSchedule.length==0) return res.send('No schedule is allocated for this room yet.')
+else return res.status(200).send(requestedSchedule)
+    
+    }
+    catch(error) {
+        // We will be handling the error later
+        res.send(error)
+    }  
+
+});
+
+
+
+//Create a new schedule for a room OK // TESTED
+router.post('/createSchedule/:idC/:idR', async (req,res)=>{
+    try{
+    
+    const isValidated = validatorSchedule.createValidation(req.body)
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+
+    //var idNum = parseInt(objectId.valueOf(), 16);
+    const cospace= await users.findOne({type:"coworkingSpace",'_id':parseInt(req.params.idC)})
+    if(cospace===undefined || cospace.length==0)  return res.send('Coworking Space not found.')
+
+    const requestedRoom = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$match: {_id:parseInt(req.params.idC), type:"coworkingSpace","rooms.id":parseInt(req.params.idR)}},
+        {$project: {"rooms": 2,"name":1, _id:0}}
+    ])
+    
+    if(requestedRoom===undefined || requestedRoom.length==0)  return res.send('Requested room is not found.')
+
+    const newSchedule = {id: req.body.idS, Date: req.body.Date, time: req.body.time, reserved: false}
+    //const newSchedule = await Schedule.create(req.body)
+    users.findOneAndUpdate({'_id':parseInt(req.params.idC), 'rooms.id':parseInt(req.params.idR)}, {$push: {rooms: {schedule: newSchedule}}}, {new: true}, (err, cospaceRooms) => {
+        if (err) {
+            res.json("Something wrong when updating data!");
+        }
+    
+        res.json({msg:'Schedule was created successfully', data: newSchedule})
+    });
+  
+    }
+      catch(error) {
+        // We will be handling the error later
+      console.log(error)
+    }  
+});
+
+
+
+
+//Delete a schedule //TESTED
+
+router.delete('/:idC/:idR/:idS', async (req, res) => {
+    try{
+
+        const idc = parseInt(req.params.idC)
+        const idr = parseInt(req.params.idR)
+        const ids = parseInt(req.params.idS)
+
+        const cospace = await users.find({type:"coworkingSpace",'_id':parseInt(req.params.idC)})
+        if(cospace===undefined || cospace.length==0) return res.send({error:'Coworking space does not exist.'})
+  
+    const requestedRoom = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$match: {_id:idc, type:"coworkingSpace","rooms.id":idr}},
+        {$project: {"rooms": 2,"name":1, _id:0}}
+    ])
+    if(requestedRoom===undefined || requestedRoom.length==0) return res.send({error:'Room does not exist.'})
  
-   if(scheduleOfRoom.reserved===true){
-       if(scheduleOfRoom.user.ID===parseInt(req.params.id)) return res.send({error: 'You already reserved this room.', data: scheduleOfRoom})
-       else if(scheduleOfRoom.user.ID!==parseInt(req.params.id)) return res.send({error: 'This is a reserved time slot. Choose another one.'})
-   }
-   else if(scheduleOfRoom.reserved===false){
-       scheduleOfRoom.reserved=true
-       scheduleOfRoom.user.name=req.body.user.name
-       scheduleOfRoom.user.ID =parseInt(req.body.user.id)
-       scheduleOfRoom.user.field = req.body.user.field
-       scheduleOfRoom.user.MemberTasks = req.body.user.MemberTasks
-       return res.send({message:'Room is successfully reserved.', data: scheduleOfRoom})
-   }
-}
-catch(error) {
-   // We will be handling the error later
-   console.log(error)
+        users.update( {'_id': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
+            { $pull: {'rooms.$.schedule':{id:ids}} }, async function(err, model){
+               
+           if(err)  return res.send(err)
+           else res.json({msg:'Schedule was deleted successfully', data: model})
+        });   
+
+
+  }
+    catch(error) {
+    // We will be handling the error later
+    console.log(error)
 }  
 });
 
 
 
-
-
-//Delete a schedule OK
-router.delete('/:idC/:idR/:idS', (req, res) => {
-   
-    var cospace = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.idC))
-   if(!cospace){
-    return res.status(404).send('Coworking space does not exist');
-       
-   };
-   
-   var scheduleRoom = cospace.rooms.find(s => s.id === parseInt(req.params.idR));
-   if(!scheduleRoom){
-      return res.status(404).send('Room does not exist.');
-       
-   };
+router.put('/:idC/:idR/:idS' ,async(req, res)=>{
+    try{
+    const schedID = req.params.idS;
+    const idc = parseInt(req.params.idC)
+    const idr = parseInt(req.params.idR)
+    const ids = parseInt(req.params.idS)
     
-   var scheduleOfRoom = scheduleRoom.schedule.find(s => s.id === parseInt(req.params.idS));;
-   if(!scheduleOfRoom){
-       return res.status(404).send('This schedule is not assigned to this room.');
-        
-    }; 
-    if(scheduleOfRoom.reserved===true){
-        return res.send({message: 'Action can not be made as this slot is reserved. Try again after reservation duration ends.'})
-    }
-  
-    const index = scheduleRoom.schedule.indexOf(scheduleOfRoom)
-    scheduleRoom.schedule.splice(index,1)
-    res.json({message: 'Schedule successfully deleted', data: scheduleRoom})
+    var cospace = await users.findOne({type:"coworkingSpace",'_id':parseInt(req.params.idC)})
+    if(cospace===undefined || cospace.length==0) return res.send({error:'Coworking space does not exist.'})
+
+
+    var scheduleroom  = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$match: {_id:parseInt(req.params.idC), type:"coworkingSpace","rooms.id":parseInt(req.params.idR)}},
+        {$project: {"rooms": 1, _id:0}}
+      ])
+
+    if(scheduleroom ===undefined || scheduleroom .length==0) return res.send({error:'Room does not exist.'})
+    const requestedSchedule = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$match: {_id:parseInt(req.params.idC), type:"coworkingSpace","rooms.id":parseInt(req.params.idR)}},
+        {$project: {"rooms.schedule": 1, _id:0}}
+    ])
+   /* const newArray = requestedSchedule.filter(function(item) {
+        for (var property in object) {
+            if (object.hasOwnProperty(property)) {
+              if(property.id===ids)
+              return property.reserved
+            }
+          }
+          res.json(newArray)
+
+     const test1 = await users.aggregate([
+        {$unwind: "$rooms"},
+        {$unwind: "$rooms.schedule"},
+        {$match: {_id:parseInt(req.params.idC),type:"coworkingspace",'rooms.id':parseInt(req.params.idR),'rooms.schedule.id':parseInt(schedID)}},
+        {$project:{"rooms":1,_id:0}}
+    ])
+return res.json(test1)*/
+
+   // if(test1===undefined || test1.length==0) res.json(test1)
+   // if(test1.pop().reserved) res.json({error:'already reserved'})
+ 
+ 
+  users.update( {'_id': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
+  { $set: {'rooms.$.schedule':{reserved:true}} }, async function(err, model){
+     
+   if(err)  res.json(err)
+   else res.json({msg:'Schedule was booked successfully', data: model})
+   });   
+
+     }
+   catch(error) {
+        // We will be handling the error later
+        console.log(error)
+    }  
+
 });
 
 

@@ -1,11 +1,21 @@
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const MemberSchema= new Schema({ 
+    type:{String,required: false},
+    name:{type:String,required: false},
+    email:{type:String,required: false},
+    birthday:{type:Date,required: false},
+    phoneNumber:{type:Number,required: false},
+    skills:{type:String,required: false},
+    interest:{type:String,required: false},
+    accomplishments:{type:String,required: false},
+    certificates:{type:String,required: false},
+},
+{ versionKey: false}
+
+);
+module.exports = Member = mongoose.model('Member', MemberSchema)
 
 
-const uuid = require('uuid')
-
-module.exports= Member=[
-    {name:'Eman' , ID:1,field:'ENG', activation:false,MemberTasks:['task1','task2']},
-    
-    {name:'Janna' , ID:2, field:'PHARM' ,MemberTasks:[]},
-    {name:'Lina' , ID:3,field:'PHARM', MemberTasks:[]}
-];
 

@@ -97,4 +97,4 @@ router.get('/', (req, res) => res.json({ data: Notification }));
 
 
 
-module.exports = router
+module.exports = router;

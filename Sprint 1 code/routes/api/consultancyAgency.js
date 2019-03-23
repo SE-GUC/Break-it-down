@@ -1,32 +1,127 @@
 // Dependencies
 const express = require('express');
 const Joi = require('joi');
-const uuid = require('uuid');
 const router = express.Router();
 
+const User = require('../../models/UserProfile');
+
+
+router.get('/filterTasks/:memberID', async (req, res) =>{
+try{
+	//Member skills
+	const memberSkills = await User.findOne({type:"member",'_id':parseInt(req.params.memberID)},{skills:1,_id:0})
+	//Member field
+	const memberField = await User.findOne({type:"member",'_id':parseInt(req.params.memberID)},{field:1,_id:0})
+	//Resulting tasks
+	var recommendedTasks=[]
+	//All partner tasks
+	const grptasks = await User.find({type:"partner"},{"tasks":1,_id:0})
+	//var grpTasks= groupBy2(tasks,'field')
+
+	for (var i = 0; i < grptasks.length; i++) {
+		for (var j =0; j< grptasks[i].tasks.length; j++){
+		if(grptasks[i].tasks[j].approved===true && grptasks[i].tasks[j].lifeCycle[1]===false && grptasks[i].tasks[j].field===memberField.field)
+		{
+			recommendedTasks.push(grptasks[i].tasks[j])
+		}
+		}
+}
+
+res.json(recommendedTasks)
+
+}
+catch(error){
+	res.send(error)
+}
+
+
+});
+
+function groupBy2(xs, prop) {
+  var grouped = {};
+  for (var i=0; i<xs.length; i++) {
+    var p = xs[i][prop];
+    if (!grouped[p]) { grouped[p] = []; }
+    grouped[p].push(xs[i]);
+  }
+  return grouped;
+}
+
+
+
+
 // Models
-const ConsultancyAgency = require('../../Models/ConsultancyAgency');
-const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+
+const PartnerCoworkingSpace = require('../../Models/Partner');
+
+//nourhan
+//const User = require('../../models/UserProfile');
+ var mongoose = require('mongoose');
+ var objectid = require('mongodb').ObjectID
+
+
+const ConsultancyAgency = require('../../models/ConsultancyAgency');
+//const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
+const Message = require('../../models/messages');
 
-// temporary arbitary data created as if it was pulled out of the database ...
-var consultancyAgencys = [
-	new ConsultancyAgency('Barney', 'barney.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C","@barney"),
-	new ConsultancyAgency('Lilly', 'Lilly.com','lily@hotmail.com',"Giza", 01234567,3489348934,'Mohamed','Organs','Graduation',"O","@lilly"),
-	new ConsultancyAgency('Ted', 'Ted.com','ted@hotmail.com',"Point90", 01234567,8943893489,'Ali','Humans','CS4GameRoom',"N","@Ted"),
-	new ConsultancyAgency('Marshal', "Marshal.com",'marshal@hotmail.com',"Mohandseen", 01234567,34983489,'Samya','Relaxing','Kol El Nas Bet2ol Yarab',"S","@Ted"),
-	new ConsultancyAgency('Robin', "Robin.com",'robin@hotmail.com',"Agouza", 01234567,3489348989,'Farida','Being Happy','Concepts Food Logger in Prolog',"U","@Robin")
 
-];
+
+
+//nourhan
+const user = require('../../models/UserProfile');
+ var mongoose = require('mongoose');
+ var objectid = require('mongodb').ObjectID
+
 
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
+//shaza
+//get the coworking space by id
+router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
-// Get all ConsultancyAgencys
-router.get('/', (req, res) => res.json({ data: consultancyAgencys }));
+	const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.id)})
+	if(!Users) return res.json('Coworking space does not exist')
+	res.json({ data: Users })
+}); 
 
-//Get Specific ConsultancyAgency
+//view all coworking spaces
+router.get('/PartnerCoworkingspaces',async (req, res) =>{
+	const Users = await User.find({type:'coworkingspace'})
+	 res.json({ data: Users })
+	});
+
+	router.post('/messages', async (req, res) => {
+
+		try{
+	
+					var message = new Message(req.body);
+					console.log(req.body);
+			var savedMessage = await message.save();
+	
+				console.log('saved');
+	
+				res.sendStatus(200);
+	
+		}	
+		catch (error){
+	
+			res.sendStatus(500);
+	
+			return console.log('error',error);
+	
+		}	
+	})
+
+router.get('/', async (req,res) => {
+	const ConsultancyAgencys = await ConsultancyAgency.find()
+	res.json({data: ConsultancyAgencys})
+})
+
+
+
+//Get Specific ConsultancyAgency (Malak&Nour) MONGOUPDATED
 router.get('/:id', (req, res) => {
 	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
   
@@ -36,6 +131,112 @@ router.get('/:id', (req, res) => {
 	  res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
 	}
   });
+
+
+
+	//--------------------------------nourhan----------------------------------------------
+router.put('/apply/:pid/:tid/:agid',async(req , res)=> {
+	const tid = parseInt(req.params.tid)
+	const aid = parseInt(req.params.agid)
+	const tmp = await User.findOneAndUpdate({userID : parseInt(req.params.pid), 'tasks.taskID' : tid},
+	{$addToSet : {'tasks.$.agencies':  {agencyID : aid, accepted: false, assigned: false}}}
+	)
+	res.send("applied successfully")
+})
+
+
+
+//nourhan
+//Get all bookings of a specific user
+router.get('/roombookings/:userID',async (req, res) => {
+  
+	var userID = parseInt(req.params.userID);
+
+	await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
+
+			res.send(roombookings);
+	})
+
+})
+
+//get a room in a specific coworking space by id
+router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
+	try{
+	const test = await User.aggregate([
+			{$unwind: "$rooms"},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
+			 {$project: {schedule:'$rooms.schedule',_id:0}}
+	])
+	 res.send(test.pop().schedule);
+	}
+	catch(error){
+			res.send("not found")
+			console.log("error")
+	}
+	
+});
+
+//book a room , append it to the array of bookings if it is not in my bookings
+router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
+	const schedID = req.params.id3;
+	const cospaceID = req.params.id;
+	const roomID = req.params.id2;
+
+	try{
+	const test1 = await User.aggregate([
+			{$unwind: "$rooms"},
+			{$unwind: "$rooms.schedule"},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+			{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
+	])
+
+	//res.send(test1.pop().reserved == "true")
+ if(test1.pop().reserved) return res.send({error:'already reserved'})
+
+	const test = await User.aggregate([
+			{$unwind: "$rooms"},
+			{$unwind: "$rooms.schedule"},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+			{$project:{date:'$rooms.schedule.Date',_id:0}}
+	])
+
+	const test3 = await User.aggregate([
+			{$unwind: "$rooms"},
+			{$unwind: "$rooms.schedule"},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+			{$project:{time:'$rooms.schedule.time',_id:0}}
+	])
+
+
+	const f = await User.findOneAndUpdate({
+
+			'userID' : parseInt(req.params.id)},
+	
+	{
+			$set : {'rooms.$[i].schedule.$[j].reserved' : true, 'rooms.$[i].schedule.$[j].reservedBy' : {uid : parseInt(req.params.userID)}}
+	},
+	{
+			arrayFilters : [{"i.id" : parseInt(roomID)},{"j.id" : parseInt(schedID)}]
+	}
+	
+	)
+
+	await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
+	{$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
+	scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}}, 
+	async function(err, model){
+						 
+			if(err)  return handleError(res, err)
+			else res.json({msg:'Room was reserved successfully'})
+	 });
+	}
+	catch(error){
+			console.log(error)
+			res.send("Not found")
+	}
+});
+
+//------------------------------------------------------------------------------------------
 
 // Create a new consultancyAgency
 router.post('/', (req, res) => {
@@ -84,69 +285,67 @@ router.post('/', (req, res) => {
 	
 	*/
 
-	const newConsultancyAgency = {
-		name,
-		website,
-		email,
-		address,
-		phoneNumber,
-		fax,
-		boardMembers,
-		studiesPosted,
-		eventsOrganized,
-		about,
-		socialMediaAccounts,
-		id: uuid.v4(),
-	};
 
-	consultancyAgencys.push(newConsultancyAgency)
-	return res.json({ data: newConsultancyAgency });
+// Create a new consultancyAgency (Malak&Nour) MONGOUPDATED
+router.post('/', async(req, res) => {
+const {type,name, birthday,email ,address ,phoneNumber ,partners,description, boardMembers,events ,reports,activation }=req.body
+const consultancyAgency = await ConsultancyAgency.findOne({email})
+if(consultancyAgency) return res.status(400).json({error: 'Email already exists'})
+
+	const newConsultancyAgency = new ConsultancyAgency({
+		name, 
+		birthday,
+		email,
+		type,
+		phoneNumber,
+		address,
+        partners,
+        description,
+		boardMembers,
+		events,
+		reports,
+		activation,
+	})
+	newConsultancyAgency
+	.save()
+	.then(consultancyAgency => res.json({data :consultancyAgency}))
+    .catch(err => res.json({error: 'Can not create consultancyAgency'}))
+ //catch (error){
+//console.log("can not create")}
 });
 
+// Update consultancyAgency (Malak&Nour) done except id non existent case
+router.put('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+     const consultancyAgency = await ConsultancyAgency.findOne({id})
+    // if(!consultancyAgency) return res.status(404).send({error: 'consultancyAgency does not exist'})
+	// const isValidated = validator.updateValidation(req.body)
+	 //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+     
+     const updatedConsultancyAgency = await ConsultancyAgency.updateOne(req.body)
 
-// Update consultancyAgency
-router.put('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  const updConsultancyAgency = req.body;
-	  consultancyAgencys.forEach(consultancyAgency => {
-		if (consultancyAgency.id == (req.params.id)) {
-		  consultancyAgency.name = updConsultancyAgency.name ? updConsultancyAgency.name : consultancyAgency.name;
-		  consultancyAgency.website = updConsultancyAgency.website ? updConsultancyAgency.website : consultancyAgency.website;
-		  consultancyAgency.email = updConsultancyAgency.email ? updConsultancyAgency.email : consultancyAgency.email; 
-		  consultancyAgency.address = updConsultancyAgency.address ? updConsultancyAgency.address : consultancyAgency.address;
-		  consultancyAgency.phoneNumber = updConsultancyAgency.phoneNumber ? updConsultancyAgency.phoneNumber : consultancyAgency.phoneNumber;
-		  consultancyAgency.fax = updConsultancyAgency.fax ? updConsultancyAgency.fax : consultancyAgency.fax;
-		  consultancyAgency.boardMembers = updConsultancyAgency.boardMembers ? updConsultancyAgency.boardMembers : consultancyAgency.boardMembers;
-		  consultancyAgency.studiesPosted = updConsultancyAgency.studiesPosted ? updConsultancyAgency.studiesPosted : consultancyAgency.studiesPosted;
-		  consultancyAgency.eventsOrganized = updConsultancyAgency.eventsOrganized ? updConsultancyAgency.eventsOrganized : consultancyAgency.eventsOrganized;
-		  consultancyAgency.about = updConsultancyAgency.about ? updConsultancyAgency.about : consultancyAgency.about;
-		  consultancyAgency.socialMediaAccounts = updConsultancyAgency.socialMediaAccounts ? updConsultancyAgency.socialMediaAccounts : consultancyAgency.socialMediaAccounts;
-
-		  res.json({ msg: 'Consultancy Agency successfully updated', consultancyAgency });
-		}
-	  });
-	} else {
-	  res.status(400).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
+	 res.json({msg: 'consultancyAgency updated successfully'})
 	}
-  });
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
 
 
-// Delete ConsultancyAgency
-router.delete('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  consultancyAgencys=consultancyAgencys.filter(consultancyAgency => consultancyAgency.id != (req.params.id))
-	  res.json({
-		msg: 'Consultancy Agency successfully deleted',
-		consultancyAgencys }
-	  );
-	} else {
-	  res.status(400).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
+// Delete consultancyAgency (Malak&Nour) MONGOUPDATED
+router.delete('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const deletedConsultancyAgency = await ConsultancyAgency.findByIdAndRemove(id)
+	 res.json({msg:'ConsultancyAgency was deleted successfully', data: deletedConsultancyAgency})
 	}
-  });
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
   
 //JOI later
 
@@ -173,105 +372,102 @@ router.post('/joi', (req, res) => {
 });*/
 
 
-//shaza
-//get the coworking space by id
-router.get('/PartnerCoworkingspaces/:id',(req,res)=>{
-	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
-	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
-	res.send(PartnerCoworkingspaces);
-});
-
-//view all coworking spaces
-router.get('/PartnerCoworkingspaces',(req,res)=>{
-	res.send(PartnerCoworkingSpace);
-}); 
-
-//nourhan
-//Get all bookings of a specific user
-router.get('/RoomBookings/:userID' ,(req, res)=>{
-	var RB = RoomBookings.find(p => p.userID === parseInt(req.params.userID));
-    if(!RB){
-        res.status(404).send('This user has no bookings');
-
-    }
-    res.send(RB.bookings);
-});
-
-//get a room in a specific coworking space by id
-router.get('/cospace/:id/rooms/:id2' ,(req, res)=>{
-    var scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
-    if(!scheduleroom){
-        res.status(404).send('The room with the given id is not found');
-        return;
-    }
-    res.send(scheduleroom.schedule);
-});
-
-//book a room , append it to the array of bookings if it is not in my bookings
-router.put('/api/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
-    let scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
-    if(!scheduleroom){
-        res.status(404).send('The room with the given id is not found');
-        return;
-    };
-    const scheduleOfRoom = scheduleroom.schedule;
-
-    const schema = {
-        reserved: Joi.boolean()
-    };
-    const result = Joi.validate(req.body, schema);
-    if(result.error){
-        res.status(400).send(result.error.details[0].message)
-    }
-
-    let h = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id 
-        === parseInt(req.params.id2)).schedule.find(r =>r.id === parseInt(req.params.id3));
-     let h2 = RoomBookings.find(l2 => l2.userID === parseInt(req.params.userid));
-
-     for(var i = 0;i<h2.bookings.length;i++){
-         if(parseInt(req.params.id3) === parseInt(h2.bookings[i].scheduleID) && parseInt(req.params.id2) === parseInt(h2.bookings[i].roomID)){
-             res.status(400).send('already reserved');
-             return;
-         }
-        }
-     //if(h.id === parseInt())
-     const temp = {
-        bookingID:h2.bookings.length+1 ,
-        coworkingSpaceID:parseInt(req.params.id),
-        roomID:parseInt(req.params.id2),
-        scheduleID : h.id,
-        Date : h.Date,
-        time: h.time
-    };
-    h2.bookings.push(temp);
-    var reservation = scheduleOfRoom.find(i => i.id === parseInt(req.params.id3));
-    if(reservation.reserved === true){
-        res.send('A reserver room');
-        return;
-    }
-    reservation.reserved = req.body.reserved;
-    res.send(RoomBookings);
-});
 
 
-//delete booking and set the reservation boolean to false so others can now book it
-router.delete('/RoomBookings/:userID/:bookingID', (req, res) => {
-    const temp = RoomBookings.find(c => c.userID === parseInt(req.params.userID));
-    const book = temp.bookings;
-    const temp2 = book.find(r => r.bookingID === parseInt(req.params.bookingID));
 
+
+//delete booking from user array + change reserved to false in coworking space array 
+router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
+
+	try {
+		const userID=parseInt(req.params.userID);
+		const bookingID= parseInt(req.params.bookingID);
+   
+        const temp = await RoomBookings.find({userID});
+        if(!temp[0])res.send('user id does not exist');
+    //res.send(temp);
+		const book = temp[0].bookings;
+    const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
-        res.status(404).send('The room with the given id is not found');
+
+        res.status(404).send('The booking with the given id is not found');
+
         return;
-    };
-    let h = PartnerCoworkingSpace.find(p => p.id === parseInt(temp2.coworkingSpaceID)).rooms.find(s => s.id 
-        === parseInt(temp2.roomID)).schedule.find(r =>r.id === parseInt(temp2.scheduleID));
-    h.reserved = false;
-    const index = book.indexOf(temp2);
 
-    book.splice(index,1)
+		};
+		const roomID=parseInt(temp2.roomID);
+		const scheduleID=parseInt(temp2.scheduleID);
+		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
 
-    res.send(RoomBookings)
-});
+    PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+    {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
+    
+	 
+	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
+	 }, function(err, model){})
+		
+		
+    res.send('booking has been deleted successfully')
+	}
+
+	catch(error) {
+
+			// We will be handling the error later
+
+			console.log(error)
+
+	}  
+
+})
+
+//assign managerial roles to tasks
+
+router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
+
+	try {
+
+	 const partnerID=parseInt(req.params.partnerID)
+
+	 const taskID=parseInt(req.params.taskID)
+
+	 const memberID=parseInt(req.params.memberID)
+
+	 const partner = await User.find({userID:partnerID});
+
+	 if(!partner) res.send("Partner id is incorrect or this partner does not exist ")
+
+	 //res.send(partner[0].tasks)
+	 const taskArray= partner[0].tasks;
+	 
+	 const task=await taskArray.find(r => r.taskID === taskID)
+
+	 if(!task) res.send("This task does not exist");
+
+	 if(!task.wantsConsultant) res.send("You don't have access to this task")
+
+	 //set assigneeID to inserted member ID
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.assigneeID':memberID}}, function(err, model){});
+
+	 //set life cycle 'assigned' stage to true
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
+	 
+	 res.send('Member has been assigned to task successfully')
+
+	}
+
+	catch(error) {
+
+			// We will be handling the error later
+
+			console.log(error)
+
+	}  
+
+})
+})
+
+
 
 module.exports = router;
