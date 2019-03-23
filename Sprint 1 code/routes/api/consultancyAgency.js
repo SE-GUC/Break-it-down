@@ -9,7 +9,7 @@ const ConsultancyAgency = require('../../models/ConsultancyAgency');
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
 const User = require('../../models/UserProfile');
-
+const Message = require('../../models/messages');
 // temporary arbitary data created as if it was pulled out of the database ...
 var consultancyAgencys = [
 	new ConsultancyAgency('Barney', 'barney.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C","@barney"),
@@ -23,6 +23,42 @@ var consultancyAgencys = [
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
+//shaza
+//get the coworking space by id
+router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
+
+	const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.id)})
+	if(!Users) return res.json('Coworking space does not exist')
+	res.json({ data: Users })
+}); 
+
+//view all coworking spaces
+router.get('/PartnerCoworkingspaces',async (req, res) =>{
+	const Users = await User.find({type:'coworkingspace'})
+	 res.json({ data: Users })
+	});
+
+	router.post('/messages', async (req, res) => {
+
+		try{
+	
+					var message = new Message(req.body);
+					console.log(req.body);
+			var savedMessage = await message.save();
+	
+				console.log('saved');
+	
+				res.sendStatus(200);
+	
+		}	
+		catch (error){
+	
+			res.sendStatus(500);
+	
+			return console.log('error',error);
+	
+		}	
+	})
 
 // Get all ConsultancyAgencys
 router.get('/', (req, res) => res.json({ data: consultancyAgencys }));
@@ -174,20 +210,6 @@ router.post('/joi', (req, res) => {
 });*/
 
 
-//shaza
-//get the coworking space by id
-router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
-
-	const Users =await User.find({type:'coscoworkingspacepace',userID:parseInt(req.params.id)})
-	if({Users:[]}) return res.json('Coworking space does not exist')
-	res.json({ data: Users })
-}); 
-
-//view all coworking spaces
-router.get('/PartnerCoworkingspaces',async (req, res) =>{
-	const Users = await User.find({type:'coworkingspace'})
-	 res.json({ data: Users })
-	});
 
 
 
@@ -347,5 +369,6 @@ router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
 	}  
 
 })
+
 
 module.exports = router;
