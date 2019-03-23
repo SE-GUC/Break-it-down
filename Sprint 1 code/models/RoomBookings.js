@@ -1,57 +1,42 @@
+const mongoose = require('mongoose');
 
-module.exports = RoomBookings = [
-    {
-        userID:1,
-        bookings:[{bookingID:1,
-                  coworkingSpaceID:1,
-                  roomID:1,
-                  scheduleID : 1,
-                  Date:"2019-10-01", 
-                  time: 7
+const Schema = mongoose.Schema;
+
+var ObjectId = Schema.ObjectId;
+
+//to create an id that autoincrements each time a document is added
+
+autoIncrement=require('mongoose-auto-increment');
+
+var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true")
+
+autoIncrement.initialize(connection);
+
+// Create the schema
+
+
+
+const RoomBookingsSchema = new Schema({
+
+    //attributes that all users have in common
+    _id:{type:ObjectId},
+    userID:{type:Number,required:true},
+    bookings:[{
+                  coworkingSpaceID:{type:Number,required:true},
+                  roomID:{type:Number,required:true},
+                  scheduleID : {type:Number,required:true},
+                  Date:{type:Date,required:true}, 
+                  time: {type:Number,required:true},
+                  bookingID:{type:Number,required:true}
                   }]
         
-    },
-    {
-        userID:2,
-        bookings:[{bookingID:1,
-            coworkingSpaceID:1,
-            roomID:2,
-            scheduleID : 2,
-            Date:"2019-10-02", 
-            time: 8
-            },
-            { bookingID:2,
-             coworkingSpaceID:1,
-             roomID:2,
-             scheduleID : 1,
-             Date:"2019-10-03", 
-             time: 10}
-                ]
-  
-    },
-    {
-        userID:3,
-        bookings:[{bookingID:1,
-            coworkingSpaceID:2,
-            roomID:5,
-            scheduleID : 1,
-            Date:"2019-11-03", 
-            time: 8
-            },
-            { bookingID:2,
-             coworkingSpaceID:3,
-             roomID:3,
-             scheduleID : 1,
-             Date:"2019-09-10", 
-             time: 6},
-             { bookingID:3,
-             coworkingSpaceID:1,
-             roomID:4,
-             scheduleID : 1,
-             Date:"2019-11-01", 
-             time: 10}
-                ]
-  
-    },
     
-]
+});
+
+
+
+
+
+RoomBookingsSchema.plugin(autoIncrement.plugin,'RoomBookings');
+
+module.exports = RoomBookings = connection.model('RoomBookings', RoomBookingsSchema);
