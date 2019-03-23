@@ -149,42 +149,47 @@ router.get('/MyRating/:MID', async(req, response) => {
 
 
 
-/////////////////////apply for a task//////////// LINA
+ //------------------------apply for a task---------------------// 
 
-router.put('/:id/Tasks/:idp/:idt', async (req,res) => {
-	const memID= parseInt(req.params.id);
-	const member1= Members.find(member1 => member1.ID === memID)
-	console.log(memID)
-	const partnerID=parseInt(req.params.idp)
-	
-	const partner1= partner.find(partner1 => partner1.ID === partnerID)
+router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
+    const memID= parseInt(req.params.id)
+    const partnerID=parseInt(req.params.idp)
+    const partner= await users.findOne({type:'partner',userID:partnerID})
 
-	const taskID=parseInt(req.params.idt)
-	
-	const task1= partner1.Tasks.find(task1 => task1.taskID === taskID)
-	var tasks=[];
-	 
-	const taskp=partner1.Tasks
-	var  findApproved = taskp.find(findApproved=>findApproved.taskID===taskID && findApproved.approved=== true )
- const applicantsCheck= findApproved.applicants.filter(applicantsCheck=> applicantsCheck.accepted===true && applicantsCheck.applicantID ==!memID)
-console.log(findApproved)
- console.log(applicantsCheck) 
-	if(applicantsCheck.length===0)
-			 {
+    const taskIDb=parseInt(req.params.idt)
+    var taskapp={}
+    var applicantsapp=[]
+    var array_of_tasks=partner.tasks
+    
+    for(var i=0;i<array_of_tasks.length;i++){
+        if(array_of_tasks[i].taskID===taskIDb && array_of_tasks[i].approved===true)
+        taskapp=array_of_tasks[i]    //you have a task that is approved with this given id 
+    } 
+   applicantsapp= taskapp.applicants
+   var app=[]
 
-					const index = partner.indexOf(partner1)
+   for(var j=0;j<applicantsapp.length;j++){
+       
+       if(applicantsapp[j].accepted===true && applicantsapp[j].assigned===true && applicantsapp[j].applicantID !==memID ){
+           app.push(applicantsapp[j])
+       }
+   }
 
-					const index1=partner1.Tasks.indexOf(task1)
+   if(app.length===0)
+         {
+            applicantsapp.push({applicantID:memID,accepted:false,assigned:false})
 
-					partner[index].Tasks[index1].applicants.push({applicantID:memID,accepted:false})
+            users.update({ 'userID':partnerID,'tasks.taskID':taskIDb }, 
+            {$set: {'tasks.$.applicants':applicantsapp}}, function(err, model){}); 
+            
+            const partnerx= await users.findOne({type:'partner',userID:partnerID})
+            res.json(partnerx)
 
-					res.json("good luck you are inserted in applicants list");
-				 
-			 }
-	else
-	res.json("you can't apply for a task that already has a chosen member");
+         }
+    else
+    res.json("you can't apply for a task that already has a chosen member");
 
-	
+ 
 
 
 });
