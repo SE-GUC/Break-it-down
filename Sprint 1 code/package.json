@@ -14,7 +14,8 @@
     "socket-io": "^1.0.0",
     "socket.io": "^2.2.0",
     "uuid": "^3.3.2",
-    "zlib": "^1.0.5"
+    "zlib": "^1.0.5",
+    "start":"node index.js"
   },
   "devDependencies": {},
   "scripts": {
