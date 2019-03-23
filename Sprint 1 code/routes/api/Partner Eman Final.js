@@ -435,15 +435,16 @@ router.get('/RoomBookings/:userID' ,async (req, res)=>{
         res.send(roombookings);
     })
   
-  })
 
 //get a room in a specific coworking space by id
 router.get('/cospace/:id/rooms/:id2' ,(req, res)=>{
+    try{
     var scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
     if(!scheduleroom){
         res.status(404).send('The room with the given id is not found');
         return;
     }
+}
     catch(error){
         res.send("not found")
         console.log("error")

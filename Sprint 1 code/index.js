@@ -8,31 +8,31 @@ const Message = require('./models/Message')
 
 //-----------------------------------------------------------------------------
 
+
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
 const ca = require('./routes/api/consultancyAgency')
-const validator = require('./validations/validations')
 
+const validator = require('./validations/validations')
 const express = require('express')
+const Joi = require('joi');
+
+
+// DB Config
+const db = require('./config/keys_dev').mongoURI
+
+
+
+const admins = require('./routes/api/admins');
+
 
 const ProfilesAPI = require('./routes/api/Profiles');
 
-
-
-const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
 
 
-const Joi = require('joi');
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
-
-// DB Config
-
-// DB Config
-
-const db = require('./config/keys').mongoURI;
-
 
 
 // Connect to mongo
@@ -51,41 +51,21 @@ mongoose
 
     .catch(err => console.log(err));
 
-
-
-
-
-mongoose.connect(db,{ useNewUrlParser: true })
-
-    .then(() => console.log('Connected to MongoDB'))
-
-    .catch(err => console.log(err))
 
 const member = require('../Sprint 1 code/routes/api/member');
 
 const Event = require('../Sprint 1 code/routes/api/Event')
 
-// Connect to mongo
-
-mongoose
-
-    .connect(db)
-
-    .then(() => console.log('Connected to MongoDB'))
-
-
-
-    .catch(err => console.log(err));
-
-
-
-const app = express();
 
 
 
 
+// Init middleware
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
 
-app.use(express.json());
+const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
+
 
 //nourhan
 var http = require('http').Server(app);
@@ -116,6 +96,10 @@ app.get('/', (req, res) => {
 
 // Direct routes to appropriate files 
 
+
+app.use('/api/coworkingSpace', coworkingSpace)
+app.use('/api/coworkingSpace2', coworkingSpace2)
+app.use('/api/consultancyAgency', consultancyAgency);
 
 
 app.use('/api/member', member);
