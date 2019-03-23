@@ -29,7 +29,28 @@ const notification = require('../Sprint 1 code/routes/api/notification');
 
 // DB Config
 
+// DB Config
+
 const db = require('./config/keys').mongoURI;
+
+
+
+// Connect to mongo
+
+mongoose
+
+
+
+    .connect(db)
+
+
+
+    .then(() => console.log('Connected to MongoDB'))
+
+
+
+    .catch(err => console.log(err));
+
 
 
 
@@ -49,8 +70,6 @@ const Event = require('../Sprint 1 code/routes/api/Event')
 mongoose
 
     .connect(db)
-
-
 
     .then(() => console.log('Connected to MongoDB'))
 
