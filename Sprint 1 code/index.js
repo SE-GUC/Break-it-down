@@ -16,31 +16,44 @@ const validator = require('./validations/validations')
 const express = require('express')
 
 const ProfilesAPI = require('./routes/api/Profiles');
+
+
+
 const admins = require('./routes/api/admins')
 const consultatns = require('./routes/api/consultancyAgency');
 
+
 const Joi = require('joi');
+const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const notification = require('../Sprint 1 code/routes/api/notification');
+
+// DB Config
+
+const db = require('./config/keys').mongoURI;
 
 const member = require('../Sprint 1 code/routes/api/member');
 
 const Event = require('../Sprint 1 code/routes/api/Event')
 
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
-const notification = require('../Sprint 1 code/routes/api/notification');
+// Connect to mongo
+
+mongoose
+
+    .connect(db)
+
+
+
+    .then(() => console.log('Connected to MongoDB'))
+
+
+
+    .catch(err => console.log(err));
+
 
 
 const app = express();
 
-// DB Config
-const db = require('./config/keys').mongoURI;
 
-// Connect to mongo
-mongoose
-
-    .connect(db)
-    .then(() => console.log('Connected to MongoDB'))
-
-    .catch(err => console.log(err));
 
 
 
@@ -52,6 +65,7 @@ var io = require('socket.io')(http);
 //-----------
 
 app.use(express.urlencoded({extended: false}))
+
 
 
 app.get('/', (req, res) => {
@@ -77,14 +91,15 @@ app.get('/', (req, res) => {
 app.use('/api/admins', admins)
 app.use('/api/Events', Event);
 
-app.use('/api/member', member);
 app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
 app.use('/api/notification',notification)
 app.use('/api/ca',consultatns);
-
 app.use('/api/CreateAccount', ProfilesAPI)
+app.use('/api/member', member)
+
+
 // Handling 404
 
 app.use((req, res) => {
@@ -93,9 +108,8 @@ app.use((req, res) => {
 
  })
 
+ const port = process.env.PORT || 4000;
 
- const port = process.env.PORT || 4000
 
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`));
-
