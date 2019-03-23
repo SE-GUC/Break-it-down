@@ -5,6 +5,7 @@ const Joi = require('joi');
 const partner = require('../../models/Partner');
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
+const User=require('../../models/UserProfile');
 
 
 //-----------------------------------partner submit task description------------------------------------------- eman
@@ -234,6 +235,15 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 	}  
 
 })
+//get contact info of admin
+router.get('/contactAdmin',async (req,res)=>{
+    
+    const admin = await User.find({type:"admin"}) 
+	res.send('email: '+admin[0].email+'   phone number: '+admin[0].phoneNumber);
+ 
+ }); 
+
+
 
 
 module.exports = router
