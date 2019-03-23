@@ -21,10 +21,10 @@ const Joi = require('joi');
 //------------------------------nourhan--------------------------------------------
 var bodyParser = require('body-parser')
 
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 
 const Message = require('../../models/Message')
-
+const message = require('../../models/messages');
 var http = require('http').Server(router);
 
 var io = require('socket.io')(http);
@@ -353,6 +353,11 @@ router.get('/', function(req, res){
     console.log('a user is connected')
   
   })
+
+  router.get('/viewmessages', async (req, res) => {
+    const updt=await message.find()
+    res.json({ data: updt })
+})
 
 //------------------------------------------------------------------------------------------------------
 
