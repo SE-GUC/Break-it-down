@@ -1,152 +1,93 @@
 // Dependencies
 const express = require('express');
 const Joi = require('joi');
-const uuid = require('uuid');
 const router = express.Router();
 
 // Models
-const ConsultancyAgency = require('../../Models/ConsultancyAgency');
+const ConsultancyAgency = require('../../models/ConsultancyAgency');
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
 
-// temporary arbitary data created as if it was pulled out of the database ...
-var consultancyAgencys = [
-	new ConsultancyAgency('Barney', 'barney.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C","@barney"),
-	new ConsultancyAgency('Lilly', 'Lilly.com','lily@hotmail.com',"Giza", 01234567,3489348934,'Mohamed','Organs','Graduation',"O","@lilly"),
-	new ConsultancyAgency('Ted', 'Ted.com','ted@hotmail.com',"Point90", 01234567,8943893489,'Ali','Humans','CS4GameRoom',"N","@Ted"),
-	new ConsultancyAgency('Marshal', "Marshal.com",'marshal@hotmail.com',"Mohandseen", 01234567,34983489,'Samya','Relaxing','Kol El Nas Bet2ol Yarab',"S","@Ted"),
-	new ConsultancyAgency('Robin', "Robin.com",'robin@hotmail.com',"Agouza", 01234567,3489348989,'Farida','Being Happy','Concepts Food Logger in Prolog',"U","@Robin")
-
-];
 
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
 
-// Get all ConsultancyAgencys
-router.get('/', (req, res) => res.json({ data: consultancyAgencys }));
+router.get('/', async (req,res) => {
+	const ConsultancyAgencys = await ConsultancyAgency.find()
+	res.json({data: ConsultancyAgencys})
+})
 
-//Get Specific ConsultancyAgency
+
+
+//Get Specific ConsultancyAgency (Malak&Nour) MONGOUPDATED
 router.get('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  res.json(consultancyAgencys.filter(consultancyAgency => consultancyAgency.id == (req.params.id)));
-	} else {
-	  res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
-	}
-  });
-
-// Create a new consultancyAgency
-router.post('/', (req, res) => {
-	const name = req.body.name;
-	const website = req.body.website;
-	const email = req.body.email;
-	const address = req.body.address;
-	const phoneNumber = req.body.phoneNumber;
-	const fax = req.body.fax;
-	const boardMembers = req.body.boardMembers;
-	const studiesPosted=req.body.studiesPosted;
-	const eventsOrganized = req.body.eventsOrganized;
-	const about = req.body.about;
-	const socialMediaAccounts = req.body.socialMediaAccounts;
-
-	if (!name) return res.status(400).send({ err: 'Name field is required' });
-	if (typeof name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
-	if (!website) return res.status(400).send({ err: 'Website field is required' });
-	if (typeof website !== 'string') return res.status(400).send({ err: 'Invalid value for website' });
-	if (!email) return res.status(400).send({ err: 'email field is required' });
-	if (typeof email !== 'string') return res.status(400).send({ err: 'Invalid value for email' });
-	if (!address) return res.status(400).send({ err: 'address field is required' });
-	if (typeof address !== 'string') return res.status(400).send({ err: 'Invalid value for address' });
-	if (!phoneNumber) return res.status(400).send({ err: 'phoneNumber field is required' });
-	if (typeof phoneNumber !== 'number') return res.status(400).send({ err: 'Invalid value for phoneNumber' });
-
-	//If Needed Later
-
-	/*if (!fax) return res.status(400).send({ err: 'fax field is required' });
-	if (typeof fax !== 'string') return res.status(400).send({ err: 'Invalid value for fax' });
-
-	if (!boardMembers) return res.status(400).send({ err: 'boardMembers field is required' });
-	if (typeof boardMembers !== 'string') return res.status(400).send({ err: 'Invalid value for boardMembers' });
-
-	if (!studiesPosted) return res.status(400).send({ err: 'studiesPosted field is required' });
-	if (typeof studiesPosted !== 'string') return res.status(400).send({ err: 'Invalid value for studiesPosted' });
-
-	if (!eventsOrganized) return res.status(400).send({ err: 'eventsOrganized field is required' });
-	if (typeof eventsOrganized !== 'string') return res.status(400).send({ err: 'Invalid value for eventsOrganized' });
-
-	if (!about) return res.status(400).send({ err: 'about field is required' });
-	if (typeof about !== 'string') return res.status(400).send({ err: 'Invalid value for about' });
-
-	if (!socialMediaAccounts) return res.status(400).send({ err: 'socialMediaAccounts field is required' });
-	if (typeof socialMediaAccounts !== 'string') return res.status(400).send({ err: 'Invalid value for socialMediaAccounts' });
-	
-	*/
-
-	const newConsultancyAgency = {
-		name,
-		website,
-		email,
-		address,
-		phoneNumber,
-		fax,
-		boardMembers,
-		studiesPosted,
-		eventsOrganized,
-		about,
-		socialMediaAccounts,
-		id: uuid.v4(),
-	};
-
-	consultancyAgencys.push(newConsultancyAgency)
-	return res.json({ data: newConsultancyAgency });
+  ConsultancyAgency.findById(req.params.id)
+		.then(consultancyAgency=> res.json(consultancyAgency))
+		.catch(err=>res.status(404).json({ msg: 'No consultancyAgency with the id of ${req.params.id}'}))
 });
 
 
-// Update consultancyAgency
-router.put('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  const updConsultancyAgency = req.body;
-	  consultancyAgencys.forEach(consultancyAgency => {
-		if (consultancyAgency.id == (req.params.id)) {
-		  consultancyAgency.name = updConsultancyAgency.name ? updConsultancyAgency.name : consultancyAgency.name;
-		  consultancyAgency.website = updConsultancyAgency.website ? updConsultancyAgency.website : consultancyAgency.website;
-		  consultancyAgency.email = updConsultancyAgency.email ? updConsultancyAgency.email : consultancyAgency.email; 
-		  consultancyAgency.address = updConsultancyAgency.address ? updConsultancyAgency.address : consultancyAgency.address;
-		  consultancyAgency.phoneNumber = updConsultancyAgency.phoneNumber ? updConsultancyAgency.phoneNumber : consultancyAgency.phoneNumber;
-		  consultancyAgency.fax = updConsultancyAgency.fax ? updConsultancyAgency.fax : consultancyAgency.fax;
-		  consultancyAgency.boardMembers = updConsultancyAgency.boardMembers ? updConsultancyAgency.boardMembers : consultancyAgency.boardMembers;
-		  consultancyAgency.studiesPosted = updConsultancyAgency.studiesPosted ? updConsultancyAgency.studiesPosted : consultancyAgency.studiesPosted;
-		  consultancyAgency.eventsOrganized = updConsultancyAgency.eventsOrganized ? updConsultancyAgency.eventsOrganized : consultancyAgency.eventsOrganized;
-		  consultancyAgency.about = updConsultancyAgency.about ? updConsultancyAgency.about : consultancyAgency.about;
-		  consultancyAgency.socialMediaAccounts = updConsultancyAgency.socialMediaAccounts ? updConsultancyAgency.socialMediaAccounts : consultancyAgency.socialMediaAccounts;
+// Create a new consultancyAgency (Malak&Nour) MONGOUPDATED
+router.post('/', async(req, res) => {
+const {type,name, birthday,email ,address ,phoneNumber ,partners,description, boardMembers,events ,reports,activation }=req.body
+const consultancyAgency = await ConsultancyAgency.findOne({email})
+if(consultancyAgency) return res.status(400).json({error: 'Email already exists'})
 
-		  res.json({ msg: 'Consultancy Agency successfully updated', consultancyAgency });
-		}
-	  });
-	} else {
-	  res.status(400).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
+	const newConsultancyAgency = new ConsultancyAgency({
+		name, 
+		birthday,
+		email,
+		type,
+		phoneNumber,
+		address,
+        partners,
+        description,
+		boardMembers,
+		events,
+		reports,
+		activation,
+	})
+	newConsultancyAgency
+	.save()
+	.then(consultancyAgency => res.json({data :consultancyAgency}))
+    .catch(err => res.json({error: 'Can not create consultancyAgency'}))
+ //catch (error){
+//console.log("can not create")}
+});
+
+// Update consultancyAgency (Malak&Nour) done except id non existent case
+router.put('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+     const consultancyAgency = await ConsultancyAgency.findOne({id})
+    // if(!consultancyAgency) return res.status(404).send({error: 'consultancyAgency does not exist'})
+	// const isValidated = validator.updateValidation(req.body)
+	 //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+     
+     const updatedConsultancyAgency = await ConsultancyAgency.updateOne(req.body)
+
+	 res.json({msg: 'consultancyAgency updated successfully'})
 	}
-  });
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
 
 
-// Delete ConsultancyAgency
-router.delete('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  consultancyAgencys=consultancyAgencys.filter(consultancyAgency => consultancyAgency.id != (req.params.id))
-	  res.json({
-		msg: 'Consultancy Agency successfully deleted',
-		consultancyAgencys }
-	  );
-	} else {
-	  res.status(400).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
+// Delete consultancyAgency (Malak&Nour) MONGOUPDATED
+router.delete('/:id', async (req,res) => {
+	try {
+	 const id = req.params.id
+	 const deletedConsultancyAgency = await ConsultancyAgency.findByIdAndRemove(id)
+	 res.json({msg:'ConsultancyAgency was deleted successfully', data: deletedConsultancyAgency})
 	}
-  });
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+})
   
 //JOI later
 
