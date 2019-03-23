@@ -2,7 +2,7 @@
 
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
-
+const ca = require('./routes/api/consultancyAgency')
 const validator = require('./validations/validations')
 
 const express = require('express')
@@ -57,7 +57,7 @@ app.use('/api/coworkingSpace', coworkingSpace)
 app.use('/api/coworkingSpace2', coworkingSpace2)
 app.use('/api/partner',partner)
 app.use('/api/notification',notification)
-
+app.use('/api/ca',ca)
 // Handling 404
 
 app.use((req, res) => {
