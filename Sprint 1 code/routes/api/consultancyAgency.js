@@ -5,13 +5,20 @@ const uuid = require('uuid');
 const router = express.Router();
 
 // Models
-const ConsultancyAgency = require('../../Models/ConsultancyAgency');
+
 const PartnerCoworkingSpace = require('../../Models/Partner');
 
 //nourhan
 const User = require('../../models/UserProfile');
  var mongoose = require('mongoose');
  var objectid = require('mongodb').ObjectID
+
+
+const ConsultancyAgency = require('../../models/ConsultancyAgency');
+//const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const RoomBookings = require('../../models/RoomBookings');
+const User = require('../../models/UserProfile');
+const Message = require('../../models/messages');
 
 // temporary arbitary data created as if it was pulled out of the database ...
 var consultancyAgencys = [
@@ -26,6 +33,42 @@ var consultancyAgencys = [
 // Instead of app use route
 // No need to write the full route
 // res.json() Automatically sends a status of 200
+//shaza
+//get the coworking space by id
+router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
+
+	const Users =await User.find({type:'coworkingspace',userID:parseInt(req.params.id)})
+	if(!Users) return res.json('Coworking space does not exist')
+	res.json({ data: Users })
+}); 
+
+//view all coworking spaces
+router.get('/PartnerCoworkingspaces',async (req, res) =>{
+	const Users = await User.find({type:'coworkingspace'})
+	 res.json({ data: Users })
+	});
+
+	router.post('/messages', async (req, res) => {
+
+		try{
+	
+					var message = new Message(req.body);
+					console.log(req.body);
+			var savedMessage = await message.save();
+	
+				console.log('saved');
+	
+				res.sendStatus(200);
+	
+		}	
+		catch (error){
+	
+			res.sendStatus(500);
+	
+			return console.log('error',error);
+	
+		}	
+	})
 
 // Get all ConsultancyAgencys
 router.get('/', (req, res) => res.json({ data: consultancyAgencys }));
@@ -283,18 +326,100 @@ router.post('/joi', (req, res) => {
 });*/
 
 
-//shaza
-//get the coworking space by id
-app.get('/api/PartnerCoworkingspaces/:id',(req,res)=>{
-	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
-	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
-	res.send(PartnerCoworkingspaces);
-});
 
-//view all coworking spaces
-app.get('/api/PartnerCoworkingspaces',(req,res)=>{
-	res.send(PartnerCoworkingSpace);
-}); 
+
+
+
+//delete booking from user array + change reserved to false in coworking space array 
+router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
+
+	try {
+		const userID=parseInt(req.params.userID);
+		const bookingID= parseInt(req.params.bookingID);
+   
+        const temp = await RoomBookings.find({userID});
+        if(!temp[0])res.send('user id does not exist');
+    //res.send(temp);
+		const book = temp[0].bookings;
+    const temp2 =await book.find(r => r.bookingID === bookingID);
+    if(!temp2){
+
+        res.status(404).send('The booking with the given id is not found');
+
+        return;
+
+		};
+		const roomID=parseInt(temp2.roomID);
+		const scheduleID=parseInt(temp2.scheduleID);
+		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
+
+    PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+    {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
+    
+	 
+	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
+	 }, function(err, model){})
+		
+		
+    res.send('booking has been deleted successfully')
+	}
+
+	catch(error) {
+
+			// We will be handling the error later
+
+			console.log(error)
+
+	}  
+
+})
+
+//assign managerial roles to tasks
+
+router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
+
+	try {
+
+	 const partnerID=parseInt(req.params.partnerID)
+
+	 const taskID=parseInt(req.params.taskID)
+
+	 const memberID=parseInt(req.params.memberID)
+
+	 const partner = await User.find({userID:partnerID});
+
+	 if(!partner) res.send("Partner id is incorrect or this partner does not exist ")
+
+	 //res.send(partner[0].tasks)
+	 const taskArray= partner[0].tasks;
+	 
+	 const task=await taskArray.find(r => r.taskID === taskID)
+
+	 if(!task) res.send("This task does not exist");
+
+	 if(!task.wantsConsultant) res.send("You don't have access to this task")
+
+	 //set assigneeID to inserted member ID
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.assigneeID':memberID}}, function(err, model){});
+
+	 //set life cycle 'assigned' stage to true
+	 User.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+	 {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
+	 
+	 res.send('Member has been assigned to task successfully')
+
+	}
+
+	catch(error) {
+
+			// We will be handling the error later
+
+			console.log(error)
+
+	}  
+
+})
 
 
 

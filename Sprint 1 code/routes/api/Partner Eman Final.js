@@ -3,7 +3,8 @@ const router= express.Router();
 const Joi = require('joi');
 
 const partner = require('../../models/Partner');
-
+const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
+const RoomBookings = require('../../models/RoomBookings');
 
 
 //-----------------------------------partner submit task description------------------------------------------- eman
@@ -124,9 +125,16 @@ router.get('/', (req, res) => res.json({ data: partner }));
 
 //nourhan
 //Get all bookings of a specific user
+<<<<<<< HEAD
 router.get('/roombookings/:userID',async (req, res) => {
   
     var userID = parseInt(req.params.userID);
+=======
+router.get('/RoomBookings/:userID' ,(req, res)=>{
+	var RB = RoomBookings.find(p => p.userID === parseInt(req.params.userID));
+    if(!RB){
+        res.status(404).send('This user has no bookings');
+>>>>>>> 90e36abd3a5965d00159cee1230edac9fb2019e2
 
     await user.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
 
@@ -136,6 +144,7 @@ router.get('/roombookings/:userID',async (req, res) => {
   })
 
 //get a room in a specific coworking space by id
+<<<<<<< HEAD
 router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
     try{
     const test = await user.aggregate([
@@ -144,6 +153,13 @@ router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
          {$project: {schedule:'$rooms.schedule',_id:0}}
     ])
      res.send(test.pop().schedule);
+=======
+router.get('/cospace/:id/rooms/:id2' ,(req, res)=>{
+    var scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
+    if(!scheduleroom){
+        res.status(404).send('The room with the given id is not found');
+        return;
+>>>>>>> 90e36abd3a5965d00159cee1230edac9fb2019e2
     }
     catch(error){
         res.send("not found")
@@ -153,6 +169,7 @@ router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 });
 
 //book a room , append it to the array of bookings if it is not in my bookings
+<<<<<<< HEAD
 router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     const schedID = req.params.id3;
     const cospaceID = req.params.id;
@@ -193,6 +210,22 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
     },
     {
         arrayFilters : [{"i.id" : parseInt(roomID)},{"j.id" : parseInt(schedID)}]
+=======
+router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
+    let scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
+    if(!scheduleroom){
+        res.status(404).send('The room with the given id is not found');
+        return;
+    };
+    const scheduleOfRoom = scheduleroom.schedule;
+
+    const schema = {
+        reserved: Joi.boolean()
+    };
+    const result = Joi.validate(req.body, schema);
+    if(result.error){
+        res.status(400).send(result.error.details[0].message)
+>>>>>>> 90e36abd3a5965d00159cee1230edac9fb2019e2
     }
     
     )
@@ -210,6 +243,32 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
         console.log(error)
         res.send("Not found")
     }
+<<<<<<< HEAD
+=======
+    reservation.reserved = req.body.reserved;
+    res.send(RoomBookings);
+});
+
+
+//delete booking and set the reservation boolean to false so others can now book it
+router.delete('/RoomBookings/:userID/:bookingID', (req, res) => {
+    const temp = RoomBookings.find(c => c.userID === parseInt(req.params.userID));
+    const book = temp.bookings;
+    const temp2 = book.find(r => r.bookingID === parseInt(req.params.bookingID));
+
+    if(!temp2){
+        res.status(404).send('The room with the given id is not found');
+        return;
+    };
+    let h = PartnerCoworkingSpace.find(p => p.id === parseInt(temp2.coworkingSpaceID)).rooms.find(s => s.id 
+        === parseInt(temp2.roomID)).schedule.find(r =>r.id === parseInt(temp2.scheduleID));
+    h.reserved = false;
+    const index = book.indexOf(temp2);
+
+    book.splice(index,1)
+
+    res.send(RoomBookings)
+>>>>>>> 90e36abd3a5965d00159cee1230edac9fb2019e2
 });
 
 
