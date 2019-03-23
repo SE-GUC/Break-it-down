@@ -9,6 +9,14 @@ const ConsultancyAgency = require('../../Models/ConsultancyAgency');
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 const RoomBookings = require('../../models/RoomBookings');
 
+
+
+
+//nourhan
+const user = require('../../models/UserProfile');
+ var mongoose = require('mongoose');
+ var objectid = require('mongodb').ObjectID
+
 // temporary arbitary data created as if it was pulled out of the database ...
 var consultancyAgencys = [
 	new ConsultancyAgency('Barney', 'barney.com','barney@hotmail.com',"Monib", 01234567,674387438,'Ahmed','Dice Probability','Orientation',"C","@barney"),
@@ -37,6 +45,18 @@ router.get('/:id', (req, res) => {
 	}
   });
 
+
+//--------------------------------nourhan----------------------------------------------
+router.put('/apply/:pid/:tid/:agid',async(req , res)=> {
+	const tid = parseInt(req.params.tid)
+	const aid = parseInt(req.params.agid)
+	const tmp = await user.findOneAndUpdate({userID : parseInt(req.params.pid), 'tasks.taskID' : tid},
+	{$addToSet : {'tasks.$.agencies':  {agencyID : aid, accepted: false, assigned: false}}}
+	)
+	res.send("applied successfully")
+})
+
+//------------------------------------------------------------------------------------------
 // Create a new consultancyAgency
 router.post('/', (req, res) => {
 	const name = req.body.name;

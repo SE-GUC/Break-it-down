@@ -1,5 +1,12 @@
+//---------------------------nourhan-----------------------------------------
+var bodyParser = require('body-parser')
 
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
+
+const Message = require('./models/Message')
+
+
+//-----------------------------------------------------------------------------
 
 const coworkingSpace = require('./routes/api/coworkingSpace')
 const coworkingSpace2 = require('./routes/api/coworkingSpace2')
@@ -31,16 +38,20 @@ const db = require('./config/keys').mongoURI;
 mongoose
 
     .connect(db)
-
     .then(() => console.log('Connected to MongoDB'))
 
     .catch(err => console.log(err));
 
 
 
-
 app.use(express.json());
 
+//nourhan
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+//-----------
+
+app.use(express.urlencoded({extended: false}))
 
 
 app.get('/', (req, res) => {
@@ -53,9 +64,8 @@ app.get('/', (req, res) => {
     <a href="/api/coworkingSpace">Partner Coworking Space</a>
     <a href="/api/member">Member</a>
     <a href="/api/rooms">Rooms</a>
-    <a href="/api/admin">admin</a>
     <a href="/api/notification">notfication</a>
-
+    <a href="/api/partner">Partner</a>
     `);
 
 
@@ -83,7 +93,9 @@ app.use((req, res) => {
 
  })
 
+
  const port = process.env.PORT || 4000
 
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`));
+
