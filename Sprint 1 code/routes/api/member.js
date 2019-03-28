@@ -627,17 +627,17 @@ router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
 
 
 //delete booking from user array + change reserved to false in coworking space array 
+//------------delete booking from user array + change reserved to false in coworking space array----------
 router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 
 	try {
 		const userID=parseInt(req.params.userID);
 		const bookingID= parseInt(req.params.bookingID);
    
-		const temp = await RoomBookings.find({userID});
-    //res.send(temp);
-		 if(!temp[0])res.send('user id does not exist');
-		const book = temp[0].bookings;
-    const temp2 =await book.find(r => r.bookingID === bookingID);
+        const temp = await users.find({userID});
+        if(!temp[0])res.send('user id does not exist');
+		const book = temp[0].RoomsBooked;
+		const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
 
         res.status(404).send('The booking with the given id is not found');
@@ -647,15 +647,14 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 		};
 		const roomID=parseInt(temp2.roomID);
 		const scheduleID=parseInt(temp2.scheduleID);
-		const time=parseInt(temp2.time);
-		const date=temp2.date;
 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
-
-    PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+		//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
+		//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
+		//'rooms.$.schedule.reserved':false
+    users.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
     
-	 
-	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
+	 users.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} }
 	 }, function(err, model){})
 		
 		
@@ -663,18 +662,11 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 	}
 
 	catch(error) {
-
-			// We will be handling the error later
-
 			console.log(error)
 
 	}  
 
-})
-
-
-
-})
+});
 
 
 module.exports = router;
