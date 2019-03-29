@@ -4,26 +4,15 @@ const Joi = require('joi');
 const uuid = require('uuid');
 const router = express.Router();
 const mongoose = require('mongoose');
-
-
-const users = require('../../models/UserProfile')
-
-
-// Models
-  //should ne removed
-
+// Models should be removed
 const User = require('../../models/UserProfile');
-
-
 //nourhan
 var objectid = require('mongodb').ObjectID
-
 
 var Members = require('../../models/Member');
 var partner = require('../../models/Partner');
 const PartnerCoworkingSpace = require('../../models/cospaceMtest');
 const RoomBookings = require('../../models/RoomBookings');
-
 
 // Instead of app use route
 // No need to write the full route
@@ -43,8 +32,6 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 	const Users = await User.find({type:'coworkingSpace'})
 	 res.json({ data: Users })
 	});
-	
-
 
 	//--------------------------------nourhan----------------------------------------------
 
@@ -53,25 +40,15 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 
 router.get('/roombookings/:userID',async (req, res) => {
 
-  
-
 	var userID = parseInt(req.params.userID);
 
-
-
 	await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
-
-
 
 			res.send(roombookings);
 
 	})
 
-
-
 })
-
-
 
 //get a room in a specific coworking space by id
 
@@ -90,9 +67,7 @@ router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 	])
 	res.send(test.pop().schedule);
 
-}
-
-catch(error){
+}catch(error){
 
 		res.send("not found")
 
@@ -100,11 +75,7 @@ catch(error){
 
 }
 
-
-
 });
-
-
 
 //book a room , append it to the array of bookings if it is not in my bookings
 
@@ -115,8 +86,6 @@ const schedID = req.params.id3;
 const cospaceID = req.params.id;
 
 const roomID = req.params.id2;
-
-
 
 try{
 
@@ -132,13 +101,9 @@ const test1 = await User.aggregate([
 
 ])
 
-
-
 //res.send(test1.pop().reserved == "true")
 
 if(test1.pop().reserved) return res.send({error:'already reserved'})
-
-
 
 const test = await User.aggregate([
 
@@ -163,10 +128,6 @@ const test3 = await User.aggregate([
 
 ])
 
-
-
-
-
 const f = await User.findOneAndUpdate({
 
 
@@ -187,12 +148,7 @@ const f = await User.findOneAndUpdate({
 
 }
 
-
-
 )
-
-
-
 await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
 
 {$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
@@ -201,31 +157,17 @@ scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}},
 
 async function(err, model){
 
-				 
-
 	if(err)  return handleError(res, err)
-
 	else res.json({msg:'Room was reserved successfully'})
-
 });
-
-}
-
-catch(error){
+}catch(error){
 	console.log(error)
-
-			res.send("Not found")
+    res.send("Not found")
 
 	}
-
 });
 
-
-
 //------------------------------------------------------------------------------------------
-
-
-
 
 // Get all Members (Malak&Nour) MONGOUPDATED
 router.get('/', (req, res) =>{	
@@ -242,18 +184,16 @@ router.get('/:id', (req, res) => {
 });
 //------------------------get all approved tasks------------------------------//
 router.get('/allTasks',async (req,res)=>{
-    //const member = await  users.find({type:"member"})
-    const partner=await  users.find({type:"partner"})
+    //const member = await  User.find({type:"member"})
+    const partner=await  User.find({type:"partner"})
     var tasks=[];
     for(var i=0;i<partner.length;i++){
         for(var j=0;j<partner[i].tasks.length;j++){
             if(partner[i].tasks[j].approved=== true)
             tasks.push(partner[i].tasks[j])
         }
-    }
-
-    
-
+	}
+})
 
 // Create a new member (Malak&Nour) MONGOUPDATED
 router.post('/', async(req, res) => {
@@ -332,7 +272,7 @@ router.delete('/:id', async (req,res) => {
 router.get('/view/:id',async (req, response) => {
     var data = "";
     const memID= parseInt(req.params.id)
-    const member = await  users.findOne({type:"member",userID:memID})
+    const member = await  User.findOne({type:"member",userID:memID})
    console.log(member)
     if(member===null) {
          response.send("the databsae has no member with the given ID")
@@ -350,8 +290,8 @@ router.get('/view/:id',async (req, response) => {
 
 router.get('/recoTasks/:idM',async(req,res)=>{
     const memID= parseInt(req.params.idM)
-    const member = await  users.findOne({type:"member", userID:memID})
-    const partner=await  users.find({type:"partner"})
+    const member = await  User.findOne({type:"member", userID:memID})
+    const partner=await  User.find({type:"partner"})
     var tasks=[];
    // findOne()
  
@@ -383,7 +323,7 @@ router.get('/recoTasks/:idM',async(req,res)=>{
 router.get('/MyRating/:MID', async(req, response) => {
    
     const MID = parseInt(req.params.MID)
-    const member= await users.findOne({type:'member',userID:MID})
+    const member= await User.findOne({type:'member',userID:MID})
     const AllMyRatings = member.allRatings
     const Rlength = AllMyRatings.length
     //console.log(Rlength)
@@ -402,15 +342,12 @@ router.get('/MyRating/:MID', async(req, response) => {
 
 });
 
-
-
-
  //------------------------apply for a task---------------------// 
 
 router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
     const memID= parseInt(req.params.id)
     const partnerID=parseInt(req.params.idp)
-    const partner= await users.findOne({type:'partner',userID:partnerID})
+    const partner= await User.findOne({type:'partner',userID:partnerID})
 
     const taskIDb=parseInt(req.params.idt)
     var taskapp={}
@@ -435,10 +372,10 @@ router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
          {
             applicantsapp.push({applicantID:memID,accepted:false,assigned:false})
 
-            users.update({ 'userID':partnerID,'tasks.taskID':taskIDb }, 
+            User.update({ 'userID':partnerID,'tasks.taskID':taskIDb }, 
             {$set: {'tasks.$.applicants':applicantsapp}}, function(err, model){}); 
             
-            const partnerx= await users.findOne({type:'partner',userID:partnerID})
+            const partnerx= await User.findOne({type:'partner',userID:partnerID})
             res.json(partnerx)
 
          }
@@ -625,48 +562,36 @@ router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
     res.send(RoomBookings);
 });
 
-
 //delete booking from user array + change reserved to false in coworking space array 
 //------------delete booking from user array + change reserved to false in coworking space array----------
 router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
-
 	try {
 		const userID=parseInt(req.params.userID);
 		const bookingID= parseInt(req.params.bookingID);
    
-        const temp = await users.find({userID});
+        const temp = await User.find({userID});
         if(!temp[0])res.send('user id does not exist');
 		const book = temp[0].RoomsBooked;
 		const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
 
-        res.status(404).send('The booking with the given id is not found');
-
-        return;
-
-		};
+		res.status(404).send('The booking with the given id is not found');
+		return;
+	};
 		const roomID=parseInt(temp2.roomID);
 		const scheduleID=parseInt(temp2.scheduleID);
 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
 		//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
 		//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
 		//'rooms.$.schedule.reserved':false
-    users.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+    User.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
     
-	 users.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} }
-	 }, function(err, model){})
-		
-		
+	User.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} } }, function(err, model){})	
     res.send('booking has been deleted successfully')
-	}
-
-	catch(error) {
+    }catch(error) {
 			console.log(error)
-
-	}  
-
+		}  
 });
 
-
-module.exports = router;
+module.exports = router
