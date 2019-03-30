@@ -28,7 +28,12 @@ const functions = {
              
              const partnertasks = await axios.get('http://localhost:4000/api/partner/view/1/0')
              return partnertasks
-                    }
+                    },
+     getPartnerLifeCycle: async () => {
+               
+                 const lifeCycle = await axios.get('http://localhost:4000/api/partner/TaskLifeCycle/1/0')
+                 return lifeCycle
+                                                }
                     
                           
 };
