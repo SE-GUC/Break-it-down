@@ -33,7 +33,43 @@ const functions = {
                
                  const lifeCycle = await axios.get('http://localhost:4000/api/partner/TaskLifeCycle/1/0')
                  return lifeCycle
-                                                }
+                                                },
+      memberapply: async () => {
+           const applyforTask = await axios.put('http://localhost:4000/api/member/ApplyForTask/10/1/0')
+           return applyforTask
+                                            },
+     acceptapp: async () => {
+           const appl = await axios.put('http://localhost:4000/api/partner/AcceptApplicant/1/1',{'applicantID':1})
+           return appl
+                     },
+
+              partnerReviewRate: async () => {
+                        const rateAndReview = await axios.put('http://localhost:4000/api/partner/Review&Rate/1/0',
+                               {
+                                "rating": 4,
+                                "review": "hellooo"
+                        })
+        
+                        return rateAndReview
+                },
+            partnerPostTask: async () => {
+              const posted = await axios.post('http://localhost:4000/api/partner/CreateTask/1',
+                {	
+                 "name": "test",
+                "description": "testing with jtest", 
+                "wantsConsultant": true
+                        })
+        
+                  return posted
+                },
+       ChooseConsultancyAgency: async () => {
+       const consultancy = await axios.put('http://localhost:4000/api/partner/ChooseConsultancyAgency/1/1', { "consultancyID":2})  
+        return consultancy
+           },
+  ChooseApplicant: async () => {
+      const applicant = await axios.put('http://localhost:4000/api/partner/AcceptApplicant/1/1', {"applicantID":1})  
+       return applicant
+           }
  };
 
 module.exports = functions;
