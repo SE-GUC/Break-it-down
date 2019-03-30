@@ -50,3 +50,13 @@ test('member gets his average rating', async () => {
   expect(response.data).toBeLessThan(6);
 
 });
+
+//-------------------------member put method--------------------------//
+test('apply for a task', async () => {
+  expect.assertions(1)
+  const response =  await funcs.memberapply()
+  console.log(response.data)
+  expect(response.data.length).toBeGreaterThanOrEqual(1)
+});
+
+
