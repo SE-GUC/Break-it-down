@@ -1,26 +1,22 @@
-const uuid = require('uuid')
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-/*An educational organizationʼs profile should hold their basic information, 
-the courses they offer, their trainers/educators, the certificates they supply and their training programs*/
+const consultancyAgencySchema= new Schema({ 
 
-class EducationalOrganisation{
+    name:{type:String,required: false},
+    type:{type:String,required: false},
+    email:{type:String,required: false},
+    //consultancyAgencyTasks:{type:Array,required: false},
+    phoneNumber:{type:Number,required: false},
+    description:{type:String,required: false},
+    address:{type:String,required: false},
+    partners:{type:Array,required: false},
+    boardMembers:{type:Array,required: false},
+    events:{type:Array,required: false},
+    reports:{type:Array,required: false},
+    activation:{type:Boolean,default:false},
+},
+{ versionKey: false}
 
-    constructor(name, email, website, address, phoneNumber, fax, trainers, coursesOffered, certificatesSupplied, trainingPrograms){
-        this.name= name;
-        this.email= email;
-        this.website= website;
-        this.address= address;
-        this.phoneNumber= phoneNumber;
-        this.fax= fax;
-        this.trainers= trainers;
-        this.coursesOffered= coursesOffered;
-        this.certificatesSupplied= certificatesSupplied;
-        this.trainingPrograms= trainingPrograms;
-
-        this.id= uuid.v4();
-
-    };
-
-};
-
-module.exports= EducationalOrganisation
+);
+module.exports = consultancyAgency = mongoose.model('consultancyAgency', consultancyAgencySchema)

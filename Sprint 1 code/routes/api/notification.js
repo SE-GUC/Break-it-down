@@ -2,7 +2,7 @@ const express= require('express');
 const router= express.Router();
 
 
-const notification = require('../../models/Notification');
+//const notification = require('../../models/Notification');
 const Joi = require('joi')
 
 
@@ -97,4 +97,4 @@ router.get('/', (req, res) => res.json({ data: Notification }));
 
 
 
-module.exports = router
+module.exports = router;

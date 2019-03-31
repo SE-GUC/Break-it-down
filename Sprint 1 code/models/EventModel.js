@@ -1,16 +1,24 @@
 const uuid = require('uuid')
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+autoIncrement=require('mongoose-auto-increment');
+var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true")
+autoIncrement.initialize(connection);
 
 // The Event Model
-class Event {
-    
-    constructor(name,description, date,location) {
-        this.name = name;
-        this.description =description;
-        this.date = date;
-        this.location=location;
-        this.coworkingspace=false;
-        this.id = uuid.v4();
-    };
-};
+const EventSchema= new Schema({ 
 
-module.exports = Event
+    name:{type:String,required: true},
+    description:{type:String,required: false},
+    date:{type:String,required: true},
+    location:{type:String,required: true},
+    coworkingspace:{type:Boolean,default:false},
+},
+{ versionKey: false}
+
+);
+
+module.exports = Event = mongoose.model('Event', EventSchema)
+
+
+
