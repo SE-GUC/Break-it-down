@@ -7,15 +7,12 @@ const users = require('../../models/UserProfile');
 
 const message = require('../../models/messages');
 
-<<<<<<< HEAD
 
 //-------------------pathToSendFile----------------------------
 var path = require('path');
 
 //--------------------get contact info of partner--------------------
-=======
-//--------------------get contact info of partner--------------------  
->>>>>>> 06ea10a8d6d21169196ffa7e63a5c720255e612a
+
 router.get('/contact/:pid',async (req, res)=>{
 
     var partner = parseInt(req.params.pid);
