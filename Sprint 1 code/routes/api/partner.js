@@ -308,145 +308,36 @@ router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
 
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------partner view a task's life cycle -------------------------------------------// testing done
 
-
-//-----------------------------------partner submit task description-------------------------------------------//
-
-router.post('/createTask', async(req, res)=> {
-    const name = req.body.name;
-    const ownerID = req.body.ownerID;
-    const description= req.body.description;
-    const wantsConsultant= req.body.wantsConsultant;
-    const applicants= [];
-    const approved= false;
-    const schema={
-       name:Joi.string().required(),
-       ownerID:Joi.number().required(),
-       
-       description:Joi.string().required(),
-       wantsConsultant:Joi.boolean().required()
-     
-    }
-    const result=Joi.validate(req.body,schema)
+router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
+    const partnerID = parseInt(req.params.PID);
+    const Task_id = parseInt(req.params.TID);
   
-    if(result.error)
-     return res.status(400).send(error.details[0].message);
- 
- 
-     const newtask = {
-         name,
-         description,
-         wantsConsultant, 
-         approved,
-         applicants
-         
-     };
- 
-     const t = await users.findOne({type:"partner",userID:ownerID} )
-    //console.log(t.tasks)
-    //t.tasks.push(newtask);
-     console.log(t.tasks)
- 
-    
-    users.update({ 'userID':ownerID,'type':'partner'
-                   }, 
-    {$set: {'tasks':t.tasks}}, function(err, model){}); 
-     //return res.json({ data: t.tasks });
-     return res.json("your task was created successfully");
- 
- 
- });
-//-------------------------------partner review tasks and rate member assigned -----------------------------------//
-
-
-router.put('/Review&Rate/:idP/:idT',async(req,res)=>{
-
-    const partnerID = parseInt(req.params.idP)
-    const partner = await users.findOne({type:"partner",userID:partnerID})
-
-    const taskID = parseInt(req.params.idT)
-    
-    for(var i =0;i<partner.tasks.length;i++){
-        if(partner.tasks[i].taskID===taskID)
-           var task=partner.tasks[i]
+    const partner = await users.findOne({ type: "partner", userID: partnerID });
+    // console.log(partner)
+    const Task_Array = partner.tasks;
+    //console.log(partner.tasks)
+  
+    var lifeCyc = [];
+    let data = "";
+    for (var i = 0; i < Task_Array.length; i++) {
+      if (Task_Array[i].taskID === Task_id) {
+        lifeCyc = Task_Array[i].lifeCycle;
+        data =
+          "the life cycle of your task is below" +
+          "   " +
+          "name of task:" +
+          Task_Array[i].name;
+      }
     }
-    
-    console.log(task.lifeCycle[3])
-    const rate = req.body.rating
-    const review = req.body.review 
-   
-    const schema = {
-        rating: Joi.number().min(0).max(5).required(),
-        review: Joi.string().required()
-     };
- 
-    const result = Joi.validate(req.body, schema);
+  
+    res.send({ data, lifeCyc });
+  });
 
-    if(result.error){
-        return  res.status(400).send(result.error.details[0].message)
-       }
-
-    else {
-    const taskDone = task.lifeCycle[3]
-
-    if(taskDone === true){
-        task.rate = rate
-        task.review = review
-
-        const applicants = task.applicants
-        for(var k=0;k<applicants.length;k++){
-            if(applicants[k].assigned===true && applicants.accepted===true){
-                memberAssigned=applicants[k]
-                var app = memberAssigned.applicantID
-            }
-        }
-        
-        const mem = await users.findOne({type:"member",userID:app})
-     
-        //const all = mem.allRatings
-        //console.log(mem.allRatings)
-        mem.allRatings.push(rate)
-
-        res.json(mem.allRatings)
-
-        users.update({ 'userID':app,'type':'member'}, 
-        {$set: {'allRatings':mem.allRatings}}, function(err, model){});
-
-       // users.update({ 'userID':partnerID,'type':'partner'}, 
-        //{$set: {:mem.allRatings}}, function(err, model){});
-
-     }
-     else {
-        return res.status(404).send({error: 'task is not done yet'})
-     }
-
-    }
-
- }); 
-
-//--------------------------Partner view task's applicants -----------------------------------//
-router.get('/:idP/:idT',async (req,res)=>{
-    const partnerID=parseInt(req.params.idP)
-    const taskIDb=parseInt(req.params.idT)
-    const partner= await users.find({type:'partner',userID:partnerID})
-    let data=""
-    var task={}
-    for(var i=0;i<partner.length;i++){
-        for(var j=0;j<partner[i].tasks.length;j++){
-        if(partner[i].tasks[j].taskID===taskIDb)
-            task=partner[i].tasks[j].applicants
-            data="task id:"+partner[i].tasks[j].taskID +"  "+"task name:"+partner[i].tasks[j].name
-    }
-    }
-    //console.log(task)
-   
- 
- res.send({data,task}); 
- 
- }); 
 
 //-----------------------------------partner send request to change description -------------------------------------------//
+
 
 router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
     const PartID = parseInt(req.params.idP)
@@ -491,137 +382,11 @@ router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
           {$set: {'updates': updates}}, function(err, model){});
     
             const partners = await users.findOne({type:"partner",userID:PartID})
-           res.json(partners)
+           res.json(partners.updates)
        }
     }
 }
 });
-
- //-----------------------------------partner view a task's life cycle -------------------------------------------//
-
-
-router.get('/TaskLifeCycle/:PID/:TID',async (req, res)=> {
-    const partnerID  = parseInt(req.params.PID)
-    const Task_id =parseInt( req.params.TID)
-
-    const partner= await users.findOne({type:'partner',userID:partnerID})
-   // console.log(partner)
-    const Task_Array = partner.tasks
-    //console.log(partner.tasks)
-    
-    var lifeCyc=[]
-    let data=""
-    for(var i=0;i<Task_Array.length;i++){
-       if(Task_Array[i].taskID===Task_id ){
-
-         lifeCyc = Task_Array[i].lifeCycle   
-         data="the life cycle of your task is below"+"      "+"name of task:"+Task_Array[i].name
-       }
-    }
- 
-    res.send({data,lifeCyc})
-
-
-});
-
-
- //-------------------------choose and send the applicant to the admin to assign-------------------------//
-
-router.put('/AcceptApplicant/:idP/:idT',async(req,res)=>{
-
-    const PartID = parseInt(req.params.idP)
-    const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
-
-    if(partner === null )
-    res.json("the partner id is not correct")
-
-    else {
-      const task = partner.tasks
-      const t = task.find(task => task.taskID === Task_id)
-
-      if(t === null) res,json("the task Id is not correct")
-      else{
-      const applicantID = req.body.applicantID
-      const schema = {
-          applicantID:Joi.number().required()
-         }
-
-      const result=Joi.validate(req.body,schema)
-
-      if(result.error)
-       return res.status(400).send(error.details[0].message);
-      else{
-     
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'applicants.applicantID':applicantID}, 
-      {$set:{"applicants.$.accepted":true}},
-      function(err, model){});
-
-      
-      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(partners)
-      }
-    }
-}
-
-    
- }); 
-
-//-----------------------------------partner choose a consultancy agency -------------------------------------------//
-
-
-router.put('/ChooseConsultacyAgency/:idP/:idT',async(req,res)=>{
-
-
-    const PartID = parseInt(req.params.idP)
-    const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
-
-    if(partner === null )
-    res.json("the partner id is not correct")
-
-    else {
-      const task = partner.tasks
-      const t = task.find(task => task.taskID === Task_id)
-
-      if(t === null) res,json("the task Id is not correct")
-      else{
-      const consultancyID = req.body.consultancyID
-      const schema = {
-        consultancyID:Joi.number().required()
-         }
-
-      const result=Joi.validate(req.body,schema)
-
-      if(result.error)
-       return res.status(400).send(error.details[0].message);
-      else{
-     
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'consultancies.consultancyID':consultancyID}, 
-      {$set:{"consultancies.$.accepted":true}},
-      function(err, model){});
-
-       
-      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(partners)
-      }
-    }
-}
-
-
-
-});
-
- 
-
-
-
-
-
-
-router.get('/', (req, res) => res.json({ data: partner }));
-
-
 
 
 
