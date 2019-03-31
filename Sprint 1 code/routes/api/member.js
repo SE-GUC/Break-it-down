@@ -23,7 +23,7 @@ const RoomBookings = require('../../models/RoomBookings');
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
 	const Users =await User.find({type:'coworkingSpace',userID:parseInt(req.params.id)})
-	if({Users:[]}) return res.json('Coworking space does not exist')
+//	if({Users:[]}) return res.json('Coworking space does not exist')
 	res.json({ data: Users })
 });
 
