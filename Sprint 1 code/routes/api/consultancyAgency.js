@@ -63,12 +63,12 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 		try{
 	
 					var message = new Message(req.body);
-					console.log(req.body);
+			
 			var savedMessage = await message.save();
 	
-				console.log('saved');
+		
 	
-				res.sendStatus(200);
+				res.send(message);
 	
 		}	
 		catch (error){
