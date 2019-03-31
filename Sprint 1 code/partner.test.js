@@ -1,5 +1,5 @@
 
-const funcs = require('./fn');
+const funcs = require('./partner');
 //------------partner getter test------------------//
 test('Partner view applicants for a task', async () => {
 
