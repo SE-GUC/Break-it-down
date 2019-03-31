@@ -197,4 +197,17 @@ test('Room Booking updated', async (done) => {
 done()
 });
 
+test('first item of all coworking spaces', async () => {
+  expect.assertions(1);
+  const response =  await funcs.getallcoworkingspace();
+  expect(response.data.data[1].name).toEqual('Kotob Khan');
+});
+
+test('Name of of coworking spaces 9 should be Supernova', async () => {
+  expect.assertions(1);
+  const response =  await funcs.getAcoworkingspace();
+  console.log(response.data);
+  expect(response.data.data[0].name).toEqual('Supernova');
+});
+
 

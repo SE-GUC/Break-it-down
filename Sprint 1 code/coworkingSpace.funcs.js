@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const functions = {
+        
 
 getCospace: async () => {
 
@@ -129,6 +130,25 @@ deleteRoom: async() => {
         
         
                 },
+
+                getallcoworkingspace: async () => {
+
+                        const cospaces = await axios.get('http://localhost:4000/api/coworkingSpace/viewCoworkingSpace')
+                
+                
+                        return cospaces
+                
+                        },
+                
+                        getAcoworkingspace: async () => {
+                
+                        const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/7')
+                
+                        return cospace
+                
+                        },
+
+        
 
 
 
