@@ -2,10 +2,15 @@
 const express = require('express');
 const app = express();
 
+
+//--------------------cors---------------
+const cors = require('cors')
+
 //--------------------api--------------------
 const admins = require('./routes/api/admin');
-const ca = require('./routes/api/consultancyAgency');
 const coworkingSpace = require('./routes/api/coworkingSpace');
+//const coworkingSpace2 = require('./routes/api/coworkingSpace2');
+const ca = require('./routes/api/consultancyAgency');
 const ProfilesAPI = require('./routes/api/Profiles');
 const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
 const notification = require('../Sprint 1 code/routes/api/notification');
@@ -30,6 +35,10 @@ app.use(express.urlencoded({extended: false}))
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+//-----------------cors---------------
+app.use(cors());
+
+
 //--------------------Home Page--------------------
 app.get('/', (req, res) => {
 res.send(`<h1>Home page</h1>
@@ -44,10 +53,13 @@ res.send(`<h1>Home page</h1>
 
 //--------------------Direct routes to appropriate files-------------------- 
 app.use('/api/coworkingSpace', coworkingSpace);
+//app.use('/api/coworkingSpace2', coworkingSpace2);
 app.use('/api/consultancyAgency', consultancyAgency);
 app.use('/api/member', member);
 app.use('/api/admins', admins);
 app.use('/api/Events', Event);
+app.use('/api/coworkingSpace', coworkingSpace);
+//app.use('/api/coworkingSpace2', coworkingSpace2);
 app.use('/api/partner',partner);
 app.use('/api/notification',notification);
 app.use('/api/ca',ca);

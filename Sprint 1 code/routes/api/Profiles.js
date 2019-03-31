@@ -40,7 +40,7 @@ router.post('/member', async (req,res) => {
             interests,
             accomplishments,
             certificates,
-            RoomsBooked,
+            RoomsBooked:[],
             updates:[]
         });
 
