@@ -13,6 +13,16 @@ const member = require('../Sprint 1 code/routes/api/member');
 const Event = require('./routes/api/event');
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
 
+//------------------forChatting------------------------
+const User = require('./models/ChatUser');
+var server = require('http').createServer(app);
+global.io = require('socket.io').listen(server) 
+users=[];
+connections=[];
+const messages=require('./models/messages2');
+const fuck = require('./models/server')
+server.listen(process.env.port || 4000);
+
 //--------------------Mongoose + DB configuration--------------------
 var mongoose = require('mongoose');
 const db = require('./config/keys_dev').mongoURI;
@@ -35,7 +45,7 @@ var io = require('socket.io')(http);
 app.get('/', (req, res) => {
 res.send(`<h1>Home page</h1>
 <p> REGISTER OR SIGN UP <p>
-<a href="/api/admin">Admin</a>
+<a href="/api/admins">Admin</a>
 <a href="/api/coworkingSpace">Partner Coworking Space</a>
 <a href="/api/member">Member</a>
 <a href="/api/rooms">Rooms</a>
@@ -60,5 +70,5 @@ app.use((req, res) => {
  });
 
  //--------------------Server--------------------
- const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`Server up and running on port ${port}`));
+//  const port = process.env.PORT || 4000;
+// app.listen(port, () => console.log(`Server up and running on port ${port}`));

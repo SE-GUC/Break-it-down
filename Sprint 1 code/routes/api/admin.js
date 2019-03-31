@@ -6,6 +6,10 @@ const router = express.Router();
 const users = require('../../models/UserProfile');
 const message = require('../../models/messages');
 
+
+//-------------------pathToSendFile----------------------------
+var path = require('path');
+
 //--------------------get contact info of partner--------------------
 router.get('/contact/:pid',async (req, res)=>{
 
@@ -15,9 +19,17 @@ router.get('/contact/:pid',async (req, res)=>{
 
         res.send(r);
     });
+});
   
 
-});
+
+//-----------------------chat-----------------------------
+
+router.get('/chat',function(req,res){
+    res.sendFile(path.resolve('./indexx.html'));
+   // console.log("fuck")
+   // fuck();
+  });
 
 //--------------------see all updates--------------------
 router.get('/viewUpdates', async (req, res) => {
@@ -262,5 +274,6 @@ router.get('/', async(req, res) =>{
      const admins = await users.find({type:"admin"})
      res.json(admins)
  });
+
 
 module.exports = router
