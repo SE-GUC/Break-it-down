@@ -90,6 +90,46 @@ deleteRoom: async() => {
     return cospaceRoomToDel;
 },
 
+	viewCoworkingspaceSuggestions: async (id) => {
+
+        var axiosInstance = axios.create({
+                validateStatus: function (status) {
+                        return status >= 200 && status <= 503;
+                },
+                   
+        })
+        
+
+        const suggestions = await axiosInstance.get(`http://localhost:4000/api/coworkingSpace/CoworkingSpace/Suggestions/${id}`)
+
+        const status=suggestions.status
+
+        if(status===200)
+                return suggestions.data
+        else if(status===404)
+                throw new Error('No room suggestions found')
+
+   },
+        updateRoomBooking: async (bid) => {
+
+        var axiosInstance = axios.create({
+                validateStatus: function (status) {
+                        return status >= 200 && status <= 503;
+                },
+                           
+        })
+
+        const suggestions = await axiosInstance.put(`http://localhost:4000/api/coworkingSpace/update/booking/${bid}`)
+        const status=suggestions.status
+
+        if(status===200)
+                return suggestions.data
+        else if(status===404)
+                throw new Error('Could not find an empty room with the desired capacity in the same coworking space')
+        
+        
+                },
+
 
 
 };

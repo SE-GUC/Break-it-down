@@ -1,6 +1,8 @@
 const funcs = require('./coworkingSpace.funcs');
 const axios = require('axios');
+const mongoose = require('mongoose')
 //jest.mock('axios');
+require('dotenv').config()
 
 
 describe("DELETE /rooms/1", () => {
@@ -143,5 +145,56 @@ test('Testing view schedule for a room. An array of schedule objects should be r
     done()
     });
 
-module.exports
+	
+test('No room suggestions found, returns 404', async (done) => {
+
+    expect.assertions(1)
+ try{
+    const response =  await funcs.viewCoworkingspaceSuggestions(1)
+  }catch(e){
+    expect(e.message).toEqual('No room suggestions found')
+
+  } 
+    done()
+  });
+
+  test('Coworkingspace suggestions is a defined array of objects and contains the specified records', async (done) => {
+    expect.assertions(5)
+
+      const response =  await funcs.viewCoworkingspaceSuggestions(2)
+      expect(response).toBeDefined();
+      expect(response).not.toBeNull();
+      expect(response).toBeInstanceOf(Array)
+
+      expect(response).toEqual(expect.arrayContaining([expect.objectContaining (
+        {_id: '5c940f161c9d44000091e226', name: 'Supernova' })]));
+
+      expect(response[0].facilities).toEqual(expect.arrayContaining(['WiFi', 'Hot drinks and snacks']) )
+
+ done()
+  });
+  
+  
+  test('Booking not found, returns 404', async (done) => {
+
+  expect.assertions(1)
+try{
+    const response =  await funcs.updateRoomBooking(1000)
+}catch(e){
+  expect(e.message).toEqual('Could not find an empty room with the desired capacity in the same coworking space')
+
+} 
+  done()
+});
+
+test('Room Booking updated', async (done) => {
+  expect.assertions(1)
+
+    const response =  await funcs.updateRoomBooking(3)
+    
+    expect(response.msg).toEqual('Your room booking is successfully updated.');
+
+done()
+});
+
 
