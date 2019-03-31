@@ -1,6 +1,26 @@
-const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const BookingSchema = new Schema({
+
+    username : {
+        type: String,
+        required: true
+    },
+  
+    bookings : {
+        type: Array,
+        required: true
+    }
+  
+  })
+
+  module.exports = RoomBookings = mongoose.model('roombookings', BookingSchema)
+
+//const mongoose = require('mongoose');
+
+//const Schema = mongoose.Schema;
 
 var ObjectId = Schema.ObjectId;
 
@@ -40,3 +60,4 @@ const RoomBookingsSchema = new Schema({
 RoomBookingsSchema.plugin(autoIncrement.plugin,'RoomBookings');
 
 module.exports = RoomBookings = connection.model('RoomBookings', RoomBookingsSchema);
+

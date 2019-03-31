@@ -1,33 +1,42 @@
-const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-var ObjectId = Schema.ObjectId;
+const cospaceSchema = new Schema({
 
-//to create an id that autoincrements each time a document is added
+    id2 : {
+        type: String,
+        required : true
+    },
+    name : {
+        type: String,
+        required : true
+    },
+    rooms :{
+        type : Array,
+        required : true
+    }
+  
+  })
 
-autoIncrement=require('mongoose-auto-increment');
+  module.exports = PartnerCoworkingSpace = mongoose.model('coworkingSpace', cospaceSchema)
 
-var connection=mongoose.createConnection("mongodb+srv://user:1234@break-it-down-8hjy6.mongodb.net/data?retryWrites=true")
+//const mongoose = require('mongoose');
 
-autoIncrement.initialize(connection);
-
-// Create the schema
-
-
-
-const CoworkingSpaceSchema = new Schema({
-
-    coworkingSpaceID:{type:Number,required:true},
-    name:{type:String,required:true},
-    rooms:{type:Array}
-        
-});
-
-
-
+//const Schema = mongoose.Schema;
 
 
-CoworkingSpaceSchema.plugin(autoIncrement.plugin,'partnercoworkingspaces');
-
-module.exports = PartnerCoworkingSpace = connection.model('partnercoworkingspaces', CoworkingSpaceSchema);
+const PartnerCoworkingSpaceSchema = new Schema({
+    type: {type: String,required: true},
+    name: {type: String,required: true},
+    //password: {type: String,required: true},
+    email: {type: String,required: true},
+   phoneNumber: {type: Number,required: true},
+address:{type:String,required: false},
+description:{type:String,required: false},
+facilities:{type:Array,required: false},
+rooms:{type:Array,required: false},
+},
+{ versionKey: false}
+);
+module.exports = PartnerCoworkingSpace = mongoose.model('PartnerCoworkingSpace', PartnerCoworkingSpaceSchema);
