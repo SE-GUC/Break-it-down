@@ -237,7 +237,7 @@ router.post('/', (req, res) => {
 	if (typeof socialMediaAccounts !== 'string') return res.status(400).send({ err: 'Invalid value for socialMediaAccounts' });
 	
 	*/
-
+})
 
 // Create a new consultancyAgency (Malak&Nour) MONGOUPDATED
 router.post('/', async(req, res) => {

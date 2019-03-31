@@ -46,7 +46,36 @@ partnerRequestDescriptionChange: async()=> {
   ChooseApplicant: async () => {
       const applicant = await axios.put('http://localhost:4000/api/partner/AcceptApplicant/1/1', {"applicantID":1})  
        return applicant
-           }
+           },
+
+           getBookingsp: async () => {
+
+                const bookings = await axios.get('http://localhost:4000/api/partner/roombookings/101')
+                return bookings
+        
+                },
+
+        getRoomSchedulep: async () => {
+
+                const sch = await axios.get('http://localhost:4000/api/partner/cospace/300/rooms/1')
+                
+                 return sch
+                
+                },
+        bookRoomp: async()=>{
+                const b = await axios.put('http://localhost:4000/api/partner/cospace/300/101/rooms/2/2')
+                return b
+            },
+
+            deleteBookingp: async()=>{
+
+                const k = await axios.get('http://localhost:4000/api/partner/lastelem/')
+                console.log(k.data)
+                const c =objectid(k.data)
+                 const url = 'http://localhost:4000/api/partner/nourhan/RoomBookings/101/' + c
+                const b = await axios.delete(url)
+                return true
+            },
   
   };
 

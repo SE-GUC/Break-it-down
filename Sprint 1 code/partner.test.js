@@ -26,11 +26,13 @@ test('partner review and rate', async () => {
   if(typeof response.data==="string"){
     expect(response.data).toContain("the")
   }
+  
  
   else{
     expect(response.data.tasks.rate).not.toBe(0)
     expect(response.data.tasks[0].review).toBeTruthy()
   }
+});
   
   test('partner post a task description', async () => {
   expect.assertions(1)
@@ -74,7 +76,43 @@ test('partner request description change', async () => {
 
 });
 
-  
+test('Number of bookings of partner with id 101 should be 3', async (done) => {
 
+  expect.assertions(1)
+
+  const response =  await funcs.getBookingsp()
+  //console.log(response.data)
+  expect(response.data.data.length).toBe(3)
+  done()
 });
+
+test('Number of schedules of coworkingSpace with id 300 and room id 1 should be 1', async (done) => {
+
+  expect.assertions(1)
+
+  const r = await funcs.getRoomSchedulep()
+ // console.log(r.data)
+  expect(r.data.data.length).toBe(1)
+  done()
+});
+
+test('Room should be booked for partner 101', async (done) => {
+  expect.assertions(1)
+  const response =  await funcs.bookRoomp()
+  console.log(response.data)
+  expect(response.data.data).toBe(true)
+  done()
+});
+
+//just to delete the last booking made by the test
+test('delete the last entry',async (done)=>{
+ // expect.assertions(1)
+  const r =await funcs.deleteBookingp()
+
+ expect(r).toBe(true)
+ console.log(r)
+ done();
+})  
+
+
 
