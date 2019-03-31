@@ -140,9 +140,9 @@ deleteRoom: async() => {
                 
                         },
                 
-                        getAcoworkingspace: async () => {
+                getAcoworkingspace: async () => {
                 
-                        const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/7')
+                        const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/9')
                 
                         return cospace
                 
