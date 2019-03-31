@@ -21,8 +21,15 @@ router.get('/contact/:pid',async (req, res)=>{
 
 //--------------------see all updates--------------------
 router.get('/viewUpdates', async (req, res) => {
-    const updt=await users.find();
-    res.json({ data: updt });
+    const updt= await users.find({},{'updates':1,'_id':1});
+    for(var i=0;i<updt.length;i++){
+        if(!updt[i] || !updt[i].updates || updt[i].updates.length===0) {
+            updt.splice(i,1)
+            i-=1                                          //since array is shifted when we splice
+        }
+    }
+    if(!updt || updt.length===0) return res.status(404).send({error: 'No updates found'})
+    res.json(updt);
 })
 //--------------------approve updates--------------------
 router.put('/approveUpdates/:id/:uid',async (req,res)=>{
@@ -32,11 +39,14 @@ router.put('/approveUpdates/:id/:uid',async (req,res)=>{
          const updtid=parseInt(req.params.uid)
 
          const user= await users.findById(userid)
-         if(!user)return res.status(404).send({error: 'User does not exist'})
+         if(!user || user.length===0)return res.status(404).send({error: 'User does not exist'})
 
         const update=await users.find({'_id':userid,'updates._id':updtid},{'updates':1})
-        if(!update || !update[0] || !update[0].updates[0])return res.status(404).send({error: 'Update does not exist'})
+        if(!update || update.length===0 || !update[0] || !update[0].updates[0])
+        return res.status(404).send({error: 'Update does not exist'})
 
+
+        //user may want to deactivate or activate account, therefore, activation can be changed  
         const newUser={'type':(update[0].updates[0].type===undefined?user.type:update[0].updates[0].type),
                         'name':(update[0].updates[0].name===undefined?user.name:update[0].updates[0].name),
                         'password':(update[0].updates[0].password===undefined?user.password:update[0].updates[0].password),
@@ -88,10 +98,10 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
             const updtid=parseInt(req.params.uid)
 
             const user= await users.findById(userid)
-            if(!user)return res.status(404).send({error: 'User does not exist'})
+            if(!user || user.length===0)return res.status(404).send({error: 'User does not exist'})
 
             const update=await users.find({'updates._id':updtid},{'updates':1})
-            if(!update)return res.status(404).send({error: 'Update does not exist'})
+            if(!update || update.length===0)return res.status(404).send({error: 'Update does not exist'})
 
             const del=await users.update( { '_id':userid,'updates._id':updtid}, {$pull: {updates:{_id:updtid}} } );
     
@@ -101,6 +111,7 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
                console.log(error);
            }  
 });
+
 
 //--------------------------- admin check task description ---------------------------------------------
 
