@@ -194,6 +194,87 @@ router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 
 });
 
+//-----------------------------------partner view a task's life cycle -------------------------------------------// testing done
+
+router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
+    const partnerID = parseInt(req.params.PID);
+    const Task_id = parseInt(req.params.TID);
+  
+    const partner = await users.findOne({ type: "partner", userID: partnerID });
+    // console.log(partner)
+    const Task_Array = partner.tasks;
+    //console.log(partner.tasks)
+  
+    var lifeCyc = [];
+    let data = "";
+    for (var i = 0; i < Task_Array.length; i++) {
+      if (Task_Array[i].taskID === Task_id) {
+        lifeCyc = Task_Array[i].lifeCycle;
+        data =
+          "the life cycle of your task is below" +
+          "   " +
+          "name of task:" +
+          Task_Array[i].name;
+      }
+    }
+  
+    res.send({ data, lifeCyc });
+  });
+
+
+//-----------------------------------partner send request to change description -------------------------------------------//
+
+
+router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
+    const PartID = parseInt(req.params.idP)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+    const Task_id = parseInt(req.params.idT)
+    if(partner===null ) {
+        res.json("the database has no partner with the given ID")
+   } 
+   else {
+    const task = partner.tasks
+    const task_to_update = task.find(task => task.taskID === Task_id)
+
+    if(task_to_update === null) 
+    res.json("this partner has no task with the given ID")
+
+    else{
+    const changes = req.body.description;
+    
+    const schema = {
+        description: Joi.string().required()
+     };
+ 
+    const result = Joi.validate(req.body, schema);
+
+    if(result.error){
+        return  res.status(400).send(result.error.details[0].message)
+       }
+
+    else { 
+
+        const newUpdate= [
+            {id: PartID,
+             TaskID: Task_id, 
+             description: changes,
+             status: 'pending'
+            }
+          ];
+
+          const updates = partner.updates
+          updates.push(newUpdate)
+          users.update({'userID':PartID},
+          {$set: {'updates': updates}}, function(err, model){});
+    
+            const partners = await users.findOne({type:"partner",userID:PartID})
+           res.json(partners.updates)
+       }
+    }
+}
+});
+
+
 
 
 //delete booking and set the reservation boolean to false so others can now book it
