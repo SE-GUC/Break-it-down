@@ -33,3 +33,40 @@ test('Name of of coworking spaces 7 should be Kotob Khan', async () => {
   console.log(response.data);
   expect(response.data.data[0].name).toEqual('Kotob Khan');
 });
+
+test('Number of bookings of user with id 5 should be 1', async (done) => {
+
+  expect.assertions(1)
+
+  const response =  await funcs.getBookings()
+  console.log(response.data.data)
+  expect(response.data.data.length).toBe(1)
+  done()
+});
+
+test('Number of schedules of coworkingSpace with id 3 and room id 1 should be 1', async (done) => {
+
+  expect.assertions(1)
+
+  const r = await funcs.getRoomSchedule()
+ // console.log(r.data)
+  expect(r.data.data.length).toBe(1)
+  done()
+});
+
+test('Room should be booked', async (done) => {
+  expect.assertions(1)
+  const response =  await funcs.bookRoom()
+  console.log(response.data)
+  expect(response.data.data).toBe(true)
+  done()
+});
+
+test('delete the last entry',async (done)=>{
+ // expect.assertions(1)
+  const r =await funcs.deleteBookingtest()
+
+ expect(r).toBe(true)
+ console.log(r)
+ done();
+});

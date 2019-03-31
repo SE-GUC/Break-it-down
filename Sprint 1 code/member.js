@@ -1,5 +1,6 @@
 const axios = require('axios');
 const User = require('./models/UserProfile');
+const objectid = require('mongodb').ObjectID
 
 const functions = {
 
@@ -50,7 +51,38 @@ const functions = {
         
                 return cospace
         
-                }
+                },
+                getBookings: async () => {
+
+                    const bookings = await axios.get('http://localhost:4000/api/member/roombookings/5')
+                    return bookings
+            
+                    },
+    
+            getRoomSchedule: async () => {
+    
+                    const sch = await axios.get('http://localhost:4000/api/member/cospace/3/rooms/1')
+                    
+                     return sch
+                    
+                    },
+            bookRoom: async()=>{
+                    const b = await axios.put('http://localhost:4000/api/member/cospace/3/5/rooms/2/1')
+                    return b
+                },
+            
+    
+            deleteBookingtest: async()=>{
+    
+                    const k = await axios.get('http://localhost:4000/api/member/lastelem/')
+                    console.log(k.data)
+                    const c =objectid(k.data)
+                     const url = 'http://localhost:4000/api/member/nourhan/RoomBookings/5/' + c
+                    const b = await axios.delete(url)
+                    return true
+                },  
+
+        
             
 
 
