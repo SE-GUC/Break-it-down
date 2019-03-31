@@ -1,7 +1,7 @@
 //--------------------express--------------------
 const express = require('express');
 const app = express();
-
+const cors = require('cors');
 //--------------------api--------------------
 const admins = require('./routes/api/admin');
 const ca = require('./routes/api/consultancyAgency');
@@ -25,6 +25,7 @@ mongoose
 //--------------------Init middleware--------------------
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+app.use(cors());
 
 //--------------------chat application--------------------
 var http = require('http').Server(app);

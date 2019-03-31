@@ -1,4 +1,4 @@
-const funcs = require('./fn');
+const funcs = require('./admin');
 //-----------------------------admin------------------------//
 test('admin assigning the chosen member by partner', async () => {
   expect.assertions(1)
@@ -65,3 +65,10 @@ test('account should be activated', async () => {
 // console.log(response.data)
  expect(response.data.activation).toBe(true)
 });
+
+test('first message should be from alia',async ()=>{
+  expect.assertions(1)
+  const response =  await funcs.viewconsultancyagencymessages()
+ console.log(response.data)
+  expect(response.data.data[0].name).toBe('alia')
+})

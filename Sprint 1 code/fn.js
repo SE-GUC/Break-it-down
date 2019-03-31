@@ -98,6 +98,10 @@ AssignApplicant: async () => {
                                 "description":"ooooooo"
                         })
                         return descriptionChange
+                },
+                viewconsultancyagencymessages: async()=>{
+                        const messages=await axios.get('http://localhost:4000/api/admins/viewmessages')
+                        return messages;
                 }
         
 
