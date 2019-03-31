@@ -4,9 +4,10 @@ const router = express.Router();
 
 //--------------------models--------------------
 const users = require('../../models/UserProfile');
+
 const message = require('../../models/messages');
 
-//--------------------get contact info of partner--------------------
+//--------------------get contact info of partner--------------------  
 router.get('/contact/:pid',async (req, res)=>{
 
     var partner = parseInt(req.params.pid);
@@ -111,7 +112,7 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
                console.log(error);
            }  
 });
-router.put('/AssignMember/:idP/:idT', async(req,res)=>{
+router.put('/AssignMember/:idP/:idT', async(req,res)=>{ //tested all admin methods
     var flag=false;
     const PartID = parseInt(req.params.idP)
     const Task_id = parseInt(req.params.idT)
