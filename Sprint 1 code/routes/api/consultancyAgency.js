@@ -48,7 +48,7 @@ var objectid = require('mongodb').ObjectID
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
 	const Users =await users.find({type:'coworkingspace',userID:parseInt(req.params.id)})
-	if(!Users) return res.json('Coworking space does not exist')
+
 	res.json({ data: Users });
 }); 
 
