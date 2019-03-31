@@ -220,7 +220,79 @@ catch(error){
 
 });
 
+//temp
+router.get('/lastelem',async(req,res)=>{
+	const a=await  User.aggregate([
+		{$match:{userID:5}},
+		{
+			//userID : 5,
+			
+		  $project:
+		   {
+			  last: { $arrayElemAt: [ "$RoomsBooked", -1 ] }
+		   }
+		}
+	 ])
+	 res.send(a.pop().last.bookingID)
+//	 res.send(l())
+})
 
+
+
+//delete booking and set the reservation boolean to false so others can now book it
+router.delete('/nourhan/RoomBookings/:userID/:bookingID',async (req, res) => {
+		 const test = await User.aggregate([
+			 {$unwind: "$RoomsBooked"},
+			 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+			 {$project: {'RoomsBooked.bookingID':1,_id:0}}
+		 ])
+ 
+ 
+	  if(test==0) return res.send({error:'booking does not exist.'})
+ 
+ 
+	  const test1 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
+	 ])
+	 const test2 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+	 ])
+	 const test3 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+	 ])
+ 
+	 
+ 
+	 const f =await User.findOneAndUpdate({
+		 'userID' : 3},
+	 
+	 {
+		 $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
+	 },
+	 {
+		 arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
+	 }
+	 
+	 )
+ 
+	 const y =await User.update(
+		 {userID : parseInt(req.params.userID)},
+		 {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
+				
+			 if(err)  return handleError(res, err)
+			 else {
+				 
+				 res.json({msg:'reservation was deleted successfully'})
+		 }
+		  });
+ 
+ });
 
 //------------------------------------------------------------------------------------------
 
