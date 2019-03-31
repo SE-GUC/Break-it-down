@@ -7,7 +7,12 @@ partnerRequestDescriptionChange: async()=> {
                                 "description":"ooooooo"
                         })
                         return descriptionChange
-                }
+                },
+   getPartnerTasks: async () => {
+             
+             const partnertasks = await axios.get('http://localhost:4000/api/partner/view/1/0')
+             return partnertasks
+                    }
   
   };
 
