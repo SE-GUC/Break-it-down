@@ -15,7 +15,7 @@ const notification = require('../Sprint 1 code/routes/api/notification');
 const member = require('../Sprint 1 code/routes/api/member');
 const Event = require('./routes/api/event');
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
-
+const cors = require('cors')
 //--------------------Mongoose + DB configuration--------------------
 var mongoose = require('mongoose');
 const db = require('./config/keys_dev').mongoURI;
@@ -28,7 +28,11 @@ mongoose
 //--------------------Init middleware--------------------
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+<<<<<<< HEAD
 app.use(cors())
+=======
+app.use(cors());
+>>>>>>> bbd9f9372db6ebb867d22d09e2b71b89c09a246e
 //--------------------chat application--------------------
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
