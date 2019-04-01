@@ -70,3 +70,49 @@ test('delete the last entry',async (done)=>{
  console.log(r)
  done();
 });
+
+const funcs = require('./events.js');
+
+test("'Create an Member' should return true ",  async() => {
+    expect.assertions(2);
+    const response = await  funcs.createMember();
+    console.log(response.data);
+    expect(response).toBeTruthy();
+    expect(response.data.data.name).toEqual("Malak Test")
+    
+
+  });
+
+test("'Get all Members' should return true ", async () => {
+    expect.assertions(1);
+    const response =  await funcs.getAllMembers();
+   // console.log(response.data);
+    expect(response).toBeTruthy();   
+    
+  }); 
+
+  test("'Get a Member' should return the test member ", async () => {
+    expect.assertions(1);
+    const response =  await funcs.getAnMember();
+    //console.log(response.data)
+    expect(response.data.email).toEqual("yasmin@email.com");
+  });
+
+test("'Update an Member' should return true if the member was updated ", async () => {
+    expect.assertions(1);
+    const response =  await funcs.updateMember();
+    expect(response).toBeTruthy();
+
+    
+  });
+
+  
+
+  test("'Delete an Member' should return true confirming member was deleted", async () => {
+    expect.assertions(1);
+    const response =  await funcs.DeleteAnMember();
+    expect(response).toBeTruthy();
+    
+
+  });
+
