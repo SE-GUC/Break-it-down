@@ -4,7 +4,7 @@ const functions = {
 
 getCospace: async () => {
 
-const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/9')
+const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/5263')
 // console.log(cospace)
 return cospace
 
@@ -12,7 +12,7 @@ return cospace
 
 getCospaceRoom: async () => {
 
-const rooms = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoom/9/1')
+const rooms = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoom/5263/1')
 //console.log(rooms.data)
 return rooms
 },
@@ -26,20 +26,20 @@ return cospaces
 
 getSchedule: async () => {
 
-const schedules = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/7/4')
+const schedules = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5263/1')
 //console.log(schedules.data)
 return schedules
 },
 
 updateCospace: async () => {
 const updateSchema = {
-    name: "Supernova"
+    name: "SUPERNOVA"
     };
     axios.put(
-    "http://localhost:4000/api/coworkingSpace/updateCospace/9",
+    "http://localhost:4000/api/coworkingSpace/updateCospace/5263",
     updateSchema
     );
-    const updatedCospace = axios.get("http://localhost:4000/api/coworkingSpace/viewCospace/9")
+    const updatedCospace = axios.get("http://localhost:4000/api/coworkingSpace/viewCospace/5263")
    // console.log(updatedCospace.data)
     return updatedCospace;
 },
@@ -47,7 +47,7 @@ const updateSchema = {
 createRoom: async () => {
   
         const room= axios.post(
-                "http://localhost:4000/api/coworkingSpace/createRoom/7", {
+                "http://localhost:4000/api/coworkingSpace/createRoom/5263", {
                     id: 2,
                     capacity: 160,
                     schedule: [{id: 1, reserved: false, Date: 6/6/2019, time: 9}]
@@ -57,7 +57,8 @@ createRoom: async () => {
         
       //    console.log(room)
 
-        const createdRoom = axios.get("http://localhost:4000/api/coworkingSpace/viewRoom/7/2")
+        const createdRoom = axios.get("http://localhost:4000/api/coworkingSpace/viewRoom/5263/2")
+        
         //console.log(createdRoom)
         return createdRoom;
 },
@@ -65,7 +66,7 @@ createRoom: async () => {
 createRoomSchedule: async () => {
   
     const schedule= axios.post(
-            "http://localhost:4000/api/coworkingSpace/createSchedule/7/4", 
+            "http://localhost:4000/api/coworkingSpace/createSchedule/5263/1", 
                 {
                     "id": 5,
                     "Date": "9/8/2019",
@@ -75,22 +76,35 @@ createRoomSchedule: async () => {
     
       //console.log(schedule)
 
-    const createdSch = axios.get("http://localhost:4000/api/coworkingSpace/viewRoomSchedule/7/4")
+    const createdSch = axios.get("http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5263/1")
+    axios.delete('http://localhost:4000/api/coworkingSpace/deleteSchedule/5263/1/5')
    // console.log(createdSch)
     return createdSch;
 },
 
 deleteRoom: async() => {
-    const cospaceRoomToDel = axios.get("http://localhost:4000/api/coworkingSpace/viewCospace/7")
+    const beforeDelete = axios.get("http://localhost:4000/api/coworkingSpace/viewCospace/5264")
     //console.log(roomToDel)
+    const newRoom = axios.post(
     
-    const deletedRoom = axios.delete("http://localhost:4000/api/coworkingSpace/deleteRoom/7/1")
+        "http://localhost:4000/api/coworkingSpace/createRoom/5264", {
+        id: 15,
+        capacity: 160,
+        schedule: [{id: 1, reserved: false, Date: 6/6/2019, time: 9}]
+        })
+        const removedRoom = await axios.delete(
+            'http://localhost:4000/api/coworkingSpace/deleteRoom/5264/15'
+            );
+    const response = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/5264');
 
-
-    return cospaceRoomToDel;
+    return (beforeDelete.data.rooms.length===response.data.rooms.length && removedRoom.data==={msg: "Deleted"})
 },
 
-
+reserveSchedule: async() =>{
+    axios.put('http://localhost:4000/api/coworkingSpace/reserve/5263/101/1')
+    const schedule = axios.get("http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5263/101")
+    return schedule
+}
 
 };
 

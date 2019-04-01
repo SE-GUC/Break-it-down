@@ -249,7 +249,7 @@ const requestedRoom = await users.aggregate([
 ])
 if(requestedRoom===undefined || requestedRoom.length==0) return res.send({error:'Room does not exist.'})
 
-users.update( {'userID': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
+users.findOneAndUpdate( {'userID': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
     { $pull: {'rooms.$.schedule':{id:ids}} }, async function(err, model){
         
     if(err)  return res.send(err)
@@ -274,27 +274,21 @@ const ids=parseInt(req.params.ids)
 
 const temp = await users.find({'userID':idc});
 if(!temp[0])res.send('Coworking space does not exist');
-// res.send(temp[0]);
-const rooms = temp[0].rooms;
-const temp2 =await rooms.find({'rooms.id':idr});
+const temp2 =await users.find({'userID':idc,'rooms.id':idr});
 if(!temp2){
-
-res.status(404).send('Room claimed to have this schedule does not exist');
-
+res.status(404).send('No room with this schedule exists.');
 return;
-
 };            
+//.........
+const sch=await users.update({'userID':idc,'rooms.id':idr,
+'rooms.schedule.id':ids,'rooms.schedule.reserved':false},{$set:{'rooms.$.schedule.0.reserved':true}},function(err, model){
+    if(!err) res.send({msg: 'Booking has been successfully made.', data: model})
+    
+    });
 
-const sch = await users.find({ 'userID':idc,'rooms.id':idr, 'rooms.schedule.id':ids, 'rooms.schedule.reserved':false},
-{$set: {'rooms.schedule.$.reserved':true}}, 
-function(err, model){});
-res.json(sch)
-
-res.send({msg: 'Booking has been successfully made.', data:sch})
 }
-
 catch(error) {
-    res.json({msg:"Failed to book this schedule.", data:error})
+    res.json(error.message)
 }
 });
 
@@ -419,27 +413,6 @@ res.json(suggestions)
 console.log(error)
 }
 })
-
-//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
-//get only empty rooms?
-router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
-try{
-const eventid=parseInt(req.params.eid)
-
-const event=await User.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
-
-const suggestions=await User.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
-'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
-'address':event[0].events[0].location},
-{name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
-
-res.json(suggestions)
-
-}catch(error){
-console.log(error)
-}
-
-});
 
 
 

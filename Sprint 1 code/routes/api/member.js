@@ -174,8 +174,19 @@ router.get('/', (req, res) =>{
 	Members.find()
 	.then(items=>res.json(items))});
 
+//Get specific member -Mariam
+router.get('/viewMember/:id', async (req, res) => {
+try{
 
+	const member = await User.findOne({type:"member",'userID':parseInt(req.params.id)})
+	if(member===undefined || member.length==0) return res.json('Member does not exist')
+	res.json(member)
+	}
+	catch(error) {
+	res.json(error.message)
+	} 
 
+});
 //Get Specific Member (Malak&Nour) MONGOUPDATED
 router.get('/:id', (req, res) => {
   Members.findById(req.params.id)

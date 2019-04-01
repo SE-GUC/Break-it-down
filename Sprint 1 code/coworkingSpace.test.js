@@ -1,63 +1,25 @@
 const funcs = require('./coworkingSpace.funcs');
 const axios = require('axios');
 //jest.mock('axios');
+jest.setTimeout(60000);
+
+/*test("It responds with a message of deleted if room is deleted", async () =>
+{
+const deleted = funcs.deleteRoom()
+expect.assertions(1)
+expect(deleted === true).toBe(true)
+})*/
 
 
-describe("DELETE /rooms/1", () => {
-test("It responds with a message of Deleted", async () => {
-const resBefore = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/9');
-const newRoom = axios.post(
-"http://localhost:4000/api/coworkingSpace/createRoom/9", {
-id: 101,
-capacity: 160,
-schedule: [{id: 1, reserved: false, Date: 6/6/2019, time: 9}]
-})
-expect.assertions(3)
-const removedRoom = await axios.delete(
-'http://localhost:4000/api/coworkingSpace/deleteRoom/9/101'
-);
-expect(removedRoom.data).toEqual({ msg: "Deleted" });
-expect(removedRoom.status).toBe(200);
-// make sure we still have all its rooms
-const response = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/9');
-expect(response.data.rooms.length===resBefore.data.rooms.length).toBe(true);
-// console.log(response.data.rooms.length)
-// console.log(resBefore.data.rooms.length)
-});
-});
 
-
-describe("DELETE /schedule/1", () => {
-test("It responds with a message of Deleted upon deleting schedule", async () => {
-const resBefore = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/7/4');
-const newSchedule = axios.post(
-"http://localhost:4000/api/coworkingSpace/createSchedule/7/4", 
-    {"id": 18, "Date":"6/6/2019", "time": 9}
-    )
-expect.assertions(3)
-const removedSchedule = await axios.delete(
-'http://localhost:4000/api/coworkingSpace/deleteSchedule/7/4/18'
-);
-expect(removedSchedule.data).toEqual({ msg: "Deleted" });
-expect(removedSchedule.status).toBe(200);
-// make sure we still have all its rooms
-const response = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/7/4');
-console.log(response.data)
-console.log(resBefore.data)
-expect(response.data[0].rooms.schedule.length===resBefore.data[0].rooms.schedule.length).toBe(true);
-// console.log(response.data)
-});
-});
-
-
-test('Cospace fetched should have id 9', async (done) => { //passed
+test('Cospace fetched should have id 5263', async (done) => { //passed
 const response =  await funcs.getCospace()
 expect.assertions(7)
 //console.log(response.data)
 expect(response.data).toHaveProperty('userID');
 expect(typeof response.data.userID === 'number').toBe(true)
 expect(typeof response.data === typeof {}).toBe(true)
-expect(response.data.userID).toBe(9)
+expect(response.data.userID).toBe(5263)
 expect(response.data).toHaveProperty('facilities');
 expect(response.data).toHaveProperty('rooms');
 expect(response.data.type).toBe('coworkingSpace')
@@ -89,12 +51,12 @@ done()
 });
 
 
-test('As a coworking space, I can updated my profile. A coworkin space object with name Supernova is fetched',
+test('As a coworking space, I can updated my profile. A coworkin space object with name SUPERNOVA is fetched',
 async (done) =>{ //passes
 expect.assertions(2)
 const cospace = await funcs.updateCospace()
 //console.log(cospace.data)
-expect(cospace.data.name).toBe('Supernova')
+expect(cospace.data.name).toBe('SUPERNOVA')
 expect(Array.isArray(cospace.data)).toBe(false);
 done()
 })
@@ -113,12 +75,26 @@ expect(response.data[0].rooms).toHaveProperty('capacity');
 expect(Array.isArray(response.data)).toBe(true);
 expect(Array.isArray(response.data[0].rooms.schedule)).toBe(true);
 done()
+//axios.delete("http://localhost:4000/api/coworkingSpace/deleteRoom/5263/2")
+})
+
+test('Room reservation. Reserved should be set to true', async(done) =>{
+ 
+    expect.assertions(5)
+    const response = await funcs.reserveSchedule()
+    console.log(response.data)
+    expect(Array.isArray(response.data)).toBe(true);
+    expect(Array.isArray(response.data[0].rooms.schedule)).toBe(true);
+    //to verify that schedule array of the room is returned not the whole room
+    expect(response.data[0].rooms).not.toHaveProperty('id');
+    expect(response.data[0].rooms).not.toHaveProperty('capacity');
+    expect(response.data[0].rooms.schedule[0].reserved===true).toBe(true)
+    done()
 })
 
 
-
-
 test('Schedule creation.', async (done) =>{ //passes
+ 
 expect.assertions(5)
 const response = await funcs.createRoomSchedule()
 //console.log(response.data[0])
@@ -143,5 +119,52 @@ test('Testing view schedule for a room. An array of schedule objects should be r
     done()
     });
 
+    describe("DELETE /rooms/1", () => {
+        test("It responds with a message of Deleted", async () => {
+        const resBefore = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/5264');
+        const x = resBefore.data.rooms.length
+       // console.log(resBefore.data)
+        const newRoom = axios.post(
+            
+        "http://localhost:4000/api/coworkingSpace/createRoom/5264", {
+        id: 155,
+        capacity: 160,
+        schedule: [{id: 1, reserved: false, Date: 6/6/2019, time: 9}]
+        })
+        expect.assertions(3)
+        const removedRoom = await axios.delete(
+        'http://localhost:4000/api/coworkingSpace/deleteRoom/5264/155'
+        );
+        expect(removedRoom.data).toEqual({ msg: "Deleted" });
+        expect(removedRoom.status).toBe(200);
+        const response = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/5264');
+        const y = response.data.rooms.length
+        expect(x===y).toBe(true);
+      //  console.log(response.data)
+        // console.log(resBefore.data.rooms.length)
+        });
+        });
+        
+
+        describe("DELETE /schedule/1", () => {
+            test("It responds with a message of Deleted upon deleting schedule", async () => {
+            const resBefore = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5264/1');
+            const x = resBefore.data[0].rooms.schedule.length
+            const newSchedule = axios.post(
+            "http://localhost:4000/api/coworkingSpace/createSchedule/5264/1", 
+                {"id": 18, "Date":"6/6/2019", "time": 9}
+                )
+            expect.assertions(2)
+            const removedSchedule = await axios.delete(
+            'http://localhost:4000/api/coworkingSpace/deleteSchedule/5264/1/18'
+            );
+            expect(removedSchedule.data).toEqual({ msg: "Deleted" });
+            expect(removedSchedule.status).toBe(200);
+            const response = await axios.get('http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5264/1');
+            const y = response.data[0].rooms.schedule.length
+            // console.log(response.data)
+            });
+            });
+            
 module.exports
 
