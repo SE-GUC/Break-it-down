@@ -82,8 +82,43 @@ const functions = {
                     return true
                 },  
 
-        
+       
+
+    createMember:async ()=>{
+    
+   return await axios.post('http://localhost:4000/api/Member',
+    {name:'Malak Test',phoneNumber:7775000 , email:"test@gmail.com"}
+   )
+  }
+
+ ,
+    getAllMembers: async () => {  
+    return await axios.get('http://localhost:4000/api/Member')
+  }
+    ,
+
+    getAnMember: async () => {
             
+         return await axios.get('http://localhost:4000/api/Member/5c94f52e1c9d44000083f3a5')
+    
+    }
+     ,
+    updateMember:  async()=>{
+        return await axios.put('http://localhost:4000/api/Member/5c94f52e1c9d44000083f3a5',{
+            interests:"Passing"
+        })
+  
+    }
+    ,
+    DeleteAnMember: async () => {
+        
+        return await axios.delete('http://localhost:4000/api/Member/5c95f8f0b301de04e05d2979')
+
+
+    
+    }
+
+
 
 
 };
