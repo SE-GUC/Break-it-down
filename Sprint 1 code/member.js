@@ -1,6 +1,8 @@
 const axios = require('axios');
 const User = require('./models/UserProfile');
 const objectid = require('mongodb').ObjectID
+const User = require('./models/Member');
+
 
 const functions = {
 
