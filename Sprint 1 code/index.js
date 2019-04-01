@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 //--------------------api--------------------
-const admins = require('./routes/api/admins');
+const admins = require('./routes/api/admin');
 const ca = require('./routes/api/consultancyAgency');
 const coworkingSpace = require('./routes/api/coworkingSpace');
 const ProfilesAPI = require('./routes/api/Profiles');
@@ -14,13 +14,13 @@ const Event = require('./routes/api/event');
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
 
 //------------------forChatting------------------------
-//const User = require('./models/ChatUser');
+const User = require('./models/ChatUser');
 var server = require('http').createServer(app);
 global.io = require('socket.io').listen(server) 
 users=[];
 connections=[];
-//const messages=require('./models/messages2');
-//const fuck = require('./models/server')
+const messages=require('./models/messages2');
+const f = require('./models/server')
 server.listen(process.env.port || 4000);
 
 //--------------------Mongoose + DB configuration--------------------

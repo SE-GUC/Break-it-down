@@ -3,17 +3,30 @@ const router= express.Router();
 const Joi = require('joi');
 
 const partner = require('../../models/Partner');
-const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
-const RoomBookings = require('../../models/RoomBookings');
 const User=require('../../models/UserProfile');
 
 
 const users = require('../../models/UserProfile')
 
-//nourhan -------------------------------------------------------------------------------------------------------------------
+const message = require('../../models/messages');
+
+
+//-------------------pathToSendFile----------------------------
+var path = require('path');
 
 var objectid = require('mongodb').ObjectID
 
+//-----------------------chat-----------------------------
+
+router.get('/chat',function(req,res){
+    res.sendFile(path.resolve('./indexx.html'));
+  });
+
+   //----------------------------------view messages---------------------------------- 
+   router.get('/viewmessages', async (req, res) => {
+    const updt=await message.find()
+    res.json({ data: updt })
+})
 
 
 
@@ -199,11 +212,69 @@ async function(err, model){
 catch(error){
 	console.log(error)
 
-			res.send("Not found")
+			res.send("Not found")}})
+//delete booking and set the reservation boolean to false so others can now book it
 
-	}
+router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
 
-});
+   // try{
+
+        const test = await User.aggregate([
+
+            {$unwind: "$RoomsBooked"},
+
+            {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+            {$project: {'RoomsBooked.bookingID':1,_id:0}}
+
+        ])
+
+
+
+
+
+     if(test==0) return res.send({error:'booking does not exist.'})
+
+
+
+
+
+     const test1 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
+
+    ])
+
+    const test2 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+
+    ]);
+
+    const test3 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+
+    ]);
+
+
+
+    
+    const f =await User.findOneAndUpdate({
+
+        'userID' : 3}) });
 
 
 //temp
@@ -776,17 +847,17 @@ router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
 
 
 //delete booking from user array + change reserved to false in coworking space array 
+//------------delete booking from user array + change reserved to false in coworking space array----------
 router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 
 	try {
 		const userID=parseInt(req.params.userID);
 		const bookingID= parseInt(req.params.bookingID);
    
-        const temp = await RoomBookings.find({userID});
+        const temp = await users.find({userID});
         if(!temp[0])res.send('user id does not exist');
-    //res.send(temp);
-		const book = temp[0].bookings;
-    const temp2 =await book.find(r => r.bookingID === bookingID);
+		const book = temp[0].RoomsBooked;
+		const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
 
         res.status(404).send('The booking with the given id is not found');
@@ -797,12 +868,13 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 		const roomID=parseInt(temp2.roomID);
 		const scheduleID=parseInt(temp2.scheduleID);
 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
-
-    PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+		//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
+		//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
+		//'rooms.$.schedule.reserved':false
+    users.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
     
-	 
-	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
+	 users.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} }
 	 }, function(err, model){})
 		
 		
@@ -810,14 +882,11 @@ router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
 	}
 
 	catch(error) {
-
-			// We will be handling the error later
-
 			console.log(error)
 
 	}  
 
-})
+});
 //get contact info of admin
 router.get('/contactAdmin',async (req,res)=>{
     

@@ -2,8 +2,6 @@ const axios = require('axios');
 
 const functions = {
 
-     
-
     getApprovedTasks: async () => {
             const allTasks = await axios.get('http://localhost:4000/api/member/allTasks')
             return allTasks
@@ -100,9 +98,13 @@ const functions = {
                                 "description":"ooooooo"
                         })
                         return descriptionChange
+                },
+                viewconsultancyagencymessages: async()=>{
+                        const messages=await axios.get('http://localhost:4000/api/admins/viewmessages')
+                        return messages;
                 }
         
 
- };
+};
 
 module.exports = functions;
