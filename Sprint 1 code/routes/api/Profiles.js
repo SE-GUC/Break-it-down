@@ -40,6 +40,7 @@ router.post('/member', async (req,res) => {
             interests,
             accomplishments,
             certificates,
+            RoomsBooked,
             updates:[]
         });
 
@@ -57,9 +58,9 @@ router.post('/partner', async (req,res) => {
 
     const {name,tasks,password,email,address,website,phoneNumber,field,description,partners,boardMembers,events }  = req.body;
 
-    const isValidated = validator.createAccountValidation(req.body)
+    const isValidated = validator.createAccountValidation(req.body);
 
-    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+    if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message });
 
     const user = await User.findOne({email});
 

@@ -4,26 +4,15 @@ const Joi = require('joi');
 const uuid = require('uuid');
 const router = express.Router();
 const mongoose = require('mongoose');
-
-
-const users = require('../../models/UserProfile')
-
-
-// Models
-  //should ne removed
-
+// Models should be removed
 const User = require('../../models/UserProfile');
-
-
 //nourhan
 var objectid = require('mongodb').ObjectID
-
 
 var Members = require('../../models/Member');
 var partner = require('../../models/Partner');
 const PartnerCoworkingSpace = require('../../models/cospaceMtest');
 const RoomBookings = require('../../models/RoomBookings');
-
 
 // Instead of app use route
 // No need to write the full route
@@ -34,7 +23,7 @@ const RoomBookings = require('../../models/RoomBookings');
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
 	const Users =await User.find({type:'coworkingSpace',userID:parseInt(req.params.id)})
-	if({Users:[]}) return res.json('Coworking space does not exist')
+//	if({Users:[]}) return res.json('Coworking space does not exist')
 	res.json({ data: Users })
 });
 
@@ -43,10 +32,11 @@ router.get('/PartnerCoworkingspaces',async (req, res) =>{
 	const Users = await User.find({type:'coworkingSpace'})
 	 res.json({ data: Users })
 	});
-	
-
 
 	//--------------------------------nourhan----------------------------------------------
+
+
+
 
 
 //Get all bookings of a specific user
@@ -59,13 +49,16 @@ router.get('/roombookings/:userID',async (req, res) => {
 
 
 
-	await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
+	const roombookings = await User.find({userID : userID},{RoomsBooked : 1, _id :0})
 
 
 
-			res.send(roombookings);
+		//	res.send(roombookings);
 
-	})
+		//	console.log(roombookings.length)
+			res.json({data : roombookings.pop().RoomsBooked});
+
+	
 
 
 
@@ -73,7 +66,7 @@ router.get('/roombookings/:userID',async (req, res) => {
 
 
 
-//get a room in a specific coworking space by id
+//get a schedule room in a specific coworking space by id
 
 router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 
@@ -88,7 +81,7 @@ router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 			 {$project: {schedule:'$rooms.schedule',_id:0}}
 
 	])
-	res.send(test.pop().schedule);
+	res.json({data:test.pop().schedule});
 
 }
 
@@ -131,6 +124,7 @@ const test1 = await User.aggregate([
 		{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
 
 ])
+
 
 
 
@@ -191,6 +185,18 @@ const f = await User.findOneAndUpdate({
 
 )
 
+const test0 = await User.aggregate([
+
+	{$unwind: "$rooms"},
+
+	{$unwind: "$rooms.schedule"},
+
+	{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+	{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
+
+])
+
 
 
 await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
@@ -205,7 +211,7 @@ async function(err, model){
 
 	if(err)  return handleError(res, err)
 
-	else res.json({msg:'Room was reserved successfully'})
+	else res.json({data : test0.pop().reserved})
 
 });
 
@@ -221,11 +227,81 @@ catch(error){
 });
 
 
+//temp
+router.get('/lastelem',async(req,res)=>{
+	const a=await  User.aggregate([
+		{$match:{userID:5}},
+		{
+			//userID : 5,
+			
+		  $project:
+		   {
+			  last: { $arrayElemAt: [ "$RoomsBooked", -1 ] }
+		   }
+		}
+	 ])
+	 res.send(a.pop().last.bookingID)
+//	 res.send(l())
+})
+
+//delete booking and set the reservation boolean to false so others can now book it
+router.delete('/nourhan/RoomBookings/:userID/:bookingID',async (req, res) => {
+	// try{
+		 const test = await User.aggregate([
+			 {$unwind: "$RoomsBooked"},
+			 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+			 {$project: {'RoomsBooked.bookingID':1,_id:0}}
+		 ])
+ 
+ 
+	  if(test==0) return res.send({error:'booking does not exist.'})
+ 
+ 
+	  const test1 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
+	 ])
+	 const test2 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+	 ])
+	 const test3 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+	 ])
+ 
+	 
+ 
+	 const f =await User.findOneAndUpdate({
+		 'userID' : test1.pop().cospaceID},
+	 
+	 {
+		 $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
+	 },
+	 {
+		 arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
+	 }
+	 
+	 )
+ 
+	 const y =await User.update(
+		 {userID : parseInt(req.params.userID)},
+		 {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
+				
+			 if(err)  return handleError(res, err)
+			 else {
+				 
+				 res.json({msg:'reservation was deleted successfully'})
+		 }
+		  });
+ 
+ 
+ });
 
 //------------------------------------------------------------------------------------------
-
-
-
 
 // Get all Members (Malak&Nour) MONGOUPDATED
 router.get('/', (req, res) =>{	
@@ -242,18 +318,16 @@ router.get('/:id', (req, res) => {
 });
 //------------------------get all approved tasks------------------------------//
 router.get('/allTasks',async (req,res)=>{
-    //const member = await  users.find({type:"member"})
-    const partner=await  users.find({type:"partner"})
+    //const member = await  User.find({type:"member"})
+    const partner=await  User.find({type:"partner"})
     var tasks=[];
     for(var i=0;i<partner.length;i++){
         for(var j=0;j<partner[i].tasks.length;j++){
             if(partner[i].tasks[j].approved=== true)
             tasks.push(partner[i].tasks[j])
         }
-    }
-
-    
-
+	}
+})
 
 // Create a new member (Malak&Nour) MONGOUPDATED
 router.post('/', async(req, res) => {
@@ -332,7 +406,7 @@ router.delete('/:id', async (req,res) => {
 router.get('/view/:id',async (req, response) => {
     var data = "";
     const memID= parseInt(req.params.id)
-    const member = await  users.findOne({type:"member",userID:memID})
+    const member = await  User.findOne({type:"member",userID:memID})
    console.log(member)
     if(member===null) {
          response.send("the databsae has no member with the given ID")
@@ -350,8 +424,8 @@ router.get('/view/:id',async (req, response) => {
 
 router.get('/recoTasks/:idM',async(req,res)=>{
     const memID= parseInt(req.params.idM)
-    const member = await  users.findOne({type:"member", userID:memID})
-    const partner=await  users.find({type:"partner"})
+    const member = await  User.findOne({type:"member", userID:memID})
+    const partner=await  User.find({type:"partner"})
     var tasks=[];
    // findOne()
  
@@ -383,7 +457,7 @@ router.get('/recoTasks/:idM',async(req,res)=>{
 router.get('/MyRating/:MID', async(req, response) => {
    
     const MID = parseInt(req.params.MID)
-    const member= await users.findOne({type:'member',userID:MID})
+    const member= await User.findOne({type:'member',userID:MID})
     const AllMyRatings = member.allRatings
     const Rlength = AllMyRatings.length
     //console.log(Rlength)
@@ -402,15 +476,12 @@ router.get('/MyRating/:MID', async(req, response) => {
 
 });
 
-
-
-
  //------------------------apply for a task---------------------// 
 
 router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
     const memID= parseInt(req.params.id)
     const partnerID=parseInt(req.params.idp)
-    const partner= await users.findOne({type:'partner',userID:partnerID})
+    const partner= await User.findOne({type:'partner',userID:partnerID})
 
     const taskIDb=parseInt(req.params.idt)
     var taskapp={}
@@ -435,10 +506,10 @@ router.put('/ApplyForTask/:id/:idp/:idt', async (req,res) => {
          {
             applicantsapp.push({applicantID:memID,accepted:false,assigned:false})
 
-            users.update({ 'userID':partnerID,'tasks.taskID':taskIDb }, 
+            User.update({ 'userID':partnerID,'tasks.taskID':taskIDb }, 
             {$set: {'tasks.$.applicants':applicantsapp}}, function(err, model){}); 
             
-            const partnerx= await users.findOne({type:'partner',userID:partnerID})
+            const partnerx= await User.findOne({type:'partner',userID:partnerID})
             res.json(partnerx)
 
          }
@@ -625,56 +696,36 @@ router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
     res.send(RoomBookings);
 });
 
-
 //delete booking from user array + change reserved to false in coworking space array 
+//------------delete booking from user array + change reserved to false in coworking space array----------
 router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
-
 	try {
 		const userID=parseInt(req.params.userID);
 		const bookingID= parseInt(req.params.bookingID);
    
-		const temp = await RoomBookings.find({userID});
-    //res.send(temp);
-		 if(!temp[0])res.send('user id does not exist');
-		const book = temp[0].bookings;
-    const temp2 =await book.find(r => r.bookingID === bookingID);
+        const temp = await User.find({userID});
+        if(!temp[0])res.send('user id does not exist');
+		const book = temp[0].RoomsBooked;
+		const temp2 =await book.find(r => r.bookingID === bookingID);
     if(!temp2){
 
-        res.status(404).send('The booking with the given id is not found');
-
-        return;
-
-		};
+		res.status(404).send('The booking with the given id is not found');
+		return;
+	};
 		const roomID=parseInt(temp2.roomID);
 		const scheduleID=parseInt(temp2.scheduleID);
-		const time=parseInt(temp2.time);
-		const date=temp2.date;
 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
-
-    PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+		//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
+		//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
+		//'rooms.$.schedule.reserved':false
+    User.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
     
-	 
-	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
-	 }, function(err, model){})
-		
-		
+	User.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} } }, function(err, model){})	
     res.send('booking has been deleted successfully')
-	}
-
-	catch(error) {
-
-			// We will be handling the error later
-
+    }catch(error) {
 			console.log(error)
+		}  
+});
 
-	}  
-
-})
-
-
-
-})
-
-
-module.exports = router;
+module.exports = router
