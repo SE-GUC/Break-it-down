@@ -1,7 +1,9 @@
 const funcs = require('./coworkingSpace.funcs');
 const axios = require('axios');
+const mongoose = require('mongoose')
 //jest.mock('axios');
 jest.setTimeout(60000);
+require('dotenv').config()
 
 /*test("It responds with a message of deleted if room is deleted", async () =>
 {
@@ -167,4 +169,69 @@ test('Testing view schedule for a room. An array of schedule objects should be r
             });
             
 module.exports
+	
+test('No room suggestions found, returns 404', async (done) => {
+
+    expect.assertions(1)
+ try{
+    const response =  await funcs.viewCoworkingspaceSuggestions(1)
+  }catch(e){
+    expect(e.message).toEqual('No room suggestions found')
+
+  } 
+    done()
+  });
+
+  test('Coworkingspace suggestions is a defined array of objects and contains the specified records', async (done) => {
+    expect.assertions(5)
+
+      const response =  await funcs.viewCoworkingspaceSuggestions(2)
+      expect(response).toBeDefined();
+      expect(response).not.toBeNull();
+      expect(response).toBeInstanceOf(Array)
+
+      expect(response).toEqual(expect.arrayContaining([expect.objectContaining (
+        {_id: '5c940f161c9d44000091e226', name: 'Supernova' })]));
+
+      expect(response[0].facilities).toEqual(expect.arrayContaining(['WiFi', 'Hot drinks and snacks']) )
+
+ done()
+  });
+  
+  
+  test('Booking not found, returns 404', async (done) => {
+
+  expect.assertions(1)
+try{
+    const response =  await funcs.updateRoomBooking(1000)
+}catch(e){
+  expect(e.message).toEqual('Could not find an empty room with the desired capacity in the same coworking space')
+
+} 
+  done()
+});
+
+test('Room Booking updated', async (done) => {
+  expect.assertions(1)
+
+    const response =  await funcs.updateRoomBooking(3)
+    
+    expect(response.msg).toEqual('Your room booking is successfully updated.');
+
+done()
+});
+
+test('first item of all coworking spaces', async () => {
+  expect.assertions(1);
+  const response =  await funcs.getallcoworkingspace();
+  expect(response.data.data[1].name).toEqual('Kotob Khan');
+});
+
+test('Name of of coworking spaces 9 should be Supernova', async () => {
+  expect.assertions(1);
+  const response =  await funcs.getAcoworkingspace();
+  console.log(response.data);
+  expect(response.data.data[0].name).toEqual('Supernova');
+});
+
 

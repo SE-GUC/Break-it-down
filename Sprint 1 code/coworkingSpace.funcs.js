@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const functions = {
+        
 
 getCospace: async () => {
 
@@ -100,11 +101,71 @@ deleteRoom: async() => {
     return (beforeDelete.data.rooms.length===response.data.rooms.length && removedRoom.data==={msg: "Deleted"})
 },
 
-reserveSchedule: async() =>{
+reserveSchedule: async () =>{
     axios.put('http://localhost:4000/api/coworkingSpace/reserve/5263/101/1')
     const schedule = axios.get("http://localhost:4000/api/coworkingSpace/viewRoomSchedule/5263/101")
     return schedule
-}
+},
+	viewCoworkingspaceSuggestions: async (id) => {
+
+        var axiosInstance = axios.create({
+                validateStatus: function (status) {
+                        return status >= 200 && status <= 503;
+                },
+                   
+        })
+        
+
+        const suggestions = await axiosInstance.get(`http://localhost:4000/api/coworkingSpace/CoworkingSpace/Suggestions/${id}`)
+
+        const status=suggestions.status
+
+        if(status===200)
+                return suggestions.data
+        else if(status===404)
+                throw new Error('No room suggestions found')
+
+   },
+        updateRoomBooking: async (bid) => {
+
+        var axiosInstance = axios.create({
+                validateStatus: function (status) {
+                        return status >= 200 && status <= 503;
+                },
+                           
+        })
+
+        const suggestions = await axiosInstance.put(`http://localhost:4000/api/coworkingSpace/update/booking/${bid}`)
+        const status=suggestions.status
+
+        if(status===200)
+                return suggestions.data
+        else if(status===404)
+                throw new Error('Could not find an empty room with the desired capacity in the same coworking space')
+        
+        
+                },
+
+                getallcoworkingspace: async () => {
+
+                        const cospaces = await axios.get('http://localhost:4000/api/coworkingSpace/viewCoworkingSpace')
+                
+                
+                        return cospaces
+                
+                        },
+                
+                getAcoworkingspace: async () => {
+                
+                        const cospace = await axios.get('http://localhost:4000/api/coworkingSpace/viewCospace/9')
+                
+                        return cospace
+                
+                        },
+
+        
+
+
 
 };
 

@@ -1,21 +1,28 @@
 //--------------------express--------------------
 const express = require('express');
 const app = express();
-
-//--------------------cors---------------
-const cors = require('cors')
-
+const cors = require('cors');
 //--------------------api--------------------
 const admins = require('./routes/api/admin');
 const ca = require('./routes/api/consultancyAgency');
 const coworkingSpace = require('./routes/api/coworkingSpace');
 const ProfilesAPI = require('./routes/api/Profiles');
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const partner = require('../Sprint 1 code/routes/api/partner');
 const notification = require('../Sprint 1 code/routes/api/notification');
 const member = require('../Sprint 1 code/routes/api/member');
 const Event = require('./routes/api/event');
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
-const cors = require('cors')
+
+//------------------forChatting------------------------
+const User = require('./models/ChatUser');
+var server = require('http').createServer(app);
+global.io = require('socket.io').listen(server) 
+users=[];
+connections=[];
+const messages=require('./models/messages2');
+const f = require('./models/server')
+server.listen(process.env.port || 4000);
+
 //--------------------Mongoose + DB configuration--------------------
 var mongoose = require('mongoose');
 const db = require('./config/keys_dev').mongoURI;
@@ -28,11 +35,8 @@ mongoose
 //--------------------Init middleware--------------------
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-<<<<<<< HEAD
-app.use(cors())
-=======
 app.use(cors());
->>>>>>> bbd9f9372db6ebb867d22d09e2b71b89c09a246e
+
 //--------------------chat application--------------------
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -41,7 +45,7 @@ var io = require('socket.io')(http);
 app.get('/', (req, res) => {
 res.send(`<h1>Home page</h1>
 <p> REGISTER OR SIGN UP <p>
-<a href="/api/admin">Admin</a>
+<a href="/api/admins">Admin</a>
 <a href="/api/coworkingSpace">Partner Coworking Space</a>
 <a href="/api/member">Member</a>
 <a href="/api/rooms">Rooms</a>
@@ -66,5 +70,5 @@ app.use((req, res) => {
  });
 
  //--------------------Server--------------------
- const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`Server up and running on port ${port}`));
+//  const port = process.env.PORT || 4000;
+// app.listen(port, () => console.log(`Server up and running on port ${port}`));
