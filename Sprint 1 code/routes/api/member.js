@@ -204,7 +204,10 @@ router.get('/allTasks',async (req,res)=>{
             tasks.push(partner[i].tasks[j])
         }
 	}
-})
+});
+
+    
+
 
 // Create a new member (Malak&Nour) MONGOUPDATED
 router.post('/', async(req, res) => {
@@ -493,6 +496,139 @@ router.get('/PartnerCoworkingspaces/Filter',(req,res)=>{
 });
 
 
+// //shaza
+// //get the coworking space by id
+// router.get('/PartnerCoworkingspaces/:id',(req,res)=>{
+// 	const PartnerCoworkingspaces=PartnerCoworkingSpace.find(c=>c.id===parseInt(req.params.id));
+// 	if(!PartnerCoworkingspaces) return res.status(404).send('coworkingspace not found');
+// 	res.send(PartnerCoworkingspaces);
+// });
+
+// //view all coworking spaces
+// router.get('/PartnerCoworkingspaces',(req,res)=>{
+// 	res.send(PartnerCoworkingSpace);
+// }); 
+
+
+// //nourhan
+// //Get all bookings of a specific user
+
+// router.get('/RoomBookings/:userID' ,async (req, res)=>{
+// 	const userID=req.params.userID
+// 	const bookings = await RoomBookings.findOne({userID})   
+//     if(!bookings) res.send('There are no bookings for this user')
+// 		res.json({data: bookings.bookings});
+// });
+
+// //get a room in a specific coworking space by id
+// router.get('/cospace/:id/rooms/:id2' ,(req, res)=>{
+//     var scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
+//     if(!scheduleroom){
+//         res.status(404).send('The room with the given id is not found');
+//         return;
+//     }
+//     res.send(scheduleroom.schedule);
+// });
+
+// //book a room , append it to the array of bookings if it is not in my bookings
+// router.put('/cospace/:userid/:id/rooms/:id2/:id3' ,(req, res)=>{
+//     let scheduleroom = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id === parseInt(req.params.id2));
+//     if(!scheduleroom){
+//         res.status(404).send('The room with the given id is not found');
+//         return;
+//     };
+//     const scheduleOfRoom = scheduleroom.schedule;
+
+//     const schema = {
+//         reserved: Joi.boolean()
+//     };
+//     const result = Joi.validate(req.body, schema);
+//     if(result.error){
+//         res.status(400).send(result.error.details[0].message)
+//     }
+
+//     let h = PartnerCoworkingSpace.find(p => p.id === parseInt(req.params.id)).rooms.find(s => s.id 
+//         === parseInt(req.params.id2)).schedule.find(r =>r.id === parseInt(req.params.id3));
+//      let h2 = RoomBookings.find(l2 => l2.userID === parseInt(req.params.userid));
+
+//      for(var i = 0;i<h2.bookings.length;i++){
+//          if(parseInt(req.params.id3) === parseInt(h2.bookings[i].scheduleID) && parseInt(req.params.id2) === parseInt(h2.bookings[i].roomID)){
+//              res.status(400).send('already reserved');
+//              return;
+//          }
+//         }
+//      //if(h.id === parseInt())
+//      const temp = {
+//         bookingID:h2.bookings.length+1 ,
+//         coworkingSpaceID:parseInt(req.params.id),
+//         roomID:parseInt(req.params.id2),
+//         scheduleID : h.id,
+//         Date : h.Date,
+//         time: h.time
+//     };
+//     h2.bookings.push(temp);
+//     var reservation = scheduleOfRoom.find(i => i.id === parseInt(req.params.id3));
+//     if(reservation.reserved === true){
+//         res.send('A reserver room');
+//         return;
+//     }
+//     reservation.reserved = req.body.reserved;
+//     res.send(RoomBookings);
+// });
+
+
+// //delete booking from user array + change reserved to false in coworking space array 
+// router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
+
+// 	try {
+// 		const userID=parseInt(req.params.userID);
+// 		const bookingID= parseInt(req.params.bookingID);
+   
+// 		const temp = await RoomBookings.find({userID});
+//     //res.send(temp);
+// 		 if(!temp[0])res.send('user id does not exist');
+// 		const book = temp[0].bookings;
+//     const temp2 =await book.find(r => r.bookingID === bookingID);
+//     if(!temp2){
+
+//         res.status(404).send('The booking with the given id is not found');
+
+//         return;
+
+// 		};
+// 		const roomID=parseInt(temp2.roomID);
+// 		const scheduleID=parseInt(temp2.scheduleID);
+// 		const time=parseInt(temp2.time);
+// 		const date=temp2.date;
+// 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
+
+//     PartnerCoworkingSpace.update({ 'coworkingSpaceID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+//     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
+    
+	 
+// 	 RoomBookings.update( {userID}, { $pull: { bookings: {bookingID:bookingID} }
+// 	 }, function(err, model){})
+		
+		
+//     res.send('booking has been deleted successfully')
+// 	}
+
+// 	catch(error) {
+
+// 			// We will be handling the error later
+
+// 			console.log(error)
+
+// 	}  
+
+// })
+
+
+
+
+
+
+module.exports = router;
 //shaza
 //get the coworking space by id
 router.get('/PartnerCoworkingspaces/:id',(req,res)=>{

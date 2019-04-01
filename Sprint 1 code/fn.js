@@ -1,7 +1,8 @@
 const axios = require('axios');
 
 const functions = {
-         getApprovedTasks: async () => {
+
+    getApprovedTasks: async () => {
             const allTasks = await axios.get('http://localhost:4000/api/member/allTasks')
             return allTasks
             },
@@ -31,7 +32,7 @@ const functions = {
                  const lifeCycle = await axios.get('http://localhost:4000/api/partner/TaskLifeCycle/1/0')
                  return lifeCycle
                                                 },
-          memberapply: async () => {
+      memberapply: async () => {
            const applyforTask = await axios.put('http://localhost:4000/api/member/ApplyForTask/10/1/0')
            return applyforTask
                                             },
@@ -67,8 +68,7 @@ const functions = {
       const applicant = await axios.put('http://localhost:4000/api/partner/AcceptApplicant/1/1', {"applicantID":1})  
        return applicant
            },
-
-AssignApplicant: async () => {
+     AssignApplicant: async () => {
          const aapplicant = await axios.put('http://localhost:4000/api/admin/AssignMember/1/1')  
          return aapplicant
                      },
