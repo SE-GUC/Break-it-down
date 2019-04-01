@@ -20,7 +20,7 @@ global.io = require('socket.io').listen(server)
 users=[];
 connections=[];
 const messages=require('./models/messages2');
-const fuck = require('./models/server')
+const f = require('./models/server')
 server.listen(process.env.port || 4000);
 
 //--------------------Mongoose + DB configuration--------------------
