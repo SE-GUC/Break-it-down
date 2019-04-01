@@ -29,8 +29,6 @@ router.get('/contact/:pid',async (req, res)=>{
 
 router.get('/chat',function(req,res){
     res.sendFile(path.resolve('./indexx.html'));
-   // console.log("fuck")
-   // fuck();
   });
 
 //--------------------see all updates--------------------
