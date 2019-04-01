@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 
-
-const funcs = require('./consultancyAgency.functions');
+const funcs = require('./consultancyAgency');
 const axios = require('axios');
 //jest.mock('axios');
 jest.setTimeout(30000);
@@ -43,9 +41,8 @@ describe("GET /recommended applicants/1", () => {
     });
     });
 
-module.exports
-=======
-const funcs = require('./consultancyAgency');
+//module.exports
+
 
 /* test('send a message to the admin', async () => {
   expect.assertions(1);
@@ -107,4 +104,3 @@ test('first item of all coworking spaces', async () => {
 
 
 
->>>>>>> bbd9f9372db6ebb867d22d09e2b71b89c09a246e
