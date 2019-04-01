@@ -12,11 +12,21 @@ const coworkingSpace = require('./routes/api/coworkingSpace');
 //const coworkingSpace2 = require('./routes/api/coworkingSpace2');
 const ca = require('./routes/api/consultancyAgency');
 const ProfilesAPI = require('./routes/api/Profiles');
-const partner = require('../Sprint 1 code/routes/api/Partner Eman Final');
+const partner = require('../Sprint 1 code/routes/api/partner');
 const notification = require('../Sprint 1 code/routes/api/notification');
 const member = require('../Sprint 1 code/routes/api/member');
 const Event = require('./routes/api/event');
 const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
+
+//------------------forChatting------------------------
+const User = require('./models/ChatUser');
+var server = require('http').createServer(app);
+global.io = require('socket.io').listen(server) 
+users=[];
+connections=[];
+const messages=require('./models/messages2');
+const f = require('./models/server')
+server.listen(process.env.port || 4000);
 
 //--------------------Mongoose + DB configuration--------------------
 var mongoose = require('mongoose');
@@ -30,6 +40,7 @@ mongoose
 //--------------------Init middleware--------------------
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+app.use(cors());
 
 //--------------------chat application--------------------
 var http = require('http').Server(app);
@@ -43,7 +54,7 @@ app.use(cors());
 app.get('/', (req, res) => {
 res.send(`<h1>Home page</h1>
 <p> REGISTER OR SIGN UP <p>
-<a href="/api/admin">Admin</a>
+<a href="/api/admins">Admin</a>
 <a href="/api/coworkingSpace">Partner Coworking Space</a>
 <a href="/api/member">Member</a>
 <a href="/api/rooms">Rooms</a>
@@ -71,5 +82,5 @@ app.use((req, res) => {
  });
 
  //--------------------Server--------------------
- const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`Server up and running on port ${port}`));
+//  const port = process.env.PORT || 4000;
+// app.listen(port, () => console.log(`Server up and running on port ${port}`));

@@ -7,6 +7,26 @@ const users = require('../../models/UserProfile');
 const ConsultancyAgency = require('../../models/ConsultancyAgency');
 const Message = require('../../models/messages');
 
+
+//-------------------pathToSendFile----------------------------
+var path = require('path');
+
+var objectid = require('mongodb').ObjectID
+
+//-----------------------chat-----------------------------
+
+router.get('/chat',function(req,res){
+    res.sendFile(path.resolve('./indexx.html'));
+	});
+	
+	//----------------------------------view messages---------------------------------- 
+router.get('/viewmessages', async (req, res) => {
+    const updt=await Message.find()
+    res.json({ data: updt })
+})
+
+
+
 //--------------------filter tasks--------------------
 router.get('/filterTasks/:memberID', async (req, res) =>{
 try{
@@ -48,7 +68,7 @@ var objectid = require('mongodb').ObjectID
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
 
 	const Users =await users.find({type:'coworkingspace',userID:parseInt(req.params.id)})
-	if(!Users) return res.json('Coworking space does not exist')
+
 	res.json({ data: Users });
 }); 
 
