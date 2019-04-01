@@ -3,17 +3,30 @@ const router= express.Router();
 const Joi = require('joi');
 
 const partner = require('../../models/Partner');
-const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
-const RoomBookings = require('../../models/RoomBookings');
 const User=require('../../models/UserProfile');
 
 
 const users = require('../../models/UserProfile')
 
-//nourhan -------------------------------------------------------------------------------------------------------------------
+const message = require('../../models/messages');
+
+
+//-------------------pathToSendFile----------------------------
+var path = require('path');
 
 var objectid = require('mongodb').ObjectID
 
+//-----------------------chat-----------------------------
+
+router.get('/chat',function(req,res){
+    res.sendFile(path.resolve('./indexx.html'));
+  });
+
+   //----------------------------------view messages---------------------------------- 
+   router.get('/viewmessages', async (req, res) => {
+    const updt=await message.find()
+    res.json({ data: updt })
+})
 
 
 
