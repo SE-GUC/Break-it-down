@@ -249,7 +249,7 @@ const requestedRoom = await users.aggregate([
 ])
 if(requestedRoom===undefined || requestedRoom.length==0) return res.send({error:'Room does not exist.'})
 
-users.update( {'userID': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
+users.findOneAndUpdate( {'userID': idc, 'rooms.id': idr, 'rooms.schedule.id': ids}, 
     { $pull: {'rooms.$.schedule':{id:ids}} }, async function(err, model){
         
     if(err)  return res.send(err)
@@ -274,27 +274,21 @@ const ids=parseInt(req.params.ids)
 
 const temp = await users.find({'userID':idc});
 if(!temp[0])res.send('Coworking space does not exist');
-// res.send(temp[0]);
-const rooms = temp[0].rooms;
-const temp2 =await rooms.find({'rooms.id':idr});
+const temp2 =await users.find({'userID':idc,'rooms.id':idr});
 if(!temp2){
-
-res.status(404).send('Room claimed to have this schedule does not exist');
-
+res.status(404).send('No room with this schedule exists.');
 return;
-
 };            
+//.........
+const sch=await users.update({'userID':idc,'rooms.id':idr,
+'rooms.schedule.id':ids,'rooms.schedule.reserved':false},{$set:{'rooms.$.schedule.0.reserved':true}},function(err, model){
+    if(!err) res.send({msg: 'Booking has been successfully made.', data: model})
+    
+    });
 
-const sch = await users.find({ 'userID':idc,'rooms.id':idr, 'rooms.schedule.id':ids, 'rooms.schedule.reserved':false},
-{$set: {'rooms.schedule.$.reserved':true}}, 
-function(err, model){});
-res.json(sch)
-
-res.send({msg: 'Booking has been successfully made.', data:sch})
 }
-
 catch(error) {
-    res.json({msg:"Failed to book this schedule.", data:error})
+    res.json(error.message)
 }
 });
 
@@ -364,33 +358,38 @@ catch(error) {
 }  
 })
 
-
 //Update coworking space booking, to request a larger room   
-router.put('/update/booking/:bid', async(req, res)=>{
+router.put('/update/booking/:bid/:uid', async(req, res)=>{
     try
     {
         const bookingid=parseInt(req.params.bid);
 
+        const userid=parseInt(req.params.uid);
+
         const newCapacity=parseInt(req.body.capacity);
-
-        const booking=await User.find({'RoomsBooked.bookingID':bookingid},{RoomsBooked:{$elemMatch:{bookingID:bookingid}}}).lean()
-
+        const booking=await User.find({'userID':userid,'RoomsBooked.0.bookingID': bookingid},{RoomsBooked:1,_id:0}).lean()
+       
         //find empty room in same coworking space with same date and with specified capacity or greater
+        //_id
         const room= await User.findOne({$and:[{'_id':booking[0].RoomsBooked[0].coworkingSpaceID},
         {'rooms.schedule.reserved':false},{'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},
-        {'rooms.capacity':{$gte:newCapacity}},{'rooms.schedule.time':booking[0].RoomsBooked[0].time}]},{rooms:1,_id:0}).lean()
+        {'rooms.capacity':{$gte:newCapacity}},{'rooms.schedule.time':booking[0].RoomsBooked[0].time}]}).lean()
+
 
         if(!room || room.length===0)
          return res.status(404).send({error:'Could not find an empty room with the desired capacity in the same coworking space'})
     
-        const updtbooking=await User.update({'RoomsBooked.bookingID':bookingID}, {$set:{RoomsBooked:{roomID:room.rooms[0].id}}});
+        const updtbooking=await User.update({'RoomsBooked.0.bookingID':bookingid}, {$set:{'RoomsBooked.0.roomID':room.rooms[0].id,
+        'RoomsBooked.0.scheduleID':room.rooms[0].schedule.id}});
 
-        const updtOldRoom=await User.update({'rooms.id':booking[0].RoomsBooked[0].roomID,
-        'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},{$set:{rooms:{schedule:{reserved:false}}}})
+        const updtOldRoom=await User.update({'userID':booking[0].RoomsBooked[0].coworkingSpaceID,
+        'rooms.0.id':booking[0].RoomsBooked[0].roomID,'rooms.0.schedule.Date':booking[0].RoomsBooked[0].Date},
+        {$set:{'rooms.0.schedule.reserved':false}})
 
-        const updtNewRoom=await User.update({'rooms.id':room.rooms[0].id,
-        'rooms.schedule.Date':booking[0].RoomsBooked[0].Date},{$set:{rooms:{schedule:{time:booking[0].RoomsBooked[0].time}},
-        rooms:{schedule:{userID:booking[0]._id}}, rooms:{schedule:{Date:booking[0].RoomsBooked[0].Date}}, rooms:{schedule:{reserved:true}}}});
+        const updtNewRoom=await User.update({'userID':booking[0].RoomsBooked[0].coworkingSpaceID,'rooms.1.id':room.rooms[0].id,
+        'rooms.1.schedule.Date':booking[0].RoomsBooked[0].Date},{$set:{'rooms.1.schedule.time':booking[0].RoomsBooked[0].time,
+        'rooms.1.schedule.userID':booking[0]._id, 'rooms.1.schedule.Date':booking[0].RoomsBooked[0].Date, 
+        'rooms.1.schedule.reserved':true}});
       
         res.json({msg:'Your room booking is successfully updated.'})
 
@@ -399,6 +398,7 @@ router.put('/update/booking/:bid', async(req, res)=>{
         console.log(error)
     }  
 });
+
 
 
 //view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*

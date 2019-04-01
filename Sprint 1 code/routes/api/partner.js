@@ -8,6 +8,10 @@ const User=require('../../models/UserProfile');
 
 const users = require('../../models/UserProfile')
 
+
+
+
+//nourhan -------------------------------------------------------------------------------------------------------------------
 const message = require('../../models/messages');
 
 
@@ -37,53 +41,55 @@ router.get('/roombookings/:userID',async (req, res) => {
 
   
 
-    var userID = parseInt(req.params.userID);
+	var userID = parseInt(req.params.userID);
 
 
 
-    await User.find({userID : userID},{RoomsBooked : 1, _id :0},(err, roombookings)=>{
+	const roombookings = await User.find({userID : userID},{RoomsBooked : 1, _id :0})
 
 
 
-        res.send(roombookings);
+		//	res.send(roombookings);
 
-    })
+		//	console.log(roombookings.length)
+			res.json({data : roombookings.pop().RoomsBooked});
 
-  
-
-  })
-
+	
 
 
-//get a room in a specific coworking space by id
+
+})
+
+
+
+//get a schedule room in a specific coworking space by id
 
 router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 
-    try{
+	try{
 
-    const test = await User.aggregate([
+	const test = await User.aggregate([
 
-        {$unwind: "$rooms"},
+			{$unwind: "$rooms"},
 
-        {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
 
-         {$project: {schedule:'$rooms.schedule',_id:0}}
+			 {$project: {schedule:'$rooms.schedule',_id:0}}
 
-    ])
+	])
+	res.json({data:test.pop().schedule});
 
-     res.send(test.pop().schedule);
+}
 
-    }
+catch(error){
 
-    catch(error){
+		res.send("not found")
 
-        res.send("not found")
+		console.log("error")
 
-        console.log("error")
+}
 
-    }
 
-    
 
 });
 
@@ -93,122 +99,124 @@ router.get('/cospace/:id/rooms/:id2' ,async (req, res)=>{
 
 router.put('/cospace/:id/:userID/rooms/:id2/:id3' ,async(req, res)=>{
 
-    const schedID = req.params.id3;
+const schedID = req.params.id3;
 
-    const cospaceID = req.params.id;
+const cospaceID = req.params.id;
 
-    const roomID = req.params.id2;
-
-
-
-    try{
-
-    const test1 = await User.aggregate([
-
-        {$unwind: "$rooms"},
-
-        {$unwind: "$rooms.schedule"},
-
-        {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
-
-        {$project:{reserved:'$rooms.schedule.reserved',_id:0}}
-
-    ])
+const roomID = req.params.id2;
 
 
 
-    //res.send(test1.pop().reserved == "true")
+try{
 
-   if(test1.pop().reserved) return res.send({error:'already reserved'})
+const test1 = await User.aggregate([
 
+		{$unwind: "$rooms"},
 
+		{$unwind: "$rooms.schedule"},
 
-    const test = await User.aggregate([
+		{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
 
-        {$unwind: "$rooms"},
+		{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
 
-        {$unwind: "$rooms.schedule"},
-
-        {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
-
-        {$project:{date:'$rooms.schedule.Date',_id:0}}
-
-    ])
+])
 
 
 
-    const test3 = await User.aggregate([
 
-        {$unwind: "$rooms"},
+//res.send(test1.pop().reserved == "true")
 
-        {$unwind: "$rooms.schedule"},
+if(test1.pop().reserved) return res.send({error:'already reserved'})
 
-        {$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
 
-        {$project:{time:'$rooms.schedule.time',_id:0}}
 
-    ])
+const test = await User.aggregate([
+
+		{$unwind: "$rooms"},
+
+		{$unwind: "$rooms.schedule"},
+
+		{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+		{$project:{date:'$rooms.schedule.Date',_id:0}}
+
+])
+const test3 = await User.aggregate([
+
+	{$unwind: "$rooms"},
+
+	{$unwind: "$rooms.schedule"},
+
+	{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+	{$project:{time:'$rooms.schedule.time',_id:0}}
+
+])
 
 
 
 
 
-    const f = await User.findOneAndUpdate({
+const f = await User.findOneAndUpdate({
 
 
 
-        'userID' : parseInt(req.params.id)},
-
-    
-
-    {
-
-        $set : {'rooms.$[i].schedule.$[j].reserved' : true, 'rooms.$[i].schedule.$[j].reservedBy' : {uid : parseInt(req.params.userID)}}
-
-    },
-
-    {
-
-        arrayFilters : [{"i.id" : parseInt(roomID)},{"j.id" : parseInt(schedID)}]
-
-    }
-
-    
-
-    )
+	'userID' : parseInt(req.params.id)},
 
 
 
-    await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
+{
 
-    {$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
+	$set : {'rooms.$[i].schedule.$[j].reserved' : true, 'rooms.$[i].schedule.$[j].reservedBy' : {uid : parseInt(req.params.userID)}}
 
-    scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}}, 
+},
 
-    async function(err, model){
+{
 
-               
+	arrayFilters : [{"i.id" : parseInt(roomID)},{"j.id" : parseInt(schedID)}]
 
-        if(err)  return handleError(res, err)
+}
 
-        else res.json({msg:'Room was reserved successfully'})
 
-     });
 
-    }
+)
 
-    catch(error){
+const test0 = await User.aggregate([
 
-        console.log(error)
+	{$unwind: "$rooms"},
 
-        res.send("Not found")
+	{$unwind: "$rooms.schedule"},
 
-    }
+	{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2),'rooms.schedule.id':parseInt(schedID)}},
+
+	{$project:{reserved:'$rooms.schedule.reserved',_id:0}}
+
+])
+
+
+
+await User.findOneAndUpdate({userID : parseInt(req.params.userID)},
+
+{$addToSet : {RoomsBooked : {bookingID:new objectid(),coworkingSpaceID:parseInt(cospaceID), roomID :parseInt(roomID),
+
+scheduleID: parseInt(schedID),Date: test.pop().date, time:test3.pop().time}}}, 
+
+async function(err, model){
+
+				 
+
+	if(err)  return handleError(res, err)
+
+	else res.json({data : test0.pop().reserved})
 
 });
 
+}
 
+catch(error){
+	console.log(error)
 
+			res.send("Not found")}})
 //delete booking and set the reservation boolean to false so others can now book it
 
 router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
@@ -270,104 +278,232 @@ router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
     
     const f =await User.findOneAndUpdate({
 
-        'userID' : 3},
-
-    
-
-    {
-
-        $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
-
-    },
-
-    {
-
-        arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
-
-    }
-
-    
-
-    )
+        'userID' : 3}) });
 
 
+//temp
+router.get('/lastelem',async(req,res)=>{
+	const a=await  User.aggregate([
+		{$match:{userID:101}},
+		{
+			//userID : 5,
+			
+		  $project:
+		   {
+			  last: { $arrayElemAt: [ "$RoomsBooked", -1 ] }
+		   }
+		}
+	 ])
+	 res.send(a.pop().last.bookingID)
+//	 res.send(l())
+})
 
-    const y =await User.update(
-
-        {userID : parseInt(req.params.userID)},
-
-        {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
-
-               
-
-            if(err)  return handleError(res, err)
-
-            else {
-
-                
-
-                res.json({msg:'reservation was deleted successfully'})
-
-        }
-
-         });
-
-	});
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------------------
-
-
-//-----------------------------------partner submit task description-------------------------------------------//
-
-router.post('/createTask', async(req, res)=> {
-    const name = req.body.name;
-    const ownerID = req.body.ownerID;
-    const description= req.body.description;
-    const wantsConsultant= req.body.wantsConsultant;
-    const applicants= [];
-    const approved= false;
-    const schema={
-       name:Joi.string().required(),
-       ownerID:Joi.number().required(),
-       
-       description:Joi.string().required(),
-       wantsConsultant:Joi.boolean().required()
-     
-    }
-    const result=Joi.validate(req.body,schema)
-  
-    if(result.error)
-     return res.status(400).send(error.details[0].message);
+//delete booking and set the reservation boolean to false so others can now book it
+router.delete('/nourhan/RoomBookings/:userID/:bookingID',async (req, res) => {
+	// try{
+		 const test = await User.aggregate([
+			 {$unwind: "$RoomsBooked"},
+			 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+			 {$project: {'RoomsBooked.bookingID':1,_id:0}}
+		 ])
  
  
-     const newtask = {
-         name,
-         description,
-         wantsConsultant, 
-         approved,
-         applicants
-         
-     };
+	  if(test==0) return res.send({error:'booking does not exist.'})
  
-     const t = await users.findOne({type:"partner",userID:ownerID} )
-    //console.log(t.tasks)
-    //t.tasks.push(newtask);
-     console.log(t.tasks)
  
-    
-    users.update({ 'userID':ownerID,'type':'partner'
-                   }, 
-    {$set: {'tasks':t.tasks}}, function(err, model){}); 
-     //return res.json({ data: t.tasks });
-     return res.json("your task was created successfully");
+	  const test1 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
+	 ])
+	 const test2 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+	 ])
+	 const test3 = await User.aggregate([
+		 {$unwind: "$RoomsBooked"},
+		 {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+		 {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+	 ])
+ 
+	 
+ 
+	 const f =await User.findOneAndUpdate({
+		 'userID' : test1.pop().cospaceID},
+	 
+	 {
+		 $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
+	 },
+	 {
+		 arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
+	 }
+	 
+	 )
+ 
+	 const y =await User.update(
+		 {userID : parseInt(req.params.userID)},
+		 {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
+				
+			 if(err)  return handleError(res, err)
+			 else {
+				 
+				 res.json({msg:'reservation was deleted successfully'})
+		 }
+		  });
  
  
  });
-//-------------------------------partner review tasks and rate member assigned -----------------------------------//
+//-----------------------------------partner submit task description-------------------------------------------//  testing done
+
+router.post("/createTask/:id", async (req, res) => {
+  const name = req.body.name;
+  const ownerID = parseInt(req.params.id);
+  const description = req.body.description;
+  const wantsConsultant = req.body.wantsConsultant;
+  const applicants = [];
+  const approved = false;
+  const schema = {
+    name: Joi.string().required(),
+    description: Joi.string().required(),
+    wantsConsultant: Joi.boolean().required()
+  };
+  const result = Joi.validate(req.body, schema);
+
+  if (result.error) return res.status(400).send(error.details[0].message);
+
+  const newtask = {
+    name,
+    description,
+    wantsConsultant,
+    approved,
+    applicants
+  };
+
+  const t = await users.findOne({ type: "partner", userID: ownerID });
+  t.tasks.push(newtask);
+
+  //console.log(t.tasks)
+
+  users.update(
+    { userID: ownerID, type: "partner" },
+    { $set: { tasks: t.tasks } },
+    function(err, model) {}
+  );
+  return res.json(newtask);
+});
+
+//--------------------------Partner view task's applicants -----------------------------------//  testing done
+router.get("/view/:idP/:idT", async (req, res) => {
+  const partnerID = parseInt(req.params.idP);
+  const taskIDb = parseInt(req.params.idT);
+  const partner = await users.find({ type: "partner", userID: partnerID });
+  let data = "";
+  var task = {};
+  for (var i = 0; i < partner.length; i++) {
+    for (var j = 0; j < partner[i].tasks.length; j++) {
+      if (partner[i].tasks[j].taskID === taskIDb)
+        task = partner[i].tasks[j].applicants;
+      data =
+        "task id:" +
+        partner[i].tasks[j].taskID +
+        "  " +
+        "task name:" +
+        partner[i].tasks[j].name;
+    }
+  }
+  //console.log(task)
+
+  res.send({ data, task });
+});
+//-------------------------choose and send the applicant to the admin to assign-------------------------//  testing done
+
+
+router.put('/AcceptApplicant/:idP/:idT',async(req,res)=>{
+    var flag=false;
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+
+    if(partner === null )
+    res.json("the partner id is not correct")
+
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+
+      if(t === null) res,json("the task Id is not correct")
+      else{
+          const applicantID = req.body.applicantID
+          const schema = {
+            applicantID:Joi.number().required()
+         }
+
+      const result=Joi.validate(req.body,schema)
+
+      if(result.error)
+      return res.status(400).send(error.message);
+
+
+      else{
+
+        const applicants=t.applicants
+        const a = applicants.filter(applicant => applicant.applicantID !== applicantID)
+ 
+      for(var i=0;i<t.applicants.length;i++){
+          if(t.applicants[i].accepted===true)
+          flag=true;
+         }
+
+        if(flag===false){
+        const accepted = true
+        const assigned = false
+        newApplicant= {
+            applicantID,
+            accepted,
+            assigned
+           }
+           const newApplicantsArray=[
+               newApplicant
+           ]
+
+           if (typeof a === 'undefined') {
+           }
+
+        else {
+           while (a.length !== 0){
+            newApplicantsArray.push(a.pop())
+           }
+        }
+   //   console.log(newApplicantsArray)
+       
+    users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
+    {$set:{"tasks.$.assigneeID":applicantID}},
+    function(err, model){});
+
+    users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
+    {$set:{ "tasks.$.applicants":newApplicantsArray}},
+    function(err, model){});
+
+
+      //const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
+      res.json(newApplicant)
+      }
+      else{
+        res.json("there exists an accepted applicant for the task")
+    }
+      }
+ 
+    }
+}
+
+    
+ }); 
+
+
+
+
+//-------------------------------partner review tasks and rate member assigned -----------------------------------// testing done
 
 
 router.put('/Review&Rate/:idP/:idT',async(req,res)=>{
@@ -414,49 +550,140 @@ router.put('/Review&Rate/:idP/:idT',async(req,res)=>{
         
         const mem = await users.findOne({type:"member",userID:app})
      
-        //const all = mem.allRatings
-        //console.log(mem.allRatings)
         mem.allRatings.push(rate)
 
-        res.json(mem.allRatings)
+ 
 
         users.update({ 'userID':app,'type':'member'}, 
         {$set: {'allRatings':mem.allRatings}}, function(err, model){});
 
-       // users.update({ 'userID':partnerID,'type':'partner'}, 
-        //{$set: {:mem.allRatings}}, function(err, model){});
+        users.update({ 'userID':partnerID,'type':'partner','tasks.taskID':taskID}, 
+        {$set: {'tasks.$.review':review}}, function(err, model){});
+        users.update({ 'userID':partnerID,'type':'partner','tasks.taskID':taskID}, 
+        {$set: {'tasks.$.rate':rate}}, function(err, model){});
 
      }
      else {
-        return res.status(404).send({error: 'task is not done yet'})
+         res.json('the task is not done yet')
      }
 
     }
 
  }); 
 
-//--------------------------Partner view task's applicants -----------------------------------//
-router.get('/:idP/:idT',async (req,res)=>{
-    const partnerID=parseInt(req.params.idP)
-    const taskIDb=parseInt(req.params.idT)
-    const partner= await users.find({type:'partner',userID:partnerID})
-    let data=""
-    var task={}
-    for(var i=0;i<partner.length;i++){
-        for(var j=0;j<partner[i].tasks.length;j++){
-        if(partner[i].tasks[j].taskID===taskIDb)
-            task=partner[i].tasks[j].applicants
-            data="task id:"+partner[i].tasks[j].taskID +"  "+"task name:"+partner[i].tasks[j].name
-    }
-    }
-    //console.log(task)
-   
+//-----------------------------------partner choose a consultancy agency -------------------------------------------// testing done
+
+///////////////////  remeber that the the route had a spelling mistake in consultancy <<<< consultacy >>>>
+
+
+router.put('/ChooseConsultancyAgency/:idP/:idT',async(req,res)=>{
+    var flag=false;
+    const PartID = parseInt(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne({type:"partner",userID:PartID})
+
+    if(partner === null )
+    res.json("the partner id is not correct")
+
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+      
+      if(t === null) res,json("the task Id is not correct")
+      else{
+      const consultancyID = req.body.consultancyID
+      for(var i=0;i<t.consultancies.length;i++){
+          if(t.consultancies[i].accepted===true)
+          flag=true
+      } 
+
+      if(flag===false){
+      const schema = {
+        consultancyID:Joi.number().required()
+         }
+
+      const result=Joi.validate(req.body,schema)
+
+      if(result.error)
+       return res.status(400).send(error.message);
+      else{
+      const consultancies=t.consultancies
+      const c = consultancies.filter(consultancy => consultancy.consultancyID !== consultancyID)
+
  
- res.send({data,task}); 
- 
- }); 
+    //  console.log(c)
+      const accepted = true
+      const assigned = false
+      newConsultancy = {
+          consultancyID,
+          accepted,
+          assigned
+         }
+         const newConsultancyArray=[
+             newConsultancy
+         ]
+
+         if (typeof c === 'undefined') {
+
+          }
+          else {
+
+            while (c.length !== 0){
+                newConsultancyArray.push(c.pop())
+               }
+           
+          }
+        //console.log(newConsultancyArray)
+         
+      users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set:{"tasks.$.consultancyAssignedID":consultancyID}},
+      function(err, model){});
+
+      users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
+      {$set:{ "tasks.$.consultancies":newConsultancyArray}},
+      function(err, model){});
+
+      res.json(newConsultancy)
+        }
+      }
+      if(flag===true){
+          res.json("there exists an accepted applicant for the task")
+      }
+    }
+  }
+
+});
+
+//-----------------------------------partner view a task's life cycle -------------------------------------------// testing done
+
+router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
+    const partnerID = parseInt(req.params.PID);
+    const Task_id = parseInt(req.params.TID);
+  
+    const partner = await users.findOne({ type: "partner", userID: partnerID });
+    // console.log(partner)
+    const Task_Array = partner.tasks;
+    //console.log(partner.tasks)
+  
+    var lifeCyc = [];
+    let data = "";
+    for (var i = 0; i < Task_Array.length; i++) {
+      if (Task_Array[i].taskID === Task_id) {
+        lifeCyc = Task_Array[i].lifeCycle;
+        data =
+          "the life cycle of your task is below" +
+          "   " +
+          "name of task:" +
+          Task_Array[i].name;
+      }
+    }
+  
+    res.send({ data, lifeCyc });
+  });
+
 
 //-----------------------------------partner send request to change description -------------------------------------------//
+
 
 router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
     const PartID = parseInt(req.params.idP)
@@ -501,135 +728,123 @@ router.put('/RequestDescriptionChange/:idP/:idT', async(req,res)=>{
           {$set: {'updates': updates}}, function(err, model){});
     
             const partners = await users.findOne({type:"partner",userID:PartID})
-           res.json(partners)
+           res.json(partners.updates)
        }
     }
 }
 });
 
- //-----------------------------------partner view a task's life cycle -------------------------------------------//
 
 
-router.get('/TaskLifeCycle/:PID/:TID',async (req, res)=> {
-    const partnerID  = parseInt(req.params.PID)
-    const Task_id =parseInt( req.params.TID)
 
-    const partner= await users.findOne({type:'partner',userID:partnerID})
-   // console.log(partner)
-    const Task_Array = partner.tasks
-    //console.log(partner.tasks)
-    
-    var lifeCyc=[]
-    let data=""
-    for(var i=0;i<Task_Array.length;i++){
-       if(Task_Array[i].taskID===Task_id ){
+//delete booking and set the reservation boolean to false so others can now book it
 
-         lifeCyc = Task_Array[i].lifeCycle   
-         data="the life cycle of your task is below"+"      "+"name of task:"+Task_Array[i].name
-       }
-    }
- 
-    res.send({data,lifeCyc})
+router.delete('/method2/RoomBookings/:userID/:bookingID',async (req, res) => {
+
+   // try{
+
+        const test = await User.aggregate([
+
+            {$unwind: "$RoomsBooked"},
+
+            {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+            {$project: {'RoomsBooked.bookingID':1,_id:0}}
+
+        ])
 
 
-});
 
 
- //-------------------------choose and send the applicant to the admin to assign-------------------------//
 
-router.put('/AcceptApplicant/:idP/:idT',async(req,res)=>{
+     if(test==0) return res.send({error:'booking does not exist.'})
 
-    const PartID = parseInt(req.params.idP)
-    const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
 
-    if(partner === null )
-    res.json("the partner id is not correct")
 
-    else {
-      const task = partner.tasks
-      const t = task.find(task => task.taskID === Task_id)
 
-      if(t === null) res,json("the task Id is not correct")
-      else{
-      const applicantID = req.body.applicantID
-      const schema = {
-          applicantID:Joi.number().required()
-         }
 
-      const result=Joi.validate(req.body,schema)
+     const test1 = await User.aggregate([
 
-      if(result.error)
-       return res.status(400).send(error.details[0].message);
-      else{
-     
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'applicants.applicantID':applicantID}, 
-      {$set:{"applicants.$.accepted":true}},
-      function(err, model){});
+        {$unwind: "$RoomsBooked"},
 
-      
-      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(partners)
-      }
-    }
-}
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {cospaceID:'$RoomsBooked.coworkingSpaceID',_id:0}}
+
+    ])
+
+    const test2 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {roomid:'$RoomsBooked.roomID',_id:0}}
+
+    ])
+
+    const test3 = await User.aggregate([
+
+        {$unwind: "$RoomsBooked"},
+
+        {$match: {userID : parseInt(req.params.userID),'RoomsBooked.bookingID':objectid(req.params.bookingID)}},
+
+        {$project: {scheduID:'$RoomsBooked.scheduleID',_id:0}}
+
+    ])
+
+
 
     
- }); 
-
-//-----------------------------------partner choose a consultancy agency -------------------------------------------//
 
 
-router.put('/ChooseConsultacyAgency/:idP/:idT',async(req,res)=>{
 
+    const f =await User.findOneAndUpdate({
 
-    const PartID = parseInt(req.params.idP)
-    const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
+        'userID' : 3},
 
-    if(partner === null )
-    res.json("the partner id is not correct")
+    
 
-    else {
-      const task = partner.tasks
-      const t = task.find(task => task.taskID === Task_id)
+    {
 
-      if(t === null) res,json("the task Id is not correct")
-      else{
-      const consultancyID = req.body.consultancyID
-      const schema = {
-        consultancyID:Joi.number().required()
-         }
+        $set : {'rooms.$[i].schedule.$[j].reserved' : false, 'rooms.$[i].schedule.$[j].reservedBy' : {}}
 
-      const result=Joi.validate(req.body,schema)
+    },
 
-      if(result.error)
-       return res.status(400).send(error.details[0].message);
-      else{
-     
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id, 'consultancies.consultancyID':consultancyID}, 
-      {$set:{"consultancies.$.accepted":true}},
-      function(err, model){});
+    {
 
-       
-      const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(partners)
-      }
+        arrayFilters : [{"i.id" : test2.pop().roomid},{"j.id" : test3.pop().scheduID}]
+
     }
-}
+
+    
+
+    )
 
 
 
-});
+    const y =await User.update(
 
- 
+        {userID : parseInt(req.params.userID)},
 
+        {$pull : {RoomsBooked : {bookingID : objectid(req.params.bookingID),}}},{multi : true}, async function(err, model){
 
+               
 
+            if(err)  return handleError(res, err)
 
+            else {
 
+                
 
-router.get('/', (req, res) => res.json({ data: partner }));
+                res.json({msg:'reservation was deleted successfully'})
+
+        }
+
+         });
+
+	});
+
 
 
 

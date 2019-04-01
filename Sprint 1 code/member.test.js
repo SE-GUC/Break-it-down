@@ -71,7 +71,7 @@ test('delete the last entry',async (done)=>{
  done();
 });
 
-const funcs = require('./events.js');
+//const funcs = require('./events.js');
 
 test("'Create an Member' should return true ",  async() => {
     expect.assertions(2);

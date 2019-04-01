@@ -1,7 +1,7 @@
 const axios = require('axios');
 const User = require('./models/UserProfile');
 const objectid = require('mongodb').ObjectID
-const User = require('./models/Member');
+//const User = require('./models/Member');
 
 
 const functions = {
@@ -34,7 +34,7 @@ const functions = {
                 const k = await axios.get('http://localhost:4000/api/member/lastelem/')
              //   console.log(k)
                 const c =objectid(k.data)
-                 const url = 'http://localhost:4000/api/member/nourhan/RoomBookings/5/' + c
+                 const url = 'http://localhost:4000/api/nourhan/member/nourhan/RoomBookings/5/' + c
                 const b = await axios.delete(url)
                 return true
             },
