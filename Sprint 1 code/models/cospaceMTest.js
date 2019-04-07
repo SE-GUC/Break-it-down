@@ -17,6 +17,3 @@ const CoSpaceSchema= new Schema({
 );
 
 module.exports = cospaceM = mongoose.model('partnercoworkingspaces', CoSpaceSchema)
-
-
-

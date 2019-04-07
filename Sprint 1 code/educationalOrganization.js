@@ -1,5 +1,5 @@
 const axios = require('axios');
-const EducationalOrganization = require('./models/EducationalOrganization');
+
 
 const functions = {
 

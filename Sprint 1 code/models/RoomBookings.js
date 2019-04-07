@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -60,4 +59,3 @@ const RoomBookingsSchema = new Schema({
 RoomBookingsSchema.plugin(autoIncrement.plugin,'RoomBookings');
 
 module.exports = RoomBookings = connection.model('RoomBookings', RoomBookingsSchema);
-

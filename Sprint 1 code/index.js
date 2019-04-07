@@ -6,16 +6,16 @@ const app = express();
 const cors = require('cors')
 
 //--------------------api--------------------
-const admins = require('./routes/api/admin');
+const admin = require('./routes/api/admin');
 const coworkingSpace = require('./routes/api/coworkingSpace');
-//const coworkingSpace2 = require('./routes/api/coworkingSpace2');
 const ca = require('./routes/api/consultancyAgency');
-const ProfilesAPI = require('./routes/api/Profiles');
-const partner = require('../Sprint 1 code/routes/api/partner');
-const notification = require('../Sprint 1 code/routes/api/notification');
-const member = require('../Sprint 1 code/routes/api/member');
+const ProfilesAPI = require('./routes/api/profiles');
+const partner = require('./routes/api/partner');
+const notification = require('./routes/api/notification');
+const member = require('./routes/api/member');
 const Event = require('./routes/api/event');
-const consultancyAgency = require('../Sprint 1 code/routes/api/consultancyAgency');
+const consultancyAgency = require('./routes/api/consultancyAgency');
+const eo = require('./routes/api/educationalOrganization');
 
 //------------------forChatting------------------------
 const User = require('./models/ChatUser');
@@ -39,7 +39,7 @@ mongoose
 //--------------------Init middleware--------------------
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-app.use(cors());
+ app.use(cors());
 
 //--------------------chat application--------------------
 var http = require('http').Server(app);
@@ -48,32 +48,31 @@ var io = require('socket.io')(http);
 //-----------------cors---------------
 app.use(cors());
 
-
 //--------------------Home Page--------------------
 app.get('/', (req, res) => {
-res.send(`<h1>Home page</h1>
-<p> REGISTER OR SIGN UP <p>
-<a href="/api/admins">Admin</a>
-<a href="/api/coworkingSpace">Partner Coworking Space</a>
-<a href="/api/member">Member</a>
-<a href="/api/rooms">Rooms</a>
-<a href="/api/notification">notfication</a>
-<a href="/api/partner">Partner</a>`);
-})
+    res.send(`<h1>Home page</h1>
+    <p> REGISTER OR SIGN UP <p>
+    <a href="/api/admin">Admin</a>
+    <a href="/api/coworkingSpace">Partner Coworking Space</a>
+    <a href="/api/consultancyAgency">consultancyAgency</a>
+    <a href="/api/educationalOrganization">Educational Organization</a>
+    <a href="/api/member">Member</a>
+    <a href="/api/partner">Partner</a>`);
+    })
+    
 
-//--------------------Direct routes to appropriate files-------------------- 
+    //--------------------Direct routes to appropriate files-------------------- 
 app.use('/api/coworkingSpace', coworkingSpace);
-//app.use('/api/coworkingSpace2', coworkingSpace2);
 app.use('/api/consultancyAgency', consultancyAgency);
 app.use('/api/member', member);
-app.use('/api/admins', admins);
+app.use('/api/admins', admin);
 app.use('/api/Events', Event);
 app.use('/api/coworkingSpace', coworkingSpace);
-//app.use('/api/coworkingSpace2', coworkingSpace2);
+app.use('/api/educationalOrganization', eo);
 app.use('/api/partner',partner);
-app.use('/api/notification',notification);
-app.use('/api/ca',ca);
-app.use('/api/CreateAccount', ProfilesAPI);
+app.use('/api/consultancyAgency',ca);
+//app.use('/api/profiles', ProfilesAPI);  it has an error but i can't figure out what 
+
 
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {
@@ -83,3 +82,4 @@ app.use((req, res) => {
  //--------------------Server--------------------
 //  const port = process.env.PORT || 4000;
 // app.listen(port, () => console.log(`Server up and running on port ${port}`));
+

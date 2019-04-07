@@ -1,3 +1,8 @@
+
+
+//-------------to be used later when we update our database----------------//
+
+
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -16,6 +21,3 @@ const MemberSchema= new Schema({
 
 );
 module.exports = Member = mongoose.model('Member', MemberSchema)
-
-
-

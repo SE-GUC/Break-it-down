@@ -46,7 +46,7 @@ router.get('/viewUpdates', async (req, res) => {
 //--------------------approve updates--------------------
 router.put('/approveUpdates/:id/:uid',async (req,res)=>{
      try {
-         const userid=parseInt(req.params.id)
+         const userid=req.params.id
 
          const updtid=parseInt(req.params.uid)
 
@@ -59,7 +59,7 @@ router.put('/approveUpdates/:id/:uid',async (req,res)=>{
 
 
         //user may want to deactivate or activate account, therefore, activation can be changed  
-        const newUser={'type':(update[0].updates[0].type===undefined?user.type:update[0].updates[0].type),
+        const newusers={'type':(update[0].updates[0].type===undefined?user.type:update[0].updates[0].type),
                         'name':(update[0].updates[0].name===undefined?user.name:update[0].updates[0].name),
                         'password':(update[0].updates[0].password===undefined?user.password:update[0].updates[0].password),
                         'email':(update[0].updates[0].email===undefined?user.email:update[0].updates[0].email),
@@ -105,7 +105,7 @@ router.put('/approveUpdates/:id/:uid',async (req,res)=>{
 //--------------------disapprove updates--------------------
 router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
      try {
-            const userid=parseInt(req.params.id)
+            const userid=req.params.id
 
             const updtid=parseInt(req.params.uid)
 
@@ -123,6 +123,13 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
                console.log(error);
            }  
 });
+
+
+
+//----------------------------- admin update a task's life cycle ---------------------------------------------//
+//---------------------------------admin assigning the chosen member by partner-------------------- 
+
+
 router.put('/AssignMember/:idP/:idT', async(req,res)=>{ //tested all admin methods
     var flag=false;
     const PartID = parseInt(req.params.idP)
@@ -194,11 +201,8 @@ router.put('/AssignMember/:idP/:idT', async(req,res)=>{ //tested all admin metho
 
  }); 
 
-
  
 //-----------------------------------admin assigning the chosen consultancy agency by partner--------------------// testing done
-
-
 
 router.put('/AssignConsultancyAgency/:idP/:idT', async(req,res)=>{
     var flag=false;
@@ -350,7 +354,6 @@ router.put('/ActivateAccounts/:MID', async (req, res)=> {
     const members = await users.findOne({type:"member",userID:MemID})
     res.json(members)
 });
-
 
 
  //----------------------------------view messages---------------------------------- 

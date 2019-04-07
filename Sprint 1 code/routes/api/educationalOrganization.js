@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 //-------------------Models-------------------
-const EducationalOrganisation = require('../../Models/EducationalOrganisation');
+const EducationalOrganisation = require('../../models/EducationalOrganization');
 
 // Get all EducationalOrganisations MONGOUPDATED
 router.get('/', async (req,res) => {

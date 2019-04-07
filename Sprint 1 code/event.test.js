@@ -1,5 +1,5 @@
 
-const funcs = require('./events.js');
+const funcs = require('./event');
 
 test("'Create an Event' should return true ",  async() => {
     expect.assertions(2);

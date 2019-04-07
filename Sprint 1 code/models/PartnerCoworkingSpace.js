@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -20,10 +19,6 @@ const cospaceSchema = new Schema({
   })
 
   module.exports = PartnerCoworkingSpace = mongoose.model('coworkingSpace', cospaceSchema)
-
-//const mongoose = require('mongoose');
-
-//const Schema = mongoose.Schema;
 
 
 const PartnerCoworkingSpaceSchema = new Schema({

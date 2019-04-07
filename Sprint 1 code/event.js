@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Event = require('./models/EventModel');
+
 
 const functions = {
 

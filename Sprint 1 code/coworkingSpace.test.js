@@ -1,4 +1,4 @@
-const funcs = require('./coworkingSpace.funcs');
+const funcs = require('./coworkingSpace');
 const axios = require('axios');
 const mongoose = require('mongoose')
 //jest.mock('axios');
