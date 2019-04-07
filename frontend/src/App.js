@@ -3,10 +3,26 @@ import './App.css';
 import Admin from './pages/Admin'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, BrowserRouter} from "react-router-dom";
+import taskDescription from "../App/pages/taskDescription"
+import Home from "../App/pages/Home";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 class App extends Component {
 
   render() {
+    
+    const App = () => (
+      <div>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/checkTaskDescriptions/:PID/:TID" component={taskDescription} />
+
+          </Switch>
+        </BrowserRouter>
+      </div>
+    );
+    
     return (
       <BrowserRouter>
       <div className="App" style={{ backgroundColor:  '#005a73'}}>
@@ -19,6 +35,11 @@ class App extends Component {
           </div>
       </div>
       </BrowserRouter>
+        
+      <Switch>
+        <App />
+      </Switch>
+      
     );
   }
 }
