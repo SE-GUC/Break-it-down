@@ -22,12 +22,17 @@ import * as serviceWorker from './serviceWorker';
 ReactDOM.render(    
     <Provider store={store}>
     <BrowserRouter>
-    <Switch>
-    <Route exact path="/" component={App}/>
+     <Route exact path="/" component={UserHomePage} />
+
+    <Route exact path="/HomeTest" component={App}/>
     <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
-    </Switch>
+    <Route exact path="/viewCoworkingspace" component={viewcoWorkingSpace}/>
+    <Route exact path="/specificCoworkingSpace/:id" component={specificCoworkingSpace}/>
+     <Route exact path="/specificRoom/:Coid/:Roid" component={specificRoom}/>
+       
     </BrowserRouter>
+
 </Provider>
 ,
 document.getElementById('root')
