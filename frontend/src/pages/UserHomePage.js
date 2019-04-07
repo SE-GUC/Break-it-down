@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 //import coworkingspace from "./viewCoworkingSpaces";
 export default class UserHomePage extends Component {

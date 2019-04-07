@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Link, BrowserRouter as Router, Route } from "react-router-dom";
+import { Link, BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 class List extends Component {
   // Initialize the state

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 class viewCoworkingSpaces extends Component {
   state = { list: [] };

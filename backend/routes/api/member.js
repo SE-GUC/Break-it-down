@@ -95,7 +95,7 @@ router.get('/cospace/rooms/:id/:id2' ,async (req, res)=>{
 
 			{$unwind: "$rooms"},
 
-			{$match: {userID:parseInt(req.params.id),type:"coworkingspace",'rooms.id':parseInt(req.params.id2)}},
+			{$match: {userID:parseInt(req.params.id),type:"coworkingSpace",'rooms.id':parseInt(req.params.id2)}},
 
 			 {$project: {schedule:'$rooms.schedule',_id:0}}
 

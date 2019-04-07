@@ -21,7 +21,8 @@ class specificRoom extends Component {
       `http://localhost:4000/api/member/cospace/rooms/${Coid}/${Roid}`
     )
       .then(res => res.json())
-      .then(list => this.setState({ list }));
+      .then(list => this.setState({ list }))
+      .catch(err => console.log(err));
   };
 
   render() {
