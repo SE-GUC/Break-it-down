@@ -817,14 +817,11 @@ router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
       if (Task_Array[i].taskID === Task_id) {
         lifeCyc = Task_Array[i].lifeCycle;
         data =
-          "the life cycle of your task is below" +
-          "   " +
-          "name of task:" +
           Task_Array[i].name;
       }
     }
   
-    res.send({ data, lifeCyc });
+    res.send(lifeCyc);
   });
 
 //-----------------------------------partner send request to change description -------------------------------------------//
