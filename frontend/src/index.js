@@ -1,13 +1,43 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import "bootstrap/dist/css/bootstrap.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import viewall from './screens/viewAll'
+import {Provider} from 'react-redux'
+import EventList from './components/EventList'
+import TaskList from './components/TaskList'
 
-ReactDOM.render(<App />, document.getElementById("root"));
+import store from './store'
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+
+import {
+  Route,
+  NavLink,
+  BrowserRouter,
+  Switch
+} from "react-router-dom";
+
+import * as serviceWorker from './serviceWorker';
+
+ReactDOM.render(    
+    <Provider store={store}>
+    <BrowserRouter>
+    <Switch>
+    <Route exact path="/" component={App}/>
+    <Route exact path="/Tasks" component={TaskList}/>
+    <Route exact path="/Events" component={EventList}/>
+    </Switch>
+    </BrowserRouter>
+</Provider>
+,
+document.getElementById('root')
+
+
+
+      
+
+
+);
+
+
 serviceWorker.unregister();
