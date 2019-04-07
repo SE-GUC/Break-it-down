@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {BrowserRouter as Router, Route } from 'react-router-dom';
 import './App.css';
-import Home from './App/pages/Home';
-import List from './App/pages/List';
+import Home from './pages/Home';
+import List from './pages/List';
+import CreateRoom from './pages/CreateRoom';
 
 
 class App extends Component {
@@ -15,6 +16,7 @@ class App extends Component {
         <Router>
           <Route exact path='/coworkingSpace' component={Home}/>
           <Route exact path='/coworkingSpace/viewRoomSchedule/:coID/:rID' component={List}/>
+          <Route exact path='/coworkingSpace/create/:coID' component={CreateRoom} />
 
         </Router>
       </div>
