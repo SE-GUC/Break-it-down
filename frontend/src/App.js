@@ -4,6 +4,7 @@ import './App.css';
 import Home from './pages/Home';
 import List from './pages/List';
 import CreateRoom from './pages/CreateRoom';
+import Update from "./pages/Update"
 
 
 class App extends Component {
@@ -17,6 +18,7 @@ class App extends Component {
           <Route exact path='/coworkingSpace' component={Home}/>
           <Route exact path='/coworkingSpace/viewRoomSchedule/:coID/:rID' component={List}/>
           <Route exact path='/coworkingSpace/create/:coID' component={CreateRoom} />
+          <Route exact path="/coworkingSpace/updateCospace/:coID" component={Update} />
 
         </Router>
       </div>
