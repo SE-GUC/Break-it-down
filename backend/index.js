@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
 app.use('/api/coworkingSpace', coworkingSpace);
 app.use('/api/consultancyAgency', consultancyAgency);
 app.use('/api/member', member);
-app.use('/api/admins', admin);
+app.use('/api/admin', admin);
 app.use('/api/Events', Event);
 app.use('/api/coworkingSpace', coworkingSpace);
 app.use('/api/educationalOrganization', eo);
