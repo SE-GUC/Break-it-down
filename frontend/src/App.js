@@ -3,8 +3,8 @@ import './App.css';
 import Admin from './pages/Admin'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, BrowserRouter} from "react-router-dom";
-import taskDescription from "../App/pages/taskDescription"
-import Home from "../App/pages/Home";
+import taskDescription from "../pages/taskDescription"
+import Home from "../pages/Home";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 class App extends Component {
@@ -34,11 +34,13 @@ class App extends Component {
                <Route exact path="/admin" component={Admin}/>
           </div>
       </div>
-      </BrowserRouter>
-        
+      
+              
       <Switch>
         <App />
       </Switch>
+      </BrowserRouter>
+
       
     );
   }
