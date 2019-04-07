@@ -1,16 +1,17 @@
 {
-  "name": "frontend",
+  "name": "app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
-    "json-stringify-safe": "^5.0.1",
+    "moment": "^2.24.0",
     "react": "^16.8.6",
-    "react-bootstrap-sweetalert": "^4.4.1",
+    "react-bootstrap": "^1.0.0-beta.6",
     "react-dom": "^16.8.6",
+    "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "^2.1.8"
+    "react-scripts": "2.1.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -21,7 +22,6 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:4000",
   "browserslist": [
     ">0.2%",
     "not dead",
