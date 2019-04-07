@@ -108,6 +108,25 @@ class App extends Component {
             path="/specificRoom/:Coid/:Roid"
             component={specificRoom}
           />
+          <Route exact path="/" component={UserHomePage} />
+          <Route
+            exact
+            path="/viewCoworkingspace"
+            component={viewcoWorkingSpace}
+          />
+          <Route
+            exact
+            path="/specificCoworkingSpace/:id"
+            component={specificCoworkingSpace}
+          />
+          <Route
+            exact
+            path="/specificRoom/:Coid/:Roid"
+            component={specificRoom}
+          />
+          <Route exact path="/admin/updates" component={MainUpdates} />
+
+          <Route exact path="/admin" component={Admin} />
         </Router>
       </div>
     );
