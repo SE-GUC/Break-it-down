@@ -76,13 +76,6 @@ app.use((req, res) => {
   res.status(404).send({ err: "We can not find what you are looking for" });
 });
 
-<<<<<<< HEAD
- //--------------------Server--------------------
-  const port = process.env.PORT || 4000;
- app.listen(port, () => console.log(`Server up and running on port ${port}`));
-
-=======
 //--------------------Server--------------------
 //  const port = process.env.PORT || 4000;
 // app.listen(port, () => console.log(`Server up and running on port ${port}`));
->>>>>>> df113443b59d3f107aff58a3da0e057889611d6b

@@ -19,6 +19,10 @@ import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization
 import taskDescription from "./pages/taskDescription"
 import Home from "./pages/Home";
 import { Switch } from "react-router-dom";
+import UserHomePage from "./pages/UserHomePage";
+import viewcoWorkingSpace from "./pages/viewCoworkingspace";
+import specificCoworkingSpace from "./pages/specificCoworkingSpace";
+import specificRoom from "./pages/specificRoom";
 
 class App extends Component {
   render() {
@@ -85,6 +89,22 @@ class App extends Component {
             path="/coworkingSpace/viewRoom/:coID/:rID"
             component={ViewRoom}
           />
+                                <Route exact path="/" component={UserHomePage} />
+                      <Route
+                        exact
+                        path="/viewCoworkingspace"
+                        component={viewcoWorkingSpace}
+                      />
+                      <Route
+                        exact
+                        path="/specificCoworkingSpace/:id"
+                        component={specificCoworkingSpace}
+                      />
+                      <Route
+                        exact
+                        path="/specificRoom/:Coid/:Roid"
+                        component={specificRoom}
+                      />
         </Router>
       </div>
     );
