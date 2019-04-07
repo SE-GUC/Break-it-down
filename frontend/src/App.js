@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
+import Home from "./pages/HomeCS";
 import List from "./pages/List";
 import CreateRoom from "./pages/CreateRoom";
 import Update from "./pages/Update";
@@ -16,8 +16,7 @@ import SignUpPartner from "./pages/signUpPartner";
 import SignUpCoworkingSpace from "./pages/signUpCoworkingSpace";
 import SignUpConsultancyAgency from "./pages/signUpConsultancyAgency";
 import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization";
-import taskDescription from "./pages/taskDescription"
-import Home from "./pages/Home";
+import taskDescription from "./pages/taskDescription";
 import { Switch } from "react-router-dom";
 import UserHomePage from "./pages/UserHomePage";
 import viewcoWorkingSpace from "./pages/viewCoworkingspace";
@@ -82,29 +81,33 @@ class App extends Component {
             path="/coworkingSpace/viewAllRooms/:coID"
             component={AllRooms}
           />
-          <Route exact path="/checkTaskDescriptions/:PID/:TID" component={taskDescription} />
+          <Route
+            exact
+            path="/checkTaskDescriptions/:PID/:TID"
+            component={taskDescription}
+          />
 
           <Route
             exact
             path="/coworkingSpace/viewRoom/:coID/:rID"
             component={ViewRoom}
           />
-                                <Route exact path="/" component={UserHomePage} />
-                      <Route
-                        exact
-                        path="/viewCoworkingspace"
-                        component={viewcoWorkingSpace}
-                      />
-                      <Route
-                        exact
-                        path="/specificCoworkingSpace/:id"
-                        component={specificCoworkingSpace}
-                      />
-                      <Route
-                        exact
-                        path="/specificRoom/:Coid/:Roid"
-                        component={specificRoom}
-                      />
+          <Route exact path="/" component={UserHomePage} />
+          <Route
+            exact
+            path="/viewCoworkingspace"
+            component={viewcoWorkingSpace}
+          />
+          <Route
+            exact
+            path="/specificCoworkingSpace/:id"
+            component={specificCoworkingSpace}
+          />
+          <Route
+            exact
+            path="/specificRoom/:Coid/:Roid"
+            component={specificRoom}
+          />
         </Router>
       </div>
     );

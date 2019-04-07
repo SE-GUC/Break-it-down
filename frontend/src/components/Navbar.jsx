@@ -9,7 +9,6 @@ class NavbarPage extends Component {
   render() {
     return (
       <Navbar bg="dark" variant="dark" sticky="top">
-        <img src={require("../Logo.svg")} width="100" height="80" />
         <Nav className="mr-auto">
           <Link to={`/`}>
             <button className="btn btn-link m-2">Home</button>
