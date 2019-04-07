@@ -22,6 +22,8 @@ import UserHomePage from "./pages/UserHomePage";
 import viewcoWorkingSpace from "./pages/viewCoworkingspace";
 import specificCoworkingSpace from "./pages/specificCoworkingSpace";
 import specificRoom from "./pages/specificRoom";
+import MainUpdates from "./components/MainUpdates";
+import Admin from "./pages/Admin";
 
 class App extends Component {
   render() {
@@ -108,7 +110,6 @@ class App extends Component {
             path="/specificRoom/:Coid/:Roid"
             component={specificRoom}
           />
-          <Route exact path="/" component={UserHomePage} />
           <Route
             exact
             path="/viewCoworkingspace"
