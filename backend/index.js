@@ -71,7 +71,6 @@ app.use("/api/educationalOrganization", eo);
 app.use("/api/partner", partner);
 app.use("/api/consultancyAgency", ca);
 app.use("/api/CreateAccount", ProfilesAPI);
-
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {
   res.status(404).send({ err: "We can not find what you are looking for" });
