@@ -6,6 +6,10 @@ import viewall from './screens/viewAll'
 import {Provider} from 'react-redux'
 import EventList from './components/EventList'
 import TaskList from './components/TaskList'
+import UserHomePage from "./pages/UserHomePage";
+import viewcoWorkingSpace from "./pages/viewCoworkingspace";
+import specificCoworkingSpace from "./pages/specificCoworkingSpace";
+import specificRoom from "./pages/specificRoom";
 
 import store from './store'
 
