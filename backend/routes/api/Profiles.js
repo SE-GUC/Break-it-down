@@ -1,147 +1,325 @@
-const axios = require('axios');
-const User=require('../../models/UserProfile');
+const express = require("express");
 
+const bcrypt = require("bcryptjs");
 
-const functions = {
+const router = express.Router();
 
-    
-  createAccountMember:async ()=>{
-    const users=await User.find({'type':'member'});
-    const x=users.length;
-    console.log(x)
-    await axios.post('http://localhost:4000/api/CreateAccount/member',
-    {field:'test',memberTasks:[],name:'test',password:'test','birthday':'1/2/2003',
-    'email':'testing@test.com','phoneNumber':'100000'})
-    .then(function (response) {
-        console.log('member create is successful')
-   })
-   .catch(function (error) {
-     console.log(error)
-   });
-   const newUsers=await User.find({'type':'member'});
-    const y=newUsers.length;
-    console.log(y);
-    await User.deleteOne({'email':'testing@test.com'})	
-   
-    if(y==x+1)
-     return true
-     else return false
- },
- createAccountPartner:async ()=>{
-  const users=await User.find({'type':'partner'});
-  const x=users.length;
-  console.log(x)
-  await axios.post('http://localhost:4000/api/CreateAccount/partner',
-  {name:'test',tasks:[],password:'12345',email:'testingPartner@test.com',
-  address:'test',website:'test','phoneNumber':'00000001','field':'test',description:'test',partners:[],boardMembers:[] ,events:[] })
-  .then(function (response) {
-      console.log('partner create is successful')
- })
- .catch(function (error) {
-   console.log(error)
- });
- const newUsers=await User.find({'type':'partner'});
-  const y=newUsers.length;
-  console.log(y);
-  await User.deleteOne({'email':'testingPartner@test.com'})	
- 
-  if(y==x+1)
-   return true
-   else return false
-},
-createAccountCoworkingSpace:async ()=>{
-  const users=await User.find({'type':'coworkingSpace'});
-  const x=users.length;
-  console.log(x)
-  await axios.post('http://localhost:4000/api/CreateAccount/coworkingSpace',
-  {name:'test',tasks:[],password:'12345',email:'testingcoworkingSpace@test.com',
-  address:'test',website:'test','phoneNumber':'00000001','field':'test',description:'test',facilities:[],rooms:[]})
-  .then(function (response) {
-      console.log('coworking space create is successful')
- })
- .catch(function (error) {
-   console.log(error)
- });
- const newUsers=await User.find({'type':'coworkingSpace'});
-  const y=newUsers.length;
-  console.log(y);
-  await User.deleteOne({'email':'testingcoworkingSpace@test.com'})	
- 
-  if(y==x+1)
-   return true
-   else return false
-}
-,
-createAccountEducationalOrganization:async ()=>{
-  const users=await User.find({'type':'educationalOrganization'});
-  const x=users.length;
-  console.log(x)
-  await axios.post('http://localhost:4000/api/CreateAccount/educationalOrganization',
-  {name:'test',tasks:[],password:'12345',email:'educationalOrganization@test.com',
-  address:'test',website:'test','phoneNumber':'00000001',description:'test','trainers':[],trainingPrograms:[],certificates:[]})
-  .then(function (response) {
-      console.log('educational organization create is successful')
- })
- .catch(function (error) {
-   console.log(error)
- });
- const newUsers=await User.find({'type':'educationalOrganization'});
-  const y=newUsers.length;
-  console.log(y);
-  await User.deleteOne({'email':'educationalOrganization@test.com'})	
- 
-  if(y==x+1)
-   return true
-   else return false
-} 
-,
-createAccountConsultancyAgency:async ()=>{
-  const users=await User.find({'type':'consultancyAgency'});
-  const x=users.length;
-  console.log(x)
-  await axios.post('http://localhost:4000/api/CreateAccount/consultancyAgency',
-  {name:'test',tasks:[],password:'12345',email:'consultancyAgency@test.com',
-  address:'test',website:'test','phoneNumber':'00000001',description:'test',partners:[],boardMembers:[],events:[],reports:[]})
-  .then(function (response) {
-      console.log('consultancy agency create is successful')
- })
- .catch(function (error) {
-   console.log(error)
- });
- const newUsers=await User.find({'type':'consultancyAgency'});
-  const y=newUsers.length;
-  console.log(y);
-  await User.deleteOne({'email':'consultancyAgency@test.com'})	
- 
-  if(y==x+1)
-   return true
-   else return false
-} ,
-createAccountAdmin:async ()=>{
-  const users=await User.find({'type':'admin'});
-  const x=users.length;
-  console.log(x)
-  await axios.post('http://localhost:4000/api/CreateAccount/admin',
-  {name:'test',password:'12345',email:'admin@test.com','phoneNumber':'00000001'})
-  .then(function (response) {
-      console.log('consultancy agency create is successful')
- })
- .catch(function (error) {
-   console.log(error)
- });
- const newUsers=await User.find({'type':'admin'});
-  const y=newUsers.length;
-  console.log(y);
-  await User.deleteOne({'email':'admin@test.com'})	
- 
-  if(y==x+1)
-   return true
-   else return false
-} 
-   
+const User = require("../../models/UserProfile");
 
-        
+const validator = require("../../Validations/validations");
 
-};
+router.get("/", (req, res) => res.json({ data: "Users working" }));
 
-module.exports = functions;
+router.post("/member", async (req, res) => {
+  const {
+    field,
+    memberTasks,
+    name,
+    password,
+    birthday,
+    email,
+    phoneNumber,
+    skills,
+    interests,
+    accomplishments,
+    certificates
+  } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "member",
+    field,
+    memberTasks,
+    activation: false,
+    name,
+    password: hashedPassword,
+    birthday,
+    email,
+    phoneNumber,
+    skills,
+    interests,
+    accomplishments,
+    certificates,
+    RoomsBooked: [],
+    updates: []
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+router.post("/partner", async (req, res) => {
+  const {
+    name,
+    tasks,
+    password,
+    email,
+    address,
+    website,
+    phoneNumber,
+    field,
+    description,
+    partners,
+    boardMembers,
+    events
+  } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "partner",
+    name,
+    activation: false,
+    tasks,
+    password: hashedPassword,
+    email,
+    address,
+    website,
+    phoneNumber,
+    field,
+    description,
+    partners,
+    boardMembers,
+    events,
+    updates: []
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+router.post("/coworkingSpace", async (req, res) => {
+  const {
+    name,
+    password,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    facilities,
+    rooms
+  } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "coworkingSpace",
+    name,
+    activation: false,
+    password: hashedPassword,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    facilities,
+    rooms,
+    updates: []
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+router.post("/educationalOrganization", async (req, res) => {
+  const {
+    name,
+    password,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    trainers,
+    trainingPrograms,
+    certificates
+  } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "educationalOrganization",
+    name,
+    activation: false,
+    password: hashedPassword,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    trainers,
+    trainingPrograms,
+    certificates,
+    updates: []
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+router.post("/consultancyAgency", async (req, res) => {
+  const {
+    name,
+    password,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    partners,
+    boardMembers,
+    events,
+    reports
+  } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "consultancyAgency",
+    name,
+    activation: false,
+    password: hashedPassword,
+    email,
+    address,
+    website,
+    phoneNumber,
+    description,
+    partners,
+    boardMembers,
+    events,
+    reports,
+    updates: []
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+router.post("/admin", async (req, res) => {
+  const { name, password, email, address, phoneNumber } = req.body;
+
+  const isValidated = validator.createAccountValidation(req.body);
+
+  if (isValidated.error)
+    return res
+      .status(400)
+      .send({ error: isValidated.error.details[0].message });
+
+  const user = await User.findOne({ email });
+
+  if (user) return res.status(400).json({ error: "Email already exists" });
+
+  const salt = bcrypt.genSaltSync(10);
+
+  const hashedPassword = bcrypt.hashSync(password, salt);
+
+  const newUser = new User({
+    type: "admin",
+    name,
+    password: hashedPassword,
+    email,
+    phoneNumber
+  });
+
+  newUser
+
+    .save()
+
+    .then(user => res.json({ data: user }))
+
+    .catch(err => res.json({ error: "Can not create user" }));
+});
+
+module.exports = router;
