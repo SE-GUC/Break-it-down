@@ -3,9 +3,9 @@ import './App.css';
 import Admin from './pages/Admin'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, BrowserRouter} from "react-router-dom";
-import taskDescription from "../pages/taskDescription"
-import Home from "../pages/Home";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import taskDescription from "./pages/taskDescription"
+import Home from "./pages/Home";
+import { Switch } from "react-router-dom";
 
 class App extends Component {
 
