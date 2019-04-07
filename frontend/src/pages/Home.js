@@ -24,7 +24,7 @@ class Home extends Component {
         </button>
       </Link>
 
-      <Link to={`/coworkingSpace/viweInfo/${coID}`}>
+      <Link to={`/coworkingSpace/viewInfo/${coID}`}>
       <button className="btn btn-primary btn-sm m-2">
             View info
         </button>
