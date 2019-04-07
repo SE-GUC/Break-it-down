@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import viewall from './screens/viewAll'
 import {Provider} from 'react-redux'
 import EventList from './components/EventList'
 import TaskList from './components/TaskList'
