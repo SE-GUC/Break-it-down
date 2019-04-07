@@ -16,6 +16,9 @@ import SignUpPartner from "./pages/signUpPartner";
 import SignUpCoworkingSpace from "./pages/signUpCoworkingSpace";
 import SignUpConsultancyAgency from "./pages/signUpConsultancyAgency";
 import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization";
+import taskDescription from "./pages/taskDescription"
+import Home from "./pages/Home";
+import { Switch } from "react-router-dom";
 
 class App extends Component {
   render() {
@@ -75,6 +78,8 @@ class App extends Component {
             path="/coworkingSpace/viewAllRooms/:coID"
             component={AllRooms}
           />
+          <Route exact path="/checkTaskDescriptions/:PID/:TID" component={taskDescription} />
+
           <Route
             exact
             path="/coworkingSpace/viewRoom/:coID/:rID"
