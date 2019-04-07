@@ -389,29 +389,28 @@ router.post("/createTask/:id", async (req, res) => {
   return res.json(newtask);
 });
 
-//--------------------------Partner view task's applicants -----------------------------------//  testing done
-router.get("/view/:idP/:idT", async (req, res) => {
-  const partnerID = parseInt(req.params.idP);
-  const taskIDb = parseInt(req.params.idT);
-  const partner = await users.find({ type: "partner", userID: partnerID });
-  let data = "";
-  var task = {};
-  for (var i = 0; i < partner.length; i++) {
-    for (var j = 0; j < partner[i].tasks.length; j++) {
-      if (partner[i].tasks[j].taskID === taskIDb)
-        task = partner[i].tasks[j].applicants;
-      data =
-        "task id:" +
-        partner[i].tasks[j].taskID +
-        "  " +
-        "task name:" +
-        partner[i].tasks[j].name;
-    }
-  }
-  //console.log(task)
+//-----------------------------------partner view a task's life cycle -------------------------------------------// testing done
 
-  res.send({ data, task });
-});
+router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
+    const partnerID = parseInt(req.params.PID);
+    const Task_id = parseInt(req.params.TID);
+  
+    const partner = await users.findOne({ type: "partner", userID: partnerID });
+    // console.log(partner)
+    const Task_Array = partner.tasks;
+    //console.log(partner.tasks)
+  
+    var lifeCyc = [];
+    let data = "";
+    for (var i = 0; i < Task_Array.length; i++) {
+      if (Task_Array[i].taskID === Task_id) {
+        lifeCyc = Task_Array[i].lifeCycle;
+        data = Task_Array[i].name;
+      }
+    }
+  
+    res.send(lifeCyc);
+  });
 //-------------------------choose and send the applicant to the admin to assign-------------------------//  testing done
 
 
