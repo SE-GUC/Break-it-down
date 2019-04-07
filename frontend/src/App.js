@@ -105,6 +105,17 @@ class App extends Component {
                         path="/specificRoom/:Coid/:Roid"
                         component={specificRoom}
                       />
+       <Route
+            exact
+            path="/admin/updates"
+            component={MainUpdates}
+          />
+
+          <Route
+            exact
+            path="/admin"
+            component={Admin}
+          />
         </Router>
       </div>
     );
