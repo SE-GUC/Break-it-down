@@ -424,20 +424,27 @@ router.get("/allTasks", async (req, res) => {
  })
 */
 // Update member (Malak&Nour) done except id non existent case
-router.put("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const member = await Members.findOne({ id });
-    //if(!member) return res.status(404).send({error: 'Member does not exist'})
-    // const isValidated = validator.updateValidation(req.body)
-    //if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-    const updatedMember = await Members.updateOne(req.body);
-    res.json({ msg: "Member updated successfully" });
-  } catch (error) {
-    // We will be handling the error later
-    console.log(error);
-  }
-});
+router.put('/:id', async (req,res) => {
+	try {
+		var max32 = Math.pow(2, 32) - 1
+	var ID = Math.floor(Math.random() * max32);
+		const id = req.params.id
+		const upd=Object.assign({_id:ID}, req.body);
+	
+		console.log(upd)
+		users.update( 
+			{'_id':id},
+			{$push: {'updates':upd}}) 
+			.then(res.json({msg: 'awaiting admin approval'}))
+			.catch(res.json({msg: 'error occured'}))
+	
+	
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}   
+})
 
 // Delete Member (Malak&Nour) MONGOUPDATED
 router.delete("/:id", async (req, res) => {

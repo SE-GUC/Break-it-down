@@ -3,16 +3,29 @@ import '../App.css';
 import {Container, ListGroup, ListGroupItem, Button, Modal, ModalHeader, ModalBody, ModalFooter , Form, FormGroup, Label, Input, FormText} from 'reactstrap';
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
 import {connect} from 'react-redux'
-import {getMyPartners} from '../actions/ConsultancyAgencyActions'
+import {getMyPartners,getPartnerTasks} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
 
 class CAPartners extends Component{
     
+    state = {
+        modal: false,
+          } 
     componentDidMount(){
  }
+ onPartnerClick =(_id) =>{
+     this.toggle();
+    this.props.getPartnerTasks(_id);
+ }
+ toggle=()=> {
+    this.setState(prevState => ({
+      modal: !prevState.modal
+    }));
+  }
 render(){
 this.props.getMyPartners();
 const {mypartners}=this.props.ca
+const {partnertasks}=this.props.ca
     return(
     
     <Container  >
@@ -22,8 +35,9 @@ const {mypartners}=this.props.ca
             <TransitionGroup className="mypartner-list">
             {mypartners.map( item => (
                <CSSTransition key={item._id} timeout={500} >
-                <ListGroupItem >
-                   {item.name}
+               <ListGroupItem >
+                <Button block  onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
+                   
                 </ListGroupItem>
                 </CSSTransition>
           ))}
@@ -37,7 +51,22 @@ const {mypartners}=this.props.ca
             </TransitionGroup>
         </ListGroup>
         <br/>
-       
+        <Modal isOpen= {this.state.modal} toggle={this.toggle}>
+       <ModalHeader >
+       Partner Tasks
+       </ModalHeader>
+           <ModalBody>
+               <ListGroup>
+                {partnertasks.map( task => (
+                    <CSSTransition key={task._id} timeout={500} >
+                    <ListGroupItem >
+                    <Button block >{task.name} </Button>
+                        
+                    </ListGroupItem>
+                </CSSTransition>  ))}   
+                 </ListGroup>    
+             </ModalBody>
+       </Modal>
     </Container>
  
 
@@ -48,11 +77,12 @@ const {mypartners}=this.props.ca
 
 CAPartners.propTypes={
  getMyPartners: PropTypes.func.isRequired,
- capartners:PropTypes.object.isRequired   //The state mapped to a prop
+ capartners:PropTypes.object.isRequired , //The state mapped to a prop
+ getPartnerTasks:PropTypes.func.isRequired
 }
 const mapStateToProps = (state) =>
 ({
     ca: state.ca
 });
 
-export default connect(mapStateToProps, {getMyPartners})(CAPartners)
+export default connect(mapStateToProps, {getMyPartners,getPartnerTasks})(CAPartners)

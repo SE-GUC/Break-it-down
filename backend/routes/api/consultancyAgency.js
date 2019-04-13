@@ -41,7 +41,17 @@ router.get('/Partners/:_id', async (req, res) => {
 	}
 	
 	})
-	
+	//----------------viewTasks----------------
+router.get('/viewTasks/:_id', async (req, res) =>{
+	try{
+		users.findById(req.params._id)
+		.then(partner =>
+			res.json({tasks:partner.tasks}))
+	}
+	catch{
+		res.json({msg:"error"})
+	}
+})
 
 //--------------------filter tasks--------------------
 router.get('/filterTasks/:memberID', async (req, res) =>{
@@ -368,24 +378,28 @@ router.get('/:id', (req, res) => {
 	}
   });
 
-//------------------Update consultancyAgency (Malak&Nour) done except id non existent case--------------
+//------------------Update consultancyAgency (Malak&Nour)--------------
 router.put('/:id', async (req,res) => {
-try {
-	const id = req.params.id
-		const consultancyAgency = await ConsultancyAgency.findOne({id})
-	// if(!consultancyAgency) return res.status(404).send({error: 'consultancyAgency does not exist'})
-// const isValidated = validator.updateValidation(req.body)
-	//if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-		
-		const updatedConsultancyAgency = await ConsultancyAgency.updateOne(req.body)
-
-	res.json({msg: 'consultancyAgency updated successfully'})
-}
-catch(error) {
-		// We will be handling the error later
-		console.log(error)
-}  
-})
+	try {
+		var max32 = Math.pow(2, 32) - 1
+	var ID = Math.floor(Math.random() * max32);
+		const id = req.params.id
+		const upd=Object.assign({_id:ID}, req.body);
+	
+		console.log(upd)
+		users.update( 
+			{'_id':id},
+			{$push: {'updates':upd}}) 
+			.then(res.json({msg: 'awaiting admin approval'}))
+			.catch(res.json({msg: 'error occured'}))
+	
+	
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+	})
 
 
 //---------------Delete consultancyAgency (Malak&Nour) MONGOUPDATED----------------
