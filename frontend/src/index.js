@@ -12,12 +12,14 @@ import {
   import EventList from './components/EventList'
   import TaskList from './components/TaskList'
   import store from './store'
+  import consultancyAgencyStories from './components/consultancyAgencyStories';
 
 
 ReactDOM.render(    <Provider store={store}>
     <BrowserRouter>
     <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
+    <Route exact path="/ConsultancyAgency" component={consultancyAgencyStories}/>
 
 
     </BrowserRouter>

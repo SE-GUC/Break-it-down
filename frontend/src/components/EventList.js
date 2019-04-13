@@ -6,6 +6,8 @@ import {connect} from 'react-redux'
 import {getEvents} from '../actions/EventActions'
 import PropTypes from 'prop-types'
 import uuid from 'uuid'
+import AddEvent from './AddEventModal';
+
 
 class EventList extends Component{
     
@@ -31,7 +33,7 @@ render(){
             </TransitionGroup>
         </ListGroup>
         <br/>
-     
+        <AddEvent></AddEvent>
        
         <div>
        

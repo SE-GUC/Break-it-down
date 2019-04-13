@@ -26,7 +26,22 @@ router.get('/viewmessages', async (req, res) => {
     res.json({ data: updt })
 })
 
+//---Get my partner----// Malak
+router.get('/Partners/:_id', async (req, res) => {
 
+	//the id is currently hardcoded with postman, it is my own id and should be taken from the token
+	try{
+		users.findById(req.params._id)
+		.then(myca =>{
+			res.json({partners:myca.partners})})
+	
+	}
+	catch{
+		res.json({msg:"yuf"})
+	}
+	
+	})
+	
 
 //--------------------filter tasks--------------------
 router.get('/filterTasks/:memberID', async (req, res) =>{
