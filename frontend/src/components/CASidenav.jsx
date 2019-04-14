@@ -10,6 +10,8 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import SvgIcon from "react-icons-kit";
 import {users} from 'react-icons-kit/icomoon/users'
 import { home } from "react-icons-kit/icomoon/home";
+import {clipboard} from 'react-icons-kit/icomoon/clipboard'
+
 export default class CASidenav extends Component {
   render() {
     return (
@@ -39,6 +41,14 @@ export default class CASidenav extends Component {
                     </NavIcon>
                     <NavText>My Partners</NavText>
                   </NavItem>
+
+                  <NavItem eventKey="ConsultancyAgency/Tasks">
+                    <NavIcon>
+                      <SvgIcon size={20} icon={clipboard} />
+                    </NavIcon>
+                    <NavText>My Assigned Tasks</NavText>
+                  </NavItem>
+
                 </SideNav.Nav>
               </SideNav>
               <main />

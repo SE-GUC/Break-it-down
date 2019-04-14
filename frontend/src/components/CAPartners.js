@@ -39,7 +39,7 @@ const {partnertasks}=this.props.ca
             {mypartners.map( item => (
                <CSSTransition key={item._id} timeout={500} >
                <ListGroupItem >
-                <Button block  color= 'warning' onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
+                <Button block outline color= "warning" onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
                    
                 </ListGroupItem>
                 </CSSTransition>

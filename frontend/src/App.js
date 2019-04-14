@@ -27,6 +27,7 @@ import Admin from "./pages/Admin";
 import CAHome from "./pages/CAHome";
 import CAPartners from "./components/CAPartners";
 import CATaskApplicantModal from "./components/CATaskApplicantModal";
+import CATasks from "./components/CATasks";
 
 
 class App extends Component {
@@ -139,6 +140,9 @@ class App extends Component {
             path="/ConsultancyAgency/viewTaskApplicants/:idP/:idT"
             component={CATaskApplicantModal}
           />
+          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
+
+
           
 
         </Router>
