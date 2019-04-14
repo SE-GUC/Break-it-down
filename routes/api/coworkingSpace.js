@@ -4,8 +4,8 @@ const router = express.Router()
 const passport = require('passport')
 
 const Joi = require('joi');
-const validator = require('../../Validations/CoworkingSpaceValidations');
 const validatorSchedule = require('../../Validations/ScheduleValidate')
+const validator = require('../../Validations/CoworkingSpaceValidations');
 //--------------------models--------------------
 const users = require('../../models/UserProfile');
 const User = require('../../models/UserProfile')
