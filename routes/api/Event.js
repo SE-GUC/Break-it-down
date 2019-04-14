@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 //-------------Models---------------
-const Event = require('../../Models/EventModel');
+const Event = require('../../models/EventModel');
 
 
 //-------------Get all events MONGOUPDATED------------------
