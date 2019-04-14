@@ -15,7 +15,7 @@ import SignUpCoworkingSpace from "./pages/signUpCoworkingSpace";
 import SignUpConsultancyAgency from "./pages/signUpConsultancyAgency";
 import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization";
 import taskDescription from "./pages/taskDescription";
-import UserHomePage from "./pages/UserHomePage";
+import MemberHomePage from "./pages/MemberHomePage";
 import viewcoWorkingSpace from "./pages/viewCoworkingspace";
 import specificCoworkingSpace from "./pages/specificCoworkingSpace";
 import specificRoom from "./pages/specificRoom";
@@ -26,7 +26,8 @@ import UpdateRoomBooking from "./components/UpdateRoomBooking";
 import ViewRoomBookings from "./components/ViewRoomBookings";
 import MemberProfile from "./pages/profileMember";
 import ProfileCO from "./pages/profileCO";
-
+import MemberMyRoomBooking from "./pages/MemberMyRoomBooking";
+import MemberViewAllmembers from "./pages/MemberViewAllmembers";
 class App extends Component {
   render() {
     const App = () => (
@@ -34,6 +35,7 @@ class App extends Component {
         <Router>
           <Route exact path="/" component={Login} />
 
+          <Route exact path="/MemberHomePage" component={MemberHomePage} />
           <Route exact path="/signup" component={SignUp} />
 
           <Route exact path="/signup/member" component={SignUpMember} />
@@ -88,38 +90,28 @@ class App extends Component {
             component={ViewRoom}
           />
 
-          <Route exact path="/" component={UserHomePage} />
+          <Route
+            exact
+            path="/viewCoworkingspace"
+            component={viewcoWorkingSpace}
+          />
+          <Route
+            exact
+            path="/specificCoworkingSpace/:id"
+            component={specificCoworkingSpace}
+          />
+          <Route
+            exact
+            path="/specificRoom/:Coid/:Roid"
+            component={specificRoom}
+          />
+          <Route exact path="/AllMembersmem" component={MemberViewAllmembers} />
+          <Route
+            exact
+            path="/RoombookingsMem/:id"
+            component={MemberMyRoomBooking}
+          />
 
-          <Route
-            exact
-            path="/viewCoworkingspace"
-            component={viewcoWorkingSpace}
-          />
-          <Route
-            exact
-            path="/specificCoworkingSpace/:id"
-            component={specificCoworkingSpace}
-          />
-          <Route
-            exact
-            path="/specificRoom/:Coid/:Roid"
-            component={specificRoom}
-          />
-          <Route
-            exact
-            path="/viewCoworkingspace"
-            component={viewcoWorkingSpace}
-          />
-          <Route
-            exact
-            path="/specificCoworkingSpace/:id"
-            component={specificCoworkingSpace}
-          />
-          <Route
-            exact
-            path="/specificRoom/:Coid/:Roid"
-            component={specificRoom}
-          />
           <Route exact path="/admin/updates" component={MainUpdates} />
 
           <Route exact path="/admin" component={Admin} />

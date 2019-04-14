@@ -25,7 +25,7 @@
     "zlib": "^1.0.5",
     "node-mailer": "^0.1.1",
     "node-notifier": "^5.4.0",
-     "cron": "^1.7.0"
+    "cron": "^1.7.0"
   },
   "devDependencies": {
     "jest": "^24.5.0",

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 //import coworkingspace from "./viewCoworkingSpaces";
-export default class UserHomePage extends Component {
+export default class MemberHomePage extends Component {
   render() {
     return (
       <div id="postData">
