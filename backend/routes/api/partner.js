@@ -553,27 +553,28 @@ router.post("/createTask/:id", async (req, res) => {
 
 //--------------------------Partner view task's applicants -----------------------------------//  testing done
 
-router.get("/viewTaskApplicants/:idP/:idT", async (req, res) => {
-  const partnerID = parseInt(req.params.idP);
-  const taskIDb = parseInt(req.params.idT);
-  const partner = await users.find({ type: "partner", userID: partnerID });
-  let data = "";
-  var task = {};
-  for (var i = 0; i < partner.length; i++) {
-    for (var j = 0; j < partner[i].tasks.length; j++) {
-      if (partner[i].tasks[j].taskID === taskIDb)
-        task = partner[i].tasks[j].applicants;
-      data =
-        "task id:" +
-        taskIDb +
-        "  " +
-        "task name:" +
-        partner[i].tasks[j].name;
-    }
+router.get("/view/:PID/:TID", async (req, res) => {
+  const partnerID = objectid(req.params.PID);
+  const taskIDb = parseInt(req.params.TID);
+  const partner = await users.findOne(partnerID);
+  var task2 = {};
+  if(partner === null )
+  {
+    res.json("the partner id is not correct")
   }
-  //console.log(task)
-
-  res.send({ data, task });
+  else{
+    var task = partner.tasks
+    var t = task.find(task => task.taskID === taskIDb)
+      
+      if(t === null)
+       {
+         res.json("the task Id is not correct")
+        }
+   else{
+       res.send(t.applicants);
+   }   
+  }
+ 
 });
 
 //-------------------------choose and send the applicant to the admin to assign-------------------------//  testing done

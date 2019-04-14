@@ -6,7 +6,6 @@ import {connect} from 'react-redux'
 import {getMyPartners,getPartnerTasks} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
 import CASidenav from './CASidenav';
-import CATaskApplicantModal from './CATaskApplicantModal';
 
 class CAPartners extends Component{
     

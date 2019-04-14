@@ -42,12 +42,13 @@ export const getPartnerTasks = (_id) =>  dispatch =>{
   })})
 }
 export const getApplicants = (idp,idt) =>  dispatch =>{
-  axios.get('/api/ConsultancyAgency/viewTaskApplicants/'+idp+'/'+idt)
+  axios.get('/api/Partner/view/'+idp+'/'+idt)
   .then(res =>{
+    console.log(res.data)
      dispatch({
     type: GET_APPLICANTS,
     payload: res.data
-  })})
+  } ) })
 }
 
 export const getMyTasks = () =>  dispatch =>{
