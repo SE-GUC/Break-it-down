@@ -4,11 +4,9 @@ import "./App.css";
 import Home from "./pages/HomeCS";
 import List from "./pages/List";
 import CreateRoom from "./pages/CreateRoom";
-import Update from "./pages/Update";
 import CreateSch from "./pages/Createsch";
 import ViewRoom from "./pages/ViewRoom";
 import AllRooms from "./pages/AllRooms";
-import ViewInfo from "./pages/Cospaceinfo";
 import Login from "./pages/login";
 import SignUp from "./pages/signUp";
 import SignUpMember from "./pages/signUpMember";
@@ -27,6 +25,7 @@ import Suggestions from "./components/Suggestions";
 import UpdateRoomBooking from "./components/UpdateRoomBooking";
 import ViewRoomBookings from "./components/ViewRoomBookings";
 import MemberProfile from "./pages/profileMember";
+import ProfileCO from "./pages/profileCO";
 
 class App extends Component {
   render() {
@@ -55,7 +54,8 @@ class App extends Component {
             component={SignUpEducationalOrganization}
           />
 
-          <Route exact path="/coworkingSpace" component={Home} />
+          <Route exact path="/coworkingSpace" component={ProfileCO} />
+
           <Route
             exact
             path="/coworkingSpace/viewRoomSchedule/:coID/:rID"
@@ -65,16 +65,6 @@ class App extends Component {
             exact
             path="/coworkingSpace/create/:coID"
             component={CreateRoom}
-          />
-          <Route
-            exact
-            path="/coworkingSpace/updateCospace/:coID"
-            component={Update}
-          />
-          <Route
-            exact
-            path="/coworkingSpace/viewInfo/:coID"
-            component={ViewInfo}
           />
           <Route
             exact
@@ -97,7 +87,9 @@ class App extends Component {
             path="/coworkingSpace/viewRoom/:coID/:rID"
             component={ViewRoom}
           />
+
           <Route exact path="/" component={UserHomePage} />
+
           <Route
             exact
             path="/viewCoworkingspace"

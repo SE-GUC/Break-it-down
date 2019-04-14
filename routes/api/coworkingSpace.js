@@ -13,7 +13,52 @@ const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule')
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 
+//---------------------------------Nourhan-----------------------------------------------------------------------
+//Facilities
+//create a facility
+router.post('/addfacility/:idC', async (req,res) => {
+  try {
+  
+  var  cospace= await users.find({'_id':req.params.idC})
+  if(cospace===undefined || cospace.length==0) return res.send({error:'Coworking space does not exist.'})
+  //Room validation 
+ 
 
+  const newFacility =req.body;
+  // console.log(newFacility)
+  User.findOneAndUpdate({'_id':req.params.idC}, {$addToSet: {facilities : newFacility}}, (err, cospaceRooms) => {
+  if (err) {
+    res.json("Something wrong when updating data!");
+  }
+  
+  res.json({msg:'Room was created successfully', data: newFacility})
+  });
+  
+  }
+  catch(error) {
+  res.json({error:"Failed to create the room."});
+  } 
+  });
+
+  
+//Delete a facility
+  router.delete('/deletefacility/:idC/', async (req, res) => { 
+    try{
+    
+    const cospace = await users.find({type:"coworkingSpace",'_id':objectid(req.params.idC)})
+    if(cospace===undefined || cospace.length==0) return res.send({error:'Coworking space does not exist.'})
+
+    //console.log(req.body)
+    users.update( {'_id': objectid(req.params.idC)}, { $pull: { facilities: {$in:  req.body } } },{ multi: true }, async function(err, model){
+            
+        if(err)  res.json(error)
+        else res.status(200).json({msg:'Deleted'})
+    });   
+    }
+    catch(error) {
+    res.json(error)
+    } 
+    });
 //---------------------------------Mariam------------------------------------------------------------------------
 
 // View all coworking spaces  TESTED ..
