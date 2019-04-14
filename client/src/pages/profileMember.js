@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import profile from "../profile.svg";
 import Image from "react-image-resizer";
-import Post from "../components/PostView";
-import PostEdit from "../components/PostEdit";
+import Post from "../components/Post";
 import {
   faPhone,
   faAt,
