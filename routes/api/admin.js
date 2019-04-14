@@ -1,10 +1,16 @@
 //--------------------express--------------------
 const express = require('express');
 const router = express.Router();
+var Mongoose = require("mongoose");
+var ObjectId = Mongoose.Types.ObjectId
+const Joi = require('joi')
+const notifier = require('node-notifier')
+const cron = require('cron')
+const nodemailer = require('nodemailer');
+
 
 //--------------------models--------------------
 const users = require('../../models/UserProfile');
-
 const message = require('../../models/messages');
 
 
@@ -126,234 +132,527 @@ router.delete('/disapproveUpdates/:id/:uid',async(req,res)=>{
 });
 
 
+//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
+//--------------------------------------notification with Mail-------------------------------------------
+const nodemailer = require('nodemailer');
+
+function sendMailToUsers(recieverEmail, subjectff, textxxx){
+
+  const subjectttt = subjectff
+  const textggg = textxxx  
+
+  let transporter = nodemailer.createTransport({
+    service:'gmail',
+    auth: {
+      user: "breakitdown.se@gmail.com",
+      pass:  "break_1234"
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+  });
+
+  let mailOptions = {
+      from:'breakitdown.se@gmail.com',
+      to: recieverEmail,
+      subject: subjectttt,
+      text: textggg
+    //   subject: "Hello ✔", // Subject line
+    //   text: "Hello world?", // plain text body
+    //  html: "<b>Hello world?</b>" // html body
+  };
+  
+    transporter.sendMail( mailOptions, function (error,info){
+      if(error){
+          console.log("something went wrong please try again later ");
+      }
+      else{
+          console.log('email sent successfully');
+      }
+  });
+}
+
+//--------------------------------------NotifyUsersToSignContract-------------------------------------------
+router.put('/NotifyUsersToSignContract/:PID', async(req, res)=> {
+
+  const PartID = req.params.PID
+  const partner = await users.findOne({'_id':PartID})
+  const email = partner.email
+  const name = partner.name
+  console.log(email)
+
+  const {appointment, day, location} = req.body
+
+  const schema = {
+    appointment: Joi.string().required(),
+    day: Joi.string().required(),
+    location: Joi.string().required()
+ };
+
+const result = Joi.validate(req.body, schema);
+
+if(result.error){
+    return  res.send(result.error.details[0].message)
+   }
+
+else {
+  const message =  `Hi ${name}! 
+                    Thanks for signing up with LirtenHub.
+                    To verify your account please meet with one of our team on ${day} at ${appointment} in ${location}.
+                    If the appointment doesn't suite you, please contact us through our email.`
+
+ // const subject =  "Urgent! LirtenHub Contract & Agreement"                
+  sendMailToUsers(email,"Urgent! LirtenHub Contract & Agreement" , message , function(err, data){
+      if (err){
+          res.json(err);
+      }
+      res.json("email sent successfully")
+
+  });
+
+}
+});
+
+
+
+
+//--------------------------------------notify users with expiry of their contract-------------------------------------------
+
+  async function deactivateAccount(id){
+
+    const activate = false
+    users.updateOne({'_id':id}, 
+    {$set: {'activation':activate} }, 
+    function(err, model){}); 
+
+    // const user = await users.findOne({'_id':MemID})
+    // res.json(user)
+
+
+  }
+
+  function Noofmonths(date1, date2) {
+    var Nomonths;
+    //console.log(date1)
+    Nomonths= (date2.getFullYear() - date1.getFullYear()) * 12;
+    Nomonths-= date1.getMonth() + 1;
+    Nomonths+= date2.getMonth() +1; // we should add + 1 to get correct month number
+    return Nomonths <= 0 ? 0 : Nomonths;
+  }
+
+  async function checkExpiryDatePartner(currentDate){
+      const userIds= await users.find({type:"partner"})
+      userIds.forEach(element => {
+
+      const activatedOn = element.membershipExpiryDate
+      const difference = Noofmonths( new Date(activatedOn),new Date(currentDate))
+      console.log(difference, element.name)
+
+      if(difference === 11 ){
+        // console.log('11 months passed')
+        // return('11 months passed')
+
+        const message =  `Hi ${element.name}! 
+                          Your contract with LirtenHub is almost Expired.
+                          Please contact one of our team, If you are willing to renew your contract with LirtenHub.
+                          Otherwise, your account unfortunately will be deactivated.
+                          `
+
+        const email = element.email       
+        sendMailToUsers(email,"Urgent! LirtenHub Account & Contract Expiration" , message , function(err, data){
+        if (err){
+            res.json(err);
+          }
+          res.json("email sent successfully")
+          });
+        }
+      else if(difference >11){
+        // console.log('not yet')
+        // return('not yet')
+        deactivateAccount(element._id)
+        console.log("----------------")
+        console.log(element.name)
+      }
+
+    });
+  }
+
+  async function checkExpiryDateMember(currentDate){
+    const userIds= await users.find({type:"member"})
+    userIds.forEach(element => {
+
+    const activatedOn = element.membershipExpiryDate
+    const difference = Noofmonths( new Date(activatedOn),new Date(currentDate))
+    console.log(difference, element.name)
+
+    if(difference === 11 ){
+      // console.log('11 months passed')
+      // return('11 months passed')
+
+      const message =  `Hi ${element.name}! 
+                        Your contract with LirtenHub is almost Expired.
+                        Please contact one of our team, If you are willing to renew your contract with LirtenHub.
+                        Otherwise, your account unfortunately will be deactivated.
+                        `
+
+      const email = element.email       
+      sendMailToUsers(email,"Urgent! LirtenHub Account & Contract Expiration" , message , function(err, data){
+      if (err){
+          res.json(err);
+        }
+        res.json("email sent successfully")
+        });
+      }
+    else if(difference >11){
+      // console.log('not yet')
+      // return('not yet')
+      deactivateAccount(element._id)
+      console.log("----------------")
+      console.log(element.name)
+    }
+
+  });
+  }
+
+  async function checkExpiryDateCS(currentDate){
+    const userIds= await users.find({type:"coworkingSpace"})
+    userIds.forEach(element => {
+
+    const activatedOn = element.membershipExpiryDate
+    const difference = Noofmonths( new Date(activatedOn),new Date(currentDate))
+    console.log(difference, element.name)
+
+    if(difference === 11 ){
+      // console.log('11 months passed')
+      // return('11 months passed')
+
+      const message =  `Hi ${element.name}! 
+                        Your contract with LirtenHub is almost Expired.
+                        Please contact one of our team, If you are willing to renew your contract with LirtenHub.
+                        Otherwise, your account unfortunately will be deactivated.
+                        `
+
+      const email = element.email       
+      sendMailToUsers(email,"Urgent! LirtenHub Account & Contract Expiration" , message , function(err, data){
+      if (err){
+          res.json(err);
+        }
+        res.json("email sent successfully")
+        });
+      }
+    else if(difference >11){
+      // console.log('not yet')
+      // return('not yet')
+      deactivateAccount(element._id)
+      console.log("----------------")
+      console.log(element.name)
+    }
+
+  });
+  }
+
+  async function checkExpiryDateCA(currentDate){
+    const userIds= await users.find({type:"consultancyAgency"})
+    userIds.forEach(element => {
+
+    const activatedOn = element.membershipExpiryDate
+    const difference = Noofmonths( new Date(activatedOn),new Date(currentDate))
+    console.log(difference, element.name)
+
+    if(difference === 11 ){
+      // console.log('11 months passed')
+      // return('11 months passed')
+
+      const message =  `Hi ${element.name}! 
+                        Your contract with LirtenHub is almost Expired.
+                        Please contact one of our team, If you are willing to renew your contract with LirtenHub.
+                        Otherwise, your account unfortunately will be deactivated.
+                        `
+
+      const email = element.email       
+      sendMailToUsers(email,"Urgent! LirtenHub Account & Contract Expiration" , message , function(err, data){
+      if (err){
+          res.json(err);
+        }
+        res.json("email sent successfully")
+        });
+      }
+    else if(difference >11){
+      // console.log('not yet')
+      // return('not yet')
+      deactivateAccount(element._id)
+      console.log("----------------")
+      console.log(element.name)
+    }
+
+  });
+  }
+
+
+
+
+  var today = new Date();
+  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+  //checkExpiryDate(today)
+
+  console.log("--------Partner--------")
+  console.log(checkExpiryDatePartner(today))
+  // console.log("--------Member--------")
+  // console.log(checkExpiryDateMember(today))
+  // console.log("----------CS----------")
+  // console.log(checkExpiryDateCS(today))
+  // console.log("----------CA----------")
+  // console.log(checkExpiryDateCA(today))
+
+  // const job = cron.job('* * * * * *', () => 
+  //    console.log(checkExpiryDate(today))
+  // );
+  // job.start()
+
+
+
+
+
+
 
 //----------------------------- admin update a task's life cycle ---------------------------------------------//
 //---------------------------------admin assigning the chosen member by partner-------------------- 
-
-
 router.put('/AssignMember/:idP/:idT', async(req,res)=>{ //tested all admin methods
-    var flag=false;
-    const PartID = parseInt(req.params.idP)
+    
+    var flag=true;
+    const PartID = req.params.idP
     const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
-
-    //const partner = await users.findOne({'userID':PartID,'tasks.taskID':Task_id })
+    const partner = await users.findOne({'_id':PartID} )
 
     if(partner === null )
     res.json("either the partner or the task id is not correct")
 
     else {
-        
+      
       const task = partner.tasks
       const t = task.find(task => task.taskID === Task_id)
+     
+      if (t.wantsConsultant === false){
       const applicants = t.applicants
-      const acceptedApplicant = applicants.find(applicants=> applicants.accepted === true)
-
+      const acceptedApplicant = applicants.find(applicant=> applicant.accepted === true)
       const applicantID = acceptedApplicant.applicantID
-       for(var i=0;i<t.applicants.length;i++){
-           if(t.applicants[i].accepted===true)
-           flag=true
+      
+      for(var i=0;i<t.applicants.length;i++){
+           if(t.applicants[i].assigned===true)
+          flag=false
        }
-      if(flag===true){
-      const a = applicants.filter(applicant => applicant.applicantID !== applicantID)
-       
-      const accepted = true
-      const assigned = true
 
-      newApplicant= {
-          applicantID,
-          accepted,
-          assigned
-         }
-         const newApplicantsArray=[
-             newApplicant
-         ]
+     if(flag===true){
+    
+      const f = await users.findOneAndUpdate(
+        {"_id":PartID},
+        { $set: { "tasks.$[i].applicants.$[j].assigned":true,
+                  "tasks.$[i].lifeCycle.1":true,
+                  "tasks.$[i].assigneeID":applicantID     
+        }},
+        { arrayFilters: [
+            { "i.taskID": Task_id },
+            { "j.applicantID": applicantID  }
+        ]});
 
-         if (typeof a === 'undefined') {
-         }
 
-      else {
-         while (a.length !== 0){
-          newApplicantsArray.push(a.pop())
-         }
-      }
-      console.log(newApplicantsArray)
- 
-      users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set: {'tasks.$.assigneeID':applicantID}}, function(err, model){});
+        const f2 = await users.findOneAndUpdate(
+            {"_id": applicantID},
+            { $set: { "memberTasks.$[i].accepted":true,
+    
+            }},
+            { arrayFilters: [
+                { "i.taskID": Task_id }
+             ]});
 
-      users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set:{"tasks.$.applicants":newApplicantsArray}}, function(err, model){});
 
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
-       
-      //const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(newApplicant)
-    }
-    else{
-        res.json("no accepted applicants")
-    }
-
-    }
+      res.json ("assigning done successfully")
+       }
    
+       else{ res.json("an applicant was already assigned to this task")  } 
+   }
+  
+   else{ res.json("partner requested a consultancy agency to help with the task including assigning applicants to the task")}
+}}); 
 
- 
-
- }); 
-
- 
-//-----------------------------------admin assigning the chosen consultancy agency by partner--------------------// testing done
-
+// //-----------------------------------admin assigning the chosen consultancy agency by partner--------------------// 
 router.put('/AssignConsultancyAgency/:idP/:idT', async(req,res)=>{
-    var flag=false;
-    const PartID = parseInt(req.params.idP)
+    var flag=true;
+    const PartID = req.params.idP
     const Task_id = parseInt(req.params.idT)
-    const partner = await users.findOne({type:"partner",userID:PartID})
-
-    //const partner = await users.findOne({'userID':PartID,'tasks.taskID':Task_id })
+    const partner = await users.findOne({'_id':PartID} )
 
     if(partner === null )
     res.json("either the partner or the task id is not correct")
 
     else {
+      
       const task = partner.tasks
       const t = task.find(task => task.taskID === Task_id)
       const consultancies = t.consultancies
       const acceptedConsultancy = consultancies.find(consultancies=> consultancies.accepted === true)
-      
-      for(var i=0;i<t.consultancies.length;i++){
-        if(t.consultancies[i].accepted===true)
-        flag=true
-    }
-    if(flag===true){
       const consultancyID = acceptedConsultancy.consultancyID
-      const c = consultancies.filter(consultancy => consultancy.consultancyID !== consultancyID)
+      
 
-      const accepted = true
-      const assigned = true
-      newConsultancy = {
-          consultancyID,
-          accepted,
-          assigned
+      for(var i=0;i<t.consultancies.length;i++){
+        if(t.consultancies[i].assigned===true)
+        flag=false
+    }
+
+    if(flag===true){
+    
+        const f = await users.findOneAndUpdate(
+          {"_id":PartID,},
+          { $set: { "tasks.$[i].consultancies.$[j].assigned":true,
+                    "tasks.$[i].consultancyAssignedID":consultancyID     
+          }},
+          { arrayFilters: [
+              { "i.taskID": Task_id },
+              { "j.consultancyID": consultancyID  }
+          ]});
+
+        res.json ("assigning done successfully")
          }
-         const newConsultancyArray=[
-             newConsultancy
-         ]
-
-         if (typeof c === 'undefined') {
-         }
-         else {
-
-          while (c.length !== 0){
-              newConsultancyArray.push(c.pop())
-             }
-         
-        }
-      console.log(newConsultancyArray)
- 
- 
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set: {'tasks.$.consultancyAssignedID':consultancyID}}, function(err, model){});
-   
-      users.updateOne({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set:{"tasks.$.consultancies":newConsultancyArray}}, function(err, model){});
- 
-      //const partners = await users.find({'userID':PartID,'tasks.taskID':Task_id})
-      res.json(newConsultancy)
-    }
-    else{
-        res.json("no accepted consultancies for the task")
-    }
-    }
-   
-
- }); 
+    else{ res.json("a consultancy was already assigned to this task") }
+   }
+}); 
 
  //--------------------------- admin check task description ---------------------------------------------
-
 router.get('/CheckTaskDescriptions/:PID/:TID', async(req, res)=> {
-
-    const PartID = parseInt(req.params.PID)
-    const partner = await users.findOne({type:"partner",userID:PartID})
+    const id =  req.params.PID
+    const PartID =ObjectId(id)
+    const partner = await users.findOne(PartID)
     const Task_id = parseInt(req.params.TID)
 
     if(partner===null) {
         res.json("the database has no partner with the given ID")
    } 
    else {
-      const task = partner.tasks
+    const partner2 = await users.findOne(PartID)
+
+      const task = partner2.tasks
       const task_to_check = task.find(task => task.taskID === Task_id)
       res.json(task_to_check);
    }
      
 });
 
-//----------------------------------------------------------------------------------------------------------
-
-
+//
 //-------------------------- admin post task on main ----------------------------------------------------------
 // partner id and task id are passed to the method to be able to access the required task to be checked  whether its approved or not 
 
 router.put('/ApproveTasks/:PID/:TID', async(req, res)=> {
 
-    const PartID = parseInt(req.params.PID)
-    const partner = await users.findOne({type:"partner",userID:PartID})
-    const Task_id = parseInt(req.params.TID)
+  const id =  req.params.PID
+  const PartID =ObjectId(id)
+  const partner = await users.findOne(PartID)
+  const Task_id = parseInt(req.params.TID)
 
-    if(partner===null ) {
-        res.json("the database has no partner with the given ID")
-      } 
-   else {
-      const task = partner.tasks
-      const task_to_post = task.find(task => task.taskID === Task_id)
+  if(partner===null ) {
+      res.json("the database has no partner with the given ID")
+    } 
+ else {
+    const task = partner.tasks
+    const task_to_post = task.find(task => task.taskID === Task_id)
 
-      if(task_to_post === null) 
-      res.json("this partner has no task with the given ID")
+    if(task_to_post === null) 
+    res.json("this partner has no task with the given ID")
 
-      else{
-      const approval = req.body.approval;
-  
-      users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
-      {$set: {'tasks.$.approved':approval}}, function(err, model){});
+    else{
 
-      if(approval === true)
+    const f = await users.findOneAndUpdate(
+      {"_id":PartID,},
       {
-     //set life cycle 'posted' stage to true
-   users.update({ 'userID':PartID,'tasks.taskID':Task_id}, 
-   {$set: {'tasks.$.lifeCycle.0':true}}, function(err, model){});
-     
-     const partners = await users.findOne({type:"partner",userID:PartID})
-     const x = partners.tasks
-     const task_to_post2 = x.find(task => task.taskID === Task_id)
+        $set: {
+          "tasks.$[i].approved":true,
+          "tasks.$[i].lirtenHubVerified":true,
+          "tasks.$[i].lifeCycle.0":true
 
-     res.json(task_to_post2)
+        }
+      },
 
+      {
+        arrayFilters: [
+          { "i.taskID": Task_id }
+        ]
+        
       }
-      else
-        { res.json( `${Task_id} not approved`) }
-  
-    
-   }
-  
-   }
-
+    );
 
    
+   const partners = await users.findOne(PartID)
+   const x = partners.tasks
+   const task_to_post2 = x.find(task => task.taskID === Task_id)
+   res.json(task_to_post2)
+ }
+ }
+ 
 });
-      
-//----------------------------- admin activate Member's account---------------------------------------------
+   
+router.put('/DisapproveTasks/:PID/:TID', async(req, res)=> {
 
+  const PartID = ObjectId(req.params.PID)
+  const partner = await users.findOne(PartID)
+  const Task_id = parseInt(req.params.TID)
 
+  if(partner===null ) {
+      res.json("the database has no partner with the given ID")
+    } 
+ else {
+    const task = partner.tasks
+    const task_to_post = task.find(task => task.taskID === Task_id)
+
+    if(task_to_post === null) 
+    res.json("this partner has no task with the given ID")
+
+    else{
+      const f = await users.findOneAndUpdate(
+        {"_id":PartID,},
+        {
+          $set: {
+            "tasks.$[i].approved":false,
+            "tasks.$[i].lirtenHubVerified":false,
+            "tasks.$[i].lifeCycle.0":false
+  
+          }
+        },
+  
+        {
+          arrayFilters: [
+            { "i.taskID": Task_id }
+          ]
+          
+        }
+      );
+   
+   const partners = await users.findOne(PartID)
+   const x = partners.tasks
+   const task_to_post2 = x.find(task => task.taskID === Task_id)
+   res.json(task_to_post2)
+ }
+ }   
+});
+   
+
+//----------------------------- admin activate user's account---------------------------------------------
 router.put('/ActivateAccounts/:MID', async (req, res)=> {
-    const MemID = parseInt(req.params.MID)
-    const activate = req.body.activate
+    const MemID = req.params.MID
+    const activate = true
 
-    users.updateOne({'userID':MemID}, 
-    {$set: {'activation':activate}}, function(err, model){}); 
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
+    console.log(dateTime)
 
-    const members = await users.findOne({type:"member",userID:MemID})
-    res.json(members)
+    users.updateOne({'_id':MemID}, 
+    {$set: {'activation':activate,
+            'membershipExpiryDate': dateTime}
+          }, function(err, model){}); 
+
+    const user = await users.findOne({'_id':MemID})
+    res.json(user)
 });
 
 
