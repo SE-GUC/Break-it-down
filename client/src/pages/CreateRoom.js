@@ -20,7 +20,7 @@ class CreateRoom extends Component {
         e.preventDefault();
         
         let databody ={
-        "id" : e.target.elements.id.value,
+        "roomNumber" : e.target.elements.id.value,
         "capacity" : e.target.elements.capacity.value,
         "schedule" : e.target.elements.schedule
     }
@@ -41,8 +41,6 @@ class CreateRoom extends Component {
     
       render() {
         const coID = window.location.pathname.split("/").pop();
-        let {rID} = this.state;
-        console.log(rID)
         return (
     
           <div className="App">
@@ -50,10 +48,6 @@ class CreateRoom extends Component {
             
     
             <UserForm getUser={this.getUser} change={this.handleChange}/>
-
-            <Link to={`/coworkingSpace/createSchedule/${coID}/${rID}`}>
-              <button type="submit" className="btn btn-success btn-sm m-2">Create a schedule</button>
-            </Link>
             
         </div>
     );
