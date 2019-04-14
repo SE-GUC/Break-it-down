@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Jumbotron, Button, Col, Form } from "react-bootstrap";
+import validator from "../validations/validation";
 
 function simulateNetworkRequest() {
   return new Promise(resolve => setTimeout(resolve, 2000));
+}
+function getValue(item) {
+  var value = item.name;
+  return value;
 }
 
 class signUpEducationalOrganization extends Component {
@@ -21,7 +26,11 @@ class signUpEducationalOrganization extends Component {
       phoneNumber: "",
       field: "",
       description: "",
-      address: ""
+      address: "",
+      city: "Egypt",
+      trainers: [{ name: "" }],
+      trainingPrograms: [{ name: "" }],
+      certificates: [{ name: "" }]
     };
   }
   updateDescription(evt) {
@@ -67,23 +76,38 @@ class signUpEducationalOrganization extends Component {
 
   async handleSubmit(event) {
     console.log("handled");
-
-    await axios
-      .post("http://localhost:4000/api/CreateAccount/educationalOrganization", {
-        name: this.state.name,
-        password: this.state.password,
-        email: this.state.email,
-        phoneNumber: this.state.phoneNumber,
-        address: this.state.address,
-        website: this.state.website,
-        description: this.state.description
-      })
-      .then(function(response) {
-        console.log("partner create is successful");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    const info = {
+      name: this.state.name,
+      password: this.state.password,
+      email: this.state.email,
+      phoneNumber: this.state.phoneNumber,
+      address: this.state.city + "-" + this.state.address,
+      website: this.state.website,
+      description: this.state.description,
+      trainers: this.state.trainers.map(getValue),
+      trainingPrograms: this.state.trainingPrograms.map(getValue),
+      certificates: this.state.certificates.map(getValue)
+    };
+    const isValidated = validator.createAccountValidation(info);
+    if (isValidated.error) alert(isValidated.error.details[0].message);
+    else
+      await axios
+        .post(
+          "http://localhost:4000/api/CreateAccount/educationalOrganization",
+          info
+        )
+        .then(function(response) {
+          console.log("partner create is successful");
+          alert(
+            "Congratulations! Your account has been created successfully. Login to Lirten Hub to get started."
+          );
+          event.preventDefault();
+          window.location = "/";
+        })
+        .catch(function(error) {
+          alert("Use another email, this email is taken");
+          console.log(error);
+        });
   }
 
   handleClick() {
@@ -98,6 +122,76 @@ class signUpEducationalOrganization extends Component {
     alert(`selected ${eventKey}`);
     this.setState({ value: eventKey });
   }
+
+  handleChange(e) {
+    console.log(e.target.value);
+    this.setState({ city: e.target.value });
+  }
+
+  handleTrainerNameChange = idx => evt => {
+    const newTrainer = this.state.trainers.map((trainer, sidx) => {
+      if (idx !== sidx) return trainer;
+      return { ...trainer, name: evt.target.value };
+    });
+
+    this.setState({ trainers: newTrainer });
+  };
+
+  handleAddTrainer = () => {
+    this.setState({
+      trainers: this.state.trainers.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveTrainer = idx => () => {
+    this.setState({
+      trainers: this.state.trainers.filter((s, sidx) => idx !== sidx)
+    });
+  };
+
+  handleTrainingProgramNameChange = idx => evt => {
+    const newTrainer = this.state.trainingPrograms.map((trainer, sidx) => {
+      if (idx !== sidx) return trainer;
+      return { ...trainer, name: evt.target.value };
+    });
+
+    this.setState({ trainingPrograms: newTrainer });
+  };
+
+  handleAddTrainingProgram = () => {
+    this.setState({
+      trainingPrograms: this.state.trainingPrograms.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveTrainingProgram = idx => () => {
+    this.setState({
+      trainingPrograms: this.state.trainingPrograms.filter(
+        (s, sidx) => idx !== sidx
+      )
+    });
+  };
+
+  handleCertificateNameChange = idx => evt => {
+    const newCertificate = this.state.certificates.map((certificate, sidx) => {
+      if (idx !== sidx) return certificate;
+      return { ...certificate, name: evt.target.value };
+    });
+
+    this.setState({ certificates: newCertificate });
+  };
+
+  handleAddCertificate = () => {
+    this.setState({
+      certificates: this.state.certificates.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveCertificate = idx => () => {
+    this.setState({
+      certificates: this.state.certificates.filter((s, sidx) => idx !== sidx)
+    });
+  };
 
   render() {
     return (
@@ -159,16 +253,20 @@ class signUpEducationalOrganization extends Component {
 
               <Form.Group as={Col} controlId="formGridCity">
                 <Form.Label>City</Form.Label>
-                <Form.Control as="select">
-                  <option>other</option>
-                  <option>10th of Ramadan City</option>
-                  <option>6 of October</option>
-                  <option>Alexandria</option>
-                  <option>Cairo</option>
-                  <option>Giza</option>
-                  <option>Helwan</option>
-                  <option>Cairo</option>
-                  <option>New Cairo</option>
+                <Form.Control
+                  as="select"
+                  value={this.state.city}
+                  onChange={e => this.handleChange(e)}
+                >
+                  <option value="Egypt">other</option>
+                  <option value="10th of Ramadan City">
+                    10th of Ramadan City
+                  </option>
+                  <option value="6 of October">6 of October</option>
+                  <option value="Alexandria">Alexandria</option>
+                  <option value="Cairo">Cairo</option>
+                  <option value="Giza">Giza</option>
+                  <option value="Helwan">Helwan</option>
                 </Form.Control>
               </Form.Group>
             </Form.Row>
@@ -189,71 +287,97 @@ class signUpEducationalOrganization extends Component {
               />
             </Form.Group>
             <Form.Row>
-              <Form.Group as={Col} controlId="formGridTrainer1">
+              <Form.Group as={Col} controlId="formGridTrainer">
                 <Form.Label>Trainers</Form.Label>
-                <Form.Control placeholder="Trainer 1" />
+                {this.state.trainers.map((trainer, idx) => (
+                  <div className="trainer">
+                    <input
+                      type="text"
+                      placeholder={`Trainer ${idx + 1} `}
+                      value={trainer.name}
+                      onChange={this.handleTrainerNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveTrainer(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={this.handleAddTrainer}
+                  className="small"
+                >
+                  Add
+                </button>
               </Form.Group>
-              <Form.Group as={Col} controlId="formTrainer2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Trainer 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTrainer3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Trainer 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTrainer4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Trainer 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
+
               <Form.Group as={Col} controlId="formGridTrainingPrograms1">
                 <Form.Label>Training Programs</Form.Label>
-                <Form.Control placeholder="Program 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTrainingPrograms2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Program 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTrainingPrograms3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Program 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTrainingPrograms4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Program 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridCertificate1">
-                <Form.Label>Certificates</Form.Label>
-                <Form.Control placeholder="Certificate 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formCertificate2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Certificate 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridCertificate3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Certificate 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridCertificate4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Certificate 4" />
-              </Form.Group>
-            </Form.Row>
+                {this.state.trainingPrograms.map((trainingProgram, idx) => (
+                  <div className="trainingProgram">
+                    <input
+                      type="text"
+                      placeholder={`Training Program ${idx + 1} `}
+                      value={trainingProgram.name}
+                      onChange={this.handleTrainingProgramNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveTrainingProgram(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
 
-            <Form.Group id="formGridCheckbox">
-              <Form.Check
-                type="checkbox"
-                label="Agreed to terms & conditions"
-              />
-            </Form.Group>
+                <button
+                  type="button"
+                  onClick={this.handleAddTrainingProgram}
+                  className="small"
+                >
+                  Add
+                </button>
+              </Form.Group>
+              <Form.Group as={Col} controlId="formGridCertificate">
+                <Form.Label>Certificates</Form.Label>
+                {this.state.certificates.map((certificate, idx) => (
+                  <div className="certificate">
+                    <input
+                      type="text"
+                      placeholder={`Certificate ${idx + 1} `}
+                      value={certificate.name}
+                      onChange={this.handleCertificateNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveCertificate(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={this.handleAddCertificate}
+                  className="small"
+                >
+                  Add
+                </button>
+              </Form.Group>
+            </Form.Row>
 
             <Button
               variant="flat"
               size="xxl"
-              type="submit"
+              type="button"
               onClick={event => this.handleSubmit(event)}
             >
               Submit

@@ -26,6 +26,7 @@ import Admin from "./pages/Admin";
 import Suggestions from "./components/Suggestions";
 import UpdateRoomBooking from "./components/UpdateRoomBooking";
 import ViewRoomBookings from "./components/ViewRoomBookings";
+import MemberProfile from "./pages/profileMember";
 
 class App extends Component {
   render() {
@@ -133,9 +134,18 @@ class App extends Component {
 
           <Route exact path="/user/suggestions" component={Suggestions} />
 
-          <Route exact path="/user/updateRoomBooking" component={UpdateRoomBooking} />
+          <Route
+            exact
+            path="/user/updateRoomBooking"
+            component={UpdateRoomBooking}
+          />
 
-          <Route exact path="/user/viewRoomBooking" component={ViewRoomBookings} />
+          <Route
+            exact
+            path="/user/viewRoomBooking"
+            component={ViewRoomBookings}
+          />
+          <Route exact path="/MemberProfile" component={MemberProfile} />
         </Router>
       </div>
     );

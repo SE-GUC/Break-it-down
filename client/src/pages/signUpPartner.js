@@ -1,9 +1,14 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Jumbotron, Button, Col, Form } from "react-bootstrap";
+import { Jumbotron, Button, Col, Form, Alert } from "react-bootstrap";
+import validator from "../validations/validation";
 
 function simulateNetworkRequest() {
   return new Promise(resolve => setTimeout(resolve, 2000));
+}
+function getValue(item) {
+  var value = item.name;
+  return value;
 }
 
 class signUpPartner extends Component {
@@ -21,7 +26,10 @@ class signUpPartner extends Component {
       phoneNumber: "",
       field: "",
       description: "",
-      address: ""
+      address: "",
+      city: "Egypt",
+      partners: [{ name: "" }],
+      boardMembers: [{ name: "" }]
     };
   }
   updateDescription(evt) {
@@ -68,22 +76,34 @@ class signUpPartner extends Component {
   async handleSubmit(event) {
     console.log("handled");
 
-    await axios
-      .post("http://localhost:4000/api/CreateAccount/partner", {
-        name: this.state.name,
-        password: this.state.password,
-        email: this.state.email,
-        phoneNumber: this.state.phoneNumber,
-        address: this.state.address,
-        website: this.state.website,
-        description: this.state.description
-      })
-      .then(function(response) {
-        console.log("partner create is successful");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    const info = {
+      name: this.state.name,
+      password: this.state.password,
+      email: this.state.email,
+      phoneNumber: this.state.phoneNumber,
+      address: this.state.city + "-" + this.state.address,
+      website: this.state.website,
+      description: this.state.description,
+      boardMembers: this.state.boardMembers.map(getValue),
+      partners: this.state.partners.map(getValue)
+    };
+    const isValidated = validator.createAccountValidation(info);
+    if (isValidated.error) alert(isValidated.error.details[0].message);
+    else
+      await axios
+        .post("http://localhost:4000/api/CreateAccount/partner", info)
+        .then(function(response) {
+          console.log("partner create is successful");
+          alert(
+            "Congratulations! Your account has been created successfully. Login to Lirten Hub to get started."
+          );
+          event.preventDefault();
+          window.location = "/";
+        })
+        .catch(function(error) {
+          console.log(error);
+          alert("Use another email, this email is taken");
+        });
   }
 
   handleClick() {
@@ -98,6 +118,53 @@ class signUpPartner extends Component {
     alert(`selected ${eventKey}`);
     this.setState({ value: eventKey });
   }
+
+  handleChange(e) {
+    console.log(e.target.value);
+    this.setState({ city: e.target.value });
+  }
+
+  handleBoardMemberNameChange = idx => evt => {
+    const newBoardMember = this.state.boardMembers.map((boardMember, sidx) => {
+      if (idx !== sidx) return boardMember;
+      return { ...boardMember, name: evt.target.value };
+    });
+
+    this.setState({ boardMembers: newBoardMember });
+  };
+
+  handleAddBoardMember = () => {
+    this.setState({
+      boardMembers: this.state.boardMembers.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveBoardMember = idx => () => {
+    this.setState({
+      boardMembers: this.state.boardMembers.filter((s, sidx) => idx !== sidx)
+    });
+  };
+
+  handlePartnerNameChange = idx => evt => {
+    const newPartner = this.state.partners.map((partner, sidx) => {
+      if (idx !== sidx) return partner;
+      return { ...partner, name: evt.target.value };
+    });
+
+    this.setState({ partners: newPartner });
+  };
+
+  handleAddPartner = () => {
+    this.setState({
+      partners: this.state.partners.concat([{ name: "" }])
+    });
+  };
+
+  handleRemovePartner = idx => () => {
+    this.setState({
+      partners: this.state.partners.filter((s, sidx) => idx !== sidx)
+    });
+  };
 
   render() {
     return (
@@ -159,16 +226,20 @@ class signUpPartner extends Component {
 
               <Form.Group as={Col} controlId="formGridCity">
                 <Form.Label>City</Form.Label>
-                <Form.Control as="select">
-                  <option>other</option>
-                  <option>10th of Ramadan City</option>
-                  <option>6 of October</option>
-                  <option>Alexandria</option>
-                  <option>Cairo</option>
-                  <option>Giza</option>
-                  <option>Helwan</option>
-                  <option>Cairo</option>
-                  <option>New Cairo</option>
+                <Form.Control
+                  as="select"
+                  value={this.state.city}
+                  onChange={e => this.handleChange(e)}
+                >
+                  <option value="Egypt">other</option>
+                  <option value="10th of Ramadan City">
+                    10th of Ramadan City
+                  </option>
+                  <option value="6 of October">6 of October</option>
+                  <option value="Alexandria">Alexandria</option>
+                  <option value="Cairo">Cairo</option>
+                  <option value="Giza">Giza</option>
+                  <option value="Helwan">Helwan</option>
                 </Form.Control>
               </Form.Group>
             </Form.Row>
@@ -191,73 +262,66 @@ class signUpPartner extends Component {
             <Form.Row>
               <Form.Group as={Col} controlId="formGridBoardMember1">
                 <Form.Label>Board Members</Form.Label>
-                <Form.Control placeholder="Board Member 1" />
+                {this.state.boardMembers.map((boardMember, idx) => (
+                  <div className="boardMember">
+                    <input
+                      type="text"
+                      placeholder={`Board Member ${idx + 1} `}
+                      value={boardMember.name}
+                      onChange={this.handleBoardMemberNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveBoardMember(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={this.handleAddBoardMember}
+                  className="small"
+                >
+                  Add
+                </button>
               </Form.Group>
-              <Form.Group as={Col} controlId="formBoardMember2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridBoardMember3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridBoardMember4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
+
               <Form.Group as={Col} controlId="formGridPartner1">
                 <Form.Label>Partners</Form.Label>
-                <Form.Control placeholder="Partner 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridTask1">
-                <Form.Label>Tasks</Form.Label>
-                <Form.Control placeholder="Task 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTask2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Task 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTask3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Task 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridTask4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Task 4" />
+                {this.state.partners.map((partner, idx) => (
+                  <div className="partner">
+                    <input
+                      type="text"
+                      placeholder={`Partner ${idx + 1} `}
+                      value={partner.name}
+                      onChange={this.handlePartnerNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemovePartner(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={this.handleAddPartner}
+                  className="small"
+                >
+                  Add
+                </button>
               </Form.Group>
             </Form.Row>
-            <Form.Group controlId="formGridBoardEvents">
-              <Form.Label>Upcoming Event</Form.Label>
-              <Form.Control />
-            </Form.Group>
-
-            <Form.Group id="formGridCheckbox">
-              <Form.Check
-                type="checkbox"
-                label="Agreed to terms & conditions"
-              />
-            </Form.Group>
 
             <Button
               variant="flat"
               size="xxl"
-              type="submit"
+              type="button"
               onClick={event => this.handleSubmit(event)}
             >
               Submit

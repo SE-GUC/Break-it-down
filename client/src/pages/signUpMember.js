@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { Jumbotron, Button, Col, Form } from "react-bootstrap";
 import axios from "axios";
+import validator from "../validations/validation";
 
 function simulateNetworkRequest() {
   return new Promise(resolve => setTimeout(resolve, 2000));
+}
+function getValue(item) {
+  var value = item.name;
+  return value;
 }
 
 class signUpMember extends Component {
@@ -15,19 +20,15 @@ class signUpMember extends Component {
       inputList: [],
       name: "",
       field: "",
-      skill1: "",
-      skill2: "",
-      skill3: "",
-      skill4: "",
-      certificate1: "",
-      certificate2: "",
-      certificate3: "",
-      certificate4: "",
+      skills: [{ name: "" }],
+      certificates: [{ name: "" }],
+      interests: [{ name: "" }],
       password: "",
       birthday: "",
-      email: "testing@test.com",
-      phoneNumber: "00000000",
-      address: ""
+      email: "",
+      phoneNumber: "",
+      address: "",
+      city: "Egypt"
     };
   }
 
@@ -114,31 +115,111 @@ class signUpMember extends Component {
       });
     });
   }
+  handleChange(e) {
+    console.log(e.target.value);
+    this.setState({ city: e.target.value });
+  }
 
   async handleSubmit(event) {
     console.log("handled");
-    await axios
-      .post("http://localhost:4000/api/CreateAccount/member", {
-        field: this.state.field,
-        name: this.state.name,
-        password: this.state.password,
-        birthday: this.state.birthday,
-        email: this.state.email,
-        phoneNumber: this.state.phoneNumber,
-        address: this.state.address
-      })
-      .then(function(response) {
-        console.log("member create is successful");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    const info = {
+      field: this.state.field,
+      name: this.state.name,
+      password: this.state.password,
+      birthday: this.state.birthday,
+      email: this.state.email,
+      phoneNumber: this.state.phoneNumber,
+      address: this.state.city + "-" + this.state.address,
+      skills: this.state.skills.map(getValue),
+      interests: this.state.interests.map(getValue),
+      certificates: this.state.certificates.map(getValue)
+    };
+    const isValidated = validator.createAccountValidation(info);
+    if (isValidated.error) alert(isValidated.error.details[0].message);
+    else
+      await axios
+        .post("http://localhost:4000/api/CreateAccount/member", info)
+        .then(function(response) {
+          console.log("member create is successful");
+          alert(
+            "Congratulations! Your account has been created successfully. Login to Lirten Hub to get started."
+          );
+          event.preventDefault();
+          window.location = "/";
+        })
+        .catch(function(error) {
+          console.log(error);
+          alert("Use another email, this email is taken");
+        });
   }
 
   handleSelect(eventKey) {
     alert(`selected ${eventKey}`);
     this.setState({ value: eventKey });
   }
+
+  handleSkillNameChange = idx => evt => {
+    const newSkill = this.state.skills.map((skill, sidx) => {
+      if (idx !== sidx) return skill;
+      return { ...skill, name: evt.target.value };
+    });
+
+    this.setState({ skills: newSkill });
+  };
+
+  handleAddSkill = () => {
+    this.setState({
+      skills: this.state.skills.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveSkill = idx => () => {
+    this.setState({
+      skills: this.state.skills.filter((s, sidx) => idx !== sidx)
+    });
+  };
+
+  handleInterestNameChange = idx => evt => {
+    const newInterest = this.state.interests.map((interest, sidx) => {
+      if (idx !== sidx) return interest;
+      return { ...interest, name: evt.target.value };
+    });
+
+    this.setState({ interests: newInterest });
+  };
+
+  handleAddInterest = () => {
+    this.setState({
+      interests: this.state.interests.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveInterest = idx => () => {
+    this.setState({
+      interests: this.state.interests.filter((s, sidx) => idx !== sidx)
+    });
+  };
+
+  handleCertificateNameChange = idx => evt => {
+    const newC = this.state.certificates.map((certificate, sidx) => {
+      if (idx !== sidx) return certificate;
+      return { ...certificate, name: evt.target.value };
+    });
+
+    this.setState({ certificates: newC });
+  };
+
+  handleAddCertificate = () => {
+    this.setState({
+      certificates: this.state.certificates.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveCertificate = idx => () => {
+    this.setState({
+      certificates: this.state.certificates.filter((s, sidx) => idx !== sidx)
+    });
+  };
 
   render() {
     return (
@@ -217,17 +298,18 @@ class signUpMember extends Component {
                 <Form.Label>City</Form.Label>
                 <Form.Control
                   as="select"
-                  onChange={evt => this.updateCity(evt)}
+                  value={this.state.city}
+                  onChange={e => this.handleChange(e)}
                 >
-                  <option>other</option>
-                  <option>10th of Ramadan City</option>
-                  <option>6 of October</option>
-                  <option>Alexandria</option>
-                  <option>Cairo</option>
-                  <option>Giza</option>
-                  <option>Helwan</option>
-                  <option>Cairo</option>
-                  <option>New Cairo</option>
+                  <option value="Egypt">other</option>
+                  <option value="10th of Ramadan City">
+                    10th of Ramadan City
+                  </option>
+                  <option value="6 of October">6 of October</option>
+                  <option value="Alexandria">Alexandria</option>
+                  <option value="Cairo">Cairo</option>
+                  <option value="Giza">Giza</option>
+                  <option value="Helwan">Helwan</option>
                 </Form.Control>
               </Form.Group>
             </Form.Row>
@@ -235,109 +317,93 @@ class signUpMember extends Component {
               <Form.Label>Phone Number</Form.Label>
               <Form.Control onChange={evt => this.updatePhoneNumber(evt)} />
             </Form.Group>
-            <div key={`custom-inline-${"radio"}`} className="mb-3">
-              <Form.Label>Interests</Form.Label>
-              <br />
-              <Form.Check
-                custom
-                inline
-                label="Science"
-                type={"radio"}
-                id={`custom-inline-${"radio"}-1`}
-              />
-              <Form.Check
-                custom
-                inline
-                label="Business"
-                type={"radio"}
-                id={`custom-inline-${"radio"}-2`}
-              />
-              <Form.Check
-                custom
-                inline
-                label="Graphic Designing"
-                type={"radio"}
-                id={`custom-inline-${"radio"}-3`}
-              />
-              <Form.Check
-                custom
-                inline
-                label="Front End"
-                type={"radio"}
-                id={`custom-inline-${"radio"}-4`}
-              />
-              <Form.Check
-                custom
-                inline
-                label="Back End"
-                type={"radio"}
-                id={`custom-inline-${"radio"}-5`}
-              />
-            </div>
             <Form.Row>
-              <Form.Group as={Col} controlId="formGridSkill1">
+              <Form.Group as={Col} controlId="formGridInterest">
+                <Form.Label>Interests</Form.Label>
+                {this.state.interests.map((interest, idx) => (
+                  <div className="interest">
+                    <input
+                      type="text"
+                      placeholder={`Interest ${idx + 1} `}
+                      value={interest.name}
+                      onChange={this.handleInterestNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveInterest(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={this.handleAddInterest}
+                  className="small"
+                >
+                  Add
+                </button>
+              </Form.Group>
+              <Form.Group as={Col} controlId="formGridSkill">
                 <Form.Label>Skills</Form.Label>
-                <Form.Control
-                  placeholder="Skill 1"
-                  onChange={evt => this.updateSkill1(evt)}
-                />
+                {this.state.skills.map((skill, idx) => (
+                  <div className="skill">
+                    <input
+                      type="text"
+                      placeholder={`Skill ${idx + 1} `}
+                      value={skill.name}
+                      onChange={this.handleSkillNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveSkill(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={this.handleAddSkill}
+                  className="small"
+                >
+                  Add
+                </button>
               </Form.Group>
-              <Form.Group as={Col} controlId="formSkill2">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Skill 2"
-                  onChange={evt => this.updateSkill2(evt)}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridSkill3">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Skill 3"
-                  onChange={evt => this.updateSkill3(evt)}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridSkill4">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Skill 4"
-                  onChange={evt => this.updateSkill4(evt)}
-                />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
               <Form.Group as={Col} controlId="formGridCertificate1">
                 <Form.Label>Certificates</Form.Label>
-                <Form.Control
-                  placeholder="Certificate 1"
-                  onChange={evt => this.updateCertificate1(evt)}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formCertificate2">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Certificate 2"
-                  onChange={evt => this.updateCertificate2(evt)}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridCertificate3">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Certificate 3"
-                  onChange={evt => this.updateCertificate3(evt)}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridCertificate4">
-                <Form.Label>.</Form.Label>
-                <Form.Control
-                  placeholder="Certificate 4"
-                  onChange={evt => this.updateCertificate4(evt)}
-                />
+                {this.state.certificates.map((certificate, idx) => (
+                  <div className="certificate">
+                    <input
+                      type="text"
+                      placeholder={`Certificate ${idx + 1} `}
+                      value={certificate.name}
+                      onChange={this.handleCertificateNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveCertificate(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={this.handleAddCertificate}
+                  className="small"
+                >
+                  Add
+                </button>
               </Form.Group>
             </Form.Row>
             <Button
               variant="flat"
               size="xxl"
-              type="submit"
+              type="button"
               onClick={event => this.handleSubmit(event)}
             >
               Submit
