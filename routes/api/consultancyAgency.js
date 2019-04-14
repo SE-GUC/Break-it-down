@@ -77,80 +77,81 @@ router.get('/viewmessages', async (req, res) => {
     res.json({ data: updt })
 })
 
-
-
-//--------------------filter tasks--------------------
-router.get('/filterTasks/:memberID', async (req, res) =>{
-try{
-//Member skills
-const memberSkills = await users.findOne({type:"member",'userID':parseInt(req.params.memberID)},{skills:1,_id:0})
-//Member field
-const memberField = await users.findOne({type:"member",'userID':parseInt(req.params.memberID)},{field:1,_id:0})
-//Resulting tasks
-var recommendedTasks=[]
-//All partner tasks
-const grptasks = await users.find({type:"partner"},{"tasks":1,_id:0})
-//var grpTasks= groupBy2(tasks,'field')
-for (var i = 0; i < grptasks.length; i++) {
-	for (var j =0; j< grptasks[i].tasks.length; j++){
-	if(grptasks[i].tasks[j].approved===true && grptasks[i].tasks[j].lifeCycle[1]===false && grptasks[i].tasks[j].field===memberField.field)
-	{
-		recommendedTasks.push(grptasks[i].tasks[j])
-	}
-	}
-}
-res.json(recommendedTasks)
-}
-catch(error){
-res.send(error)
-}
-});
-function groupBy2(xs, prop) {
-var grouped = {};
-for (var i=0; i<xs.length; i++) {
-	var p = xs[i][prop];
-	if (!grouped[p]) { grouped[p] = []; }
-	grouped[p].push(xs[i]);
-}
-return grouped;
-}
+//-----------------------------------------Mariam-------------------------------------------------------------------
 //--------------Filter applicants-----------------------------
-router.get('/filterApplicants/:partnerID', async (req, res) =>{
-try{
-//Partner tasks
-const tasks = await users.findOne({type:"partner",'userID':parseInt(req.params.partnerID)},{"tasks":1,_id:0})
-//Resulting applicants
-var applicantsPerTask= []
-for (var i = 0; i < tasks.tasks.length; i++) {
-if(tasks.tasks[i].lifeCycle[0]===true && tasks.tasks[i].lifeCycle[1]===false && tasks.tasks[i].approved===true && tasks.tasks[i].wantsConsultant===true){
-const currentTask = tasks.tasks[i].taskID
+router.put("/filterApplicants/:partnerID/:taskID/:consultID", async (req, res) => {
+  try {
 
-var result = {"taskID":currentTask, "field":tasks.tasks[i].field, "applicants":[]}
+    //Partner tasks
+    const tasks = await users.aggregate([
+      { $unwind: "$tasks" },
+      {
+        $match: {
+          _id: objectid(req.params.partnerID),
+          "tasks._id": objectid(req.params.taskID)
+        }
+      },
+      { $project: { tasks: 1, _id: 0 } }
+		]);
+		if((tasks[0].tasks.consultancyAssignedID	== req.params.consultID)===false)
+		  return res.json("You are not assigned to this task.")
+    if (tasks[0].tasks.approved === false)
+      return res.json("Task is not approved yet. Please tune in for approval.");
 
-for (var j =0; j< tasks.tasks[i].applicants.length; j++){
-	if(tasks.tasks[i].applicants[j].assigned===false)
-	{	
-		
-		const applicant = tasks.tasks[i].applicants[j].applicantID
-		const member = await User.findOne({'userID':applicant})
-		if(member.field===tasks.tasks[i].field)
-			result.applicants.push(member)
-	}
-	}
-if(result.applicants.length>0) 
-		{
-			applicantsPerTask.push(result)	
-			//res.json(applicantsPerTask)
-		}
-		result = {}
-	}
-	}
-res.json(applicantsPerTask)
-}
-catch(error){
-res.json(error.message)
-}
+    if (tasks[0].tasks.lifeCycle[1] === true)
+      return res.json("An applicant is already assigned to this task.");
+    if (tasks[0].tasks.wantsConsultant === false)
+      return res.json(
+        "A demand for a consultancy agency is not required by this task."
+      );
+
+    var matchingSkills = 0;
+
+    var toCompare = [];
+    const applicants = tasks[0].tasks.applicants;
+    //return res.json(applicants)
+    for (var i = 0; i < applicants.length; i++) {
+      const applicantID = applicants[i].applicantID;
+      const member = await User.findOne({ _id: objectid(applicantID) });
+      matchingSkills = _.intersection(member.skills, tasks[0].tasks.skills)
+        .length;
+      if (member.field === tasks[0].tasks.field) matchingSkills++;
+      toCompare.push({
+        applicant: member,
+        matchingSkills: matchingSkills,
+        applicantID: applicantID
+      });
+    }
+    const max = toCompare.reduce((prev, current) =>
+      prev.matchingSkills > current.matchingSkills ? prev : current
+    );
+
+    await users.findOneAndUpdate(
+      { _id: objectid(req.params.partnerID) },
+      {
+        $set: {
+          "tasks.$[i].applicants.$[j].accepted": true,
+          "tasks.$[i].applicants.$[j].assigned": true,
+          "tasks.$[i].lifeCycle.1":true
+        }
+      },
+      {
+        arrayFilters: [
+          { "i._id": objectid(req.params.taskID) },
+          { "j.applicantID": objectid(max.applicantID) }
+        ]
+      }
+    );
+    return res.json(max.applicant);
+  } catch (error) {
+    res.json(error.message);
+  }
 });
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+
 //------------look for a particular coworking space-----------
 var objectid = require('mongodb').ObjectID
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{

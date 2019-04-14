@@ -61,6 +61,53 @@ const RoomBookings = require("../../models/RoomBookings");
 // }
 
 
+//---------------------------------------------Mariam----------------------------------------------------------
+//--------------------filter tasks--------------------
+router.get("/filterTasks/:memberID", async (req, res) => {
+  try {
+    //Member skills: array of strings
+    const memberSkills = await users.findOne(
+      { type: "member", _id: objectid(req.params.memberID) },
+      { skills: 1, _id: 0 }
+    );
+    //return res.json(memberSkills)
+    //Member field
+    const memberField = await users.findOne(
+      { type: "member", _id: objectid(req.params.memberID) },
+      { field: 1, _id: 0 }
+    );
+    //Resulting tasks
+    var recommendedTasks = [];
+    //All partner tasks: array of objects & each obj is an array having the tasks (objects) of a certain partner
+    const grptasks = await users.find(
+      { type: "partner" },
+      { tasks: 1, _id: 0 }
+    );
+    grptasks.forEach(partnerTasks => {
+      partnerTasks.tasks.forEach(task => {
+        if (
+          task.approved === true &&
+          task.lifeCycle[1] === false &&
+          task.field === memberField.field
+        ) {
+          if (_.intersection(memberSkills.skills, task.skills).length >= 1)
+            recommendedTasks.push(task);
+        } else {
+
+          if (_.intersection(memberSkills.skills, task.skills).length >= 3)
+            recommendedTasks.push(task);
+        }
+      });
+    });
+    res.json(recommendedTasks);
+  } catch (error) {
+    res.send(error);
+  }
+});
+
+
+
+
 
 //==================================================================================================================
 // Instead of app use route

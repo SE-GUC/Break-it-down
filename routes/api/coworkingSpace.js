@@ -165,7 +165,7 @@ res.json("No coworking spaces are available yet. Tune in for a while!")
 }  
 })
 
-//ObjID ok  TESTED
+//TESTED
 router.get('/viewCoworkingSpace/:idC', async (req, res) => {
   try{
       const cospace =await users.find({type:'coworkingSpace','_id':req.params.idC})          
@@ -177,7 +177,7 @@ router.get('/viewCoworkingSpace/:idC', async (req, res) => {
   }
 });
 
-//ObjID ok
+
 // View all rooms in a specific coworking space\ View specific coworking spaces TESTED
 router.get('/viewAllRooms/:idC',async(req,res)=>{ 
 try{
@@ -191,7 +191,6 @@ catch(error){
 });
 
 
-//ObjID ok
 //Update coworking space   // TESTED ...
 router.put('/updateCospace/:idC', async (req, res)=>{
   try
@@ -223,7 +222,7 @@ router.put('/updateCospace/:idC', async (req, res)=>{
   
 
 //----------------------------------------- Rooms --------------------------------------------------------------
-//ObjID ok
+
 /// View a specific room  TESTED 
 router.get('/viewRoom/:idC/:idR', async (req,res)=>{
 try{
@@ -246,7 +245,7 @@ res.json({error: "This room does not exist."})
 }  
 });
 
-//ObjID ok
+
 // Create a room TESTED  
 router.post('/createRoom/:idC', async (req,res) => {
 try {
@@ -337,7 +336,7 @@ catch(error) {
   
 });
 
-//ObjID ok
+
 //Delete a room  TESTED 
 router.delete('/deleteRoom/:idC/:idR', async (req, res) => { 
   try{
@@ -362,7 +361,7 @@ router.delete('/deleteRoom/:idC/:idR', async (req, res) => {
   });
 
 //---------------------------------------- Schedule ---------------------------------------------------------------
-//ObjID ok
+
 //Create a new schedule for a room TESTED //react
 router.post("/createSchedule/:idC/:idR", async (req, res) => {
   try {
@@ -417,8 +416,8 @@ router.post("/createSchedule/:idC/:idR", async (req, res) => {
   }
 });
 
-//ObjID ok
-// View a room schedule TESTED  ... //react
+
+// View a room schedule TESTED  
 router.get('/viewRoomSchedule/:idC/:idR', async (req,res)=>{
   try{
   const cospace= await users.findOne({type:"coworkingSpace",'_id':objectid(req.params.idC)})
@@ -439,7 +438,7 @@ router.get('/viewRoomSchedule/:idC/:idR', async (req,res)=>{
   }  
   });
 
-//ObjID ok
+
 //Delete a schedule TESTED
 router.delete('/deleteSchedule/:idC/:idR/:idS', async (req, res) => {
 try{
@@ -470,7 +469,7 @@ users.findOneAndUpdate( {'_id': idc, 'rooms._id': idr, 'rooms.schedule._id': ids
 }
 });
 
-//objID ok
+
 router.put('/updateSchedule/:idc/:idr/:ids', async (req, res) => {
 try {
   const idc=objectid(req.params.idc);
