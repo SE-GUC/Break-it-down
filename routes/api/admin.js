@@ -173,49 +173,6 @@ function sendMailToUsers(recieverEmail, subjectff, textxxx){
   });
 }
 
-//--------------------------------------NotifyUsersToSignContract-------------------------------------------
-router.put('/NotifyUsersToSignContract/:PID', async(req, res)=> {
-
-  const PartID = req.params.PID
-  const partner = await users.findOne({'_id':PartID})
-  const email = partner.email
-  const name = partner.name
-  console.log(email)
-
-  const {appointment, day, location} = req.body
-
-  const schema = {
-    appointment: Joi.string().required(),
-    day: Joi.string().required(),
-    location: Joi.string().required()
- };
-
-const result = Joi.validate(req.body, schema);
-
-if(result.error){
-    return  res.send(result.error.details[0].message)
-   }
-
-else {
-  const message =  `Hi ${name}! 
-                    Thanks for signing up with LirtenHub.
-                    To verify your account please meet with one of our team on ${day} at ${appointment} in ${location}.
-                    If the appointment doesn't suite you, please contact us through our email.`
-
- // const subject =  "Urgent! LirtenHub Contract & Agreement"                
-  sendMailToUsers(email,"Urgent! LirtenHub Contract & Agreement" , message , function(err, data){
-      if (err){
-          res.json(err);
-      }
-      res.json("email sent successfully")
-
-  });
-
-}
-});
-
-
-
 
 //--------------------------------------notify users with expiry of their contract-------------------------------------------
 
