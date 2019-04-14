@@ -154,6 +154,9 @@ tasks: {
         description: {
           type: String
         },
+        lirtenHubVerified: {
+          type: Boolean
+        },
         wantsConsultant: {
           type: Boolean
         },
