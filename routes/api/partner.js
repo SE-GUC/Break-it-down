@@ -297,9 +297,198 @@ router.get("/viewConsultancy/:PID/:TID", async (req, res) => {
    }   
   }
  
+});     //eman's part starts here
+
+
+//-----------------------------------partner choose a consultancy agency -------------------------------------------// done with id
+
+
+
+router.put('/ChooseConsultancyAgency/:idP/:idT',async(req,res)=>{
+    var flag=false;
+    const PartID = ObjectId(req.params.idP)
+    const Task_id = parseInt(req.params.idT)
+    const partner = await users.findOne(PartID)
+
+    if(partner === null )
+    res.json("the partner id is not correct")
+
+    else {
+      const task = partner.tasks
+      const t = task.find(task => task.taskID === Task_id)
+      
+      if(t === null) res,json("the task Id is not correct")
+      else{
+      const consultancyID = req.body.consultancyID
+      for(var i=0;i<t.consultancies.length;i++){
+          if(t.consultancies[i].accepted===true)
+          flag=true
+      } 
+
+      if(flag===false){
+      const schema = {
+        consultancyID:Joi.string().required()            //the object id needs to be passed from consultancy
+        //consultancyID:Joi.number().required()
+         }
+
+      const result=Joi.validate(req.body,schema)
+
+      if(result.error)
+       return res.send(error.message);
+      else{
+        const f = await users.findOneAndUpdate(
+          {"_id":PartID,},
+          {
+            $set: {
+              "tasks.$[i].consultancies.$[j].accepted":true
+   
+            }
+          },
+    
+          {
+            arrayFilters: [
+              { "i.taskID": Task_id },
+              { "j.consultancyID": ObjectId(consultancyID)  }
+            ]
+            
+          }
+        );
+  
+      res.json("done")
+      
+        }
+      }
+      if(flag===true){
+          res.json("there exists an accepted applicant for the task")
+      }
+    }
+  }
+
+});
+//-----------------------------------partner view a task's life cycle -------------------------------------------// done with id ,done with react
+
+router.get("/TaskLifeCycle/:PID/:TID", async (req, res) => {
+    const partnerID = ObjectId(req.params.PID);
+    const Task_id = parseInt(req.params.TID);
+  
+    const partner = await users.findOne(partnerID);
+    const Task_Array = partner.tasks;
+    if(partner === null )
+  {res.json("the partner id is not correct")}
+  else{
+    const task = partner.tasks
+      
+      const t = task.find(task => task.taskID === Task_id)
+
+      if(t === null) {res.json("the task Id is not correct")}
+      else{
+         var lifeCyc = [];
+    let data = "";
+    for (var i = 0; i < Task_Array.length; i++) {
+      if (Task_Array[i].taskID === Task_id) {
+        lifeCyc = Task_Array[i].lifeCycle;
+        data = Task_Array[i].name;
+      }
+    }
+  
+    res.send(lifeCyc);
+      }
+    }
+
+  
+   
+  });
+
+
+//-----------------------------------partner send request to change description -------------------------------------------// done with id,done with react , need to handle other changes like name
+
+
+router.put('/RequestDescriptionChange/:PID/:TID', async(req,res)=>{
+    const PartID = ObjectId(req.params.PID)
+    const partner = await users.findOne(PartID)
+    const Task_id = parseInt(req.params.TID)
+    if(partner===null ) {
+        res.json("the database has no partner with the given ID")
+   } 
+   else {
+    const task = partner.tasks
+    const task_to_update = task.find(task => task.taskID === Task_id)
+
+    if(task_to_update === null) 
+    res.json("this partner has no task with the given ID")
+
+    else{
+    const changes = req.body.description;
+  
+    
+    const schema = {
+      name: Joi.string(),
+      description: Joi.string(),
+      field:Joi.string(),
+      skills:Joi.array()
+        
+     };
+ 
+    const result = Joi.validate(req.body, schema);
+
+    if(result.error){
+        return  res.send(result.error.details[0].message)
+       }
+
+    else { 
+ 
+
+        const newUpdate= 
+            {id: PartID,
+             TaskID: Task_id, 
+             description: changes,
+             status: 'pending'
+            }
+          ;
+          const updates = partner.updates
+          updates.push(newUpdate)
+
+          const f = await users.findOneAndUpdate({"_id":PartID,},{$set: { "updates":updates}});
+
+    
+            const partners = await users.findOne(PartID)
+           res.json(partners.updates)
+       }
+    }
+}
 });
 
 
+//--------------------------------partner view his/her profile------------------------------------------//
+router.get("/viewProfile/:PID", async (req, res) => {
+  const partnerID = ObjectId(req.params.PID);
+  const partner = await users.findOne(partnerID);
+  
+  if(partner === null )
+  {
+    res.json("the partner id is not correct")
+  }
+  else{
+  res.json(partner) 
+  }
+ 
+});
+
+//-----------------------------------get all tasks for a partner-----------------------------//
+
+router.get("/myTasks/:PID", async (req, res) => {
+  const partnerID = ObjectId(req.params.PID);
+  const partner = await users.findOne(partnerID);
+  
+  if(partner === null )
+  {
+    res.json("the partner id is not correct")
+  }
+  else{
+  res.json(partner.tasks) 
+  }
+ 
+});
 
 
 
