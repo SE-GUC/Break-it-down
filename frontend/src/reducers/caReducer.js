@@ -1,9 +1,10 @@
 import uuid from 'uuid'
-import {FILTER_TASKS, LOADING, GET_MEMBERS, GET_MY_PARTNERS,GET_PARTNER_TASKS} from '../actions/types'
+import {FILTER_TASKS, LOADING, GET_MEMBERS, GET_MY_PARTNERS,GET_PARTNER_TASKS, GET_MY_TASKS} from '../actions/types'
 const initialState={
     members:[],
     mypartners:[],
     partnertasks:[],
+    mytasks:[],
     loading: false
 }
 
@@ -27,10 +28,10 @@ export default function(state= initialState, action){
                 partnertasks:action.payload.tasks,
                 loading: false
         }
-        case FILTER_TASKS:
+        case GET_MY_TASKS:
             return{
                 ...state,
-                tasks: action.payload,
+                mytasks: action.payload.tasks,
                 loading: false
             }
         case LOADING: 
