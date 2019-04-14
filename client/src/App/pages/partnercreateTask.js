@@ -1,26 +1,32 @@
 import React, { Component } from 'react';
-import UserForm from './form';
+import UserForm from './partnerform';
 
-class createTask extends Component {
+class partnercreateTask extends Component {
 
+  
     constructor(props){
         super(props);
-        this.state = { 
-        }
+        this.state={
+      }
         
       }
+      
 
-      getUser = (e) => {
+      getUser = async (e) => {
 
         e.preventDefault();
         
         let databody ={
         "name" : e.target.elements.name.value,
         "description" : e.target.elements.description.value,
-        "wantsConsultant":e.target.elements.wantsConsultant.value
+        "wantsConsultant":e.target.elements.wantsConsultant.value,
+        "field":e.target.elements.field.value,
+
+        
     }
-    const id = this.props.match.params.id
-    fetch(`http://localhost:4000/api/partner/createTask/${id}`, {
+    const PID = this.props.match.params.PID
+    console.log("hiiiiii")
+    await fetch(`http://localhost:4000/api/partner/createTask/${PID}`, {
          method: 'POST',
          body: JSON.stringify(databody),
          headers: {
@@ -32,9 +38,7 @@ class createTask extends Component {
  
    }
    render() {
-    const id = window.location.pathname.split("/").pop();
 
-    console.log(id)
     return (
 
       <div className="App">
@@ -50,5 +54,5 @@ class createTask extends Component {
 
 
 
-export default createTask;
+export default partnercreateTask;
 
