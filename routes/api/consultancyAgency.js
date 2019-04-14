@@ -4,7 +4,7 @@ const router = express.Router();
 
 //--------------------models--------------------
 const users = require('../../models/UserProfile');
-const ConsultancyAgency = require('../../models/ConsultancyAgency');
+const ConsultancyAgency = require('../../models/consultancyAgency');
 const Message = require('../../models/messages');
 const recommendedAppl = require('../../models/RecommendedApplicants');
 
