@@ -16,7 +16,7 @@ const ProfilesAPI = require("./routes/api/Profiles");
 const partner = require("./routes/api/partner");
 const notification = require("./routes/api/notification");
 const member = require("./routes/api/member");
-const Event = require("./routes/api/event");
+const Event = require("./routes/api/Event");
 const consultancyAgency = require("./routes/api/consultancyAgency");
 const eo = require("./routes/api/educationalOrganization");
 
