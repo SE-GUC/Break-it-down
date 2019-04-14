@@ -11,7 +11,7 @@ var objectid = require("mongodb").ObjectID;
 
 var Members = require("../../models/Member");
 var partner = require("../../models/Partner");
-const PartnerCoworkingSpace = require("../../models/cospaceMtest");
+const PartnerCoworkingSpace = require("../../models/cospaceMTest");
 const RoomBookings = require("../../models/RoomBookings");
 
 // Instead of app use route
