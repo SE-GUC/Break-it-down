@@ -5,6 +5,7 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group'
 import {connect} from 'react-redux'
 import {getMyPartners,getPartnerTasks} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
+import CASidenav from './CASidenav';
 
 class CAPartners extends Component{
     
@@ -29,6 +30,7 @@ const {partnertasks}=this.props.ca
     return(
     
     <Container  >
+        <CASidenav></CASidenav>
         <h1> My Partners </h1>
         <br/>
         <ListGroup >
@@ -36,7 +38,7 @@ const {partnertasks}=this.props.ca
             {mypartners.map( item => (
                <CSSTransition key={item._id} timeout={500} >
                <ListGroupItem >
-                <Button block  onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
+                <Button block  color= 'warning' onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
                    
                 </ListGroupItem>
                 </CSSTransition>
@@ -52,7 +54,7 @@ const {partnertasks}=this.props.ca
         </ListGroup>
         <br/>
         <Modal isOpen= {this.state.modal} toggle={this.toggle}>
-       <ModalHeader >
+       <ModalHeader toggle={this.toggle}>
        Partner Tasks
        </ModalHeader>
            <ModalBody>

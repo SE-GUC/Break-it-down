@@ -24,6 +24,9 @@ import specificCoworkingSpace from "./pages/specificCoworkingSpace";
 import specificRoom from "./pages/specificRoom";
 import MainUpdates from "./components/MainUpdates";
 import Admin from "./pages/Admin";
+import CAHome from "./pages/CAHome";
+import CAPartners from "./components/CAPartners";
+
 
 class App extends Component {
   render() {
@@ -128,6 +131,11 @@ class App extends Component {
           <Route exact path="/admin/updates" component={MainUpdates} />
 
           <Route exact path="/admin" component={Admin} />
+          <Route exact path="/ConsultancyAgency" component={CAHome} />
+          <Route exact path="/ConsultancyAgency/Partners" component={CAPartners} />
+
+          
+
         </Router>
       </div>
     );

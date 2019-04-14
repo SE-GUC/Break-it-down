@@ -168,16 +168,6 @@ const ConsultancyAgencys = await ConsultancyAgency.find()
 res.json({data: ConsultancyAgencys})
 })
 
-//--------------get specific consultancy agencies-----------
-router.get('/:id', (req, res) => {
-const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-
-if (found) {
-	res.json(consultancyAgencys.filter(consultancyAgency => consultancyAgency.id == (req.params.id)));
-} else {
-	res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
-}
-});
 
 //--------------apply for a task-----------
 router.put('/apply/:pid/:tid/:agid',async(req , res)=> {
@@ -369,15 +359,14 @@ router.delete('/nourhan/RoomBookings/:userID/:bookingID',async (req, res) => {
 
 //--------------get specific consultancy agencies-----------
 router.get('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  res.json(consultancyAgencys.filter(consultancyAgency => consultancyAgency.id == (req.params.id)));
-	} else {
-	  res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
-	}
-  });
 
+	users.findById(req.params.id)
+	.then( ca =>{
+		res.json(ca)
+	}
+	)
+}
+)
 //------------------Update consultancyAgency (Malak&Nour)--------------
 router.put('/:id', async (req,res) => {
 	try {
