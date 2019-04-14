@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS} from './types'
+import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS} from './types'
 
 export const filterTasks = (memberID) =>  dispatch =>{
   dispatch(setLoading());
@@ -41,7 +41,14 @@ export const getPartnerTasks = (_id) =>  dispatch =>{
     payload: res.data
   })})
 }
-
+export const getApplicants = (idp,idt) =>  dispatch =>{
+  axios.get('/api/ConsultancyAgency/viewTaskApplicants/'+idp+'/'+idt)
+  .then(res =>{
+     dispatch({
+    type: GET_APPLICANTS,
+    payload: res.data
+  })})
+}
 
 
 

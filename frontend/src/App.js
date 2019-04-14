@@ -26,6 +26,7 @@ import MainUpdates from "./components/MainUpdates";
 import Admin from "./pages/Admin";
 import CAHome from "./pages/CAHome";
 import CAPartners from "./components/CAPartners";
+import CATaskApplicantModal from "./components/CATaskApplicantModal";
 
 
 class App extends Component {
@@ -133,7 +134,11 @@ class App extends Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/ConsultancyAgency" component={CAHome} />
           <Route exact path="/ConsultancyAgency/Partners" component={CAPartners} />
-
+          <Route
+            exact
+            path="/ConsultancyAgency/viewTaskApplicants/:idP/:idT"
+            component={CATaskApplicantModal}
+          />
           
 
         </Router>

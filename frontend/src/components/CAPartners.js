@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {getMyPartners,getPartnerTasks} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
 import CASidenav from './CASidenav';
+import CATaskApplicantModal from './CATaskApplicantModal';
 
 class CAPartners extends Component{
     
@@ -78,10 +79,11 @@ const {partnertasks}=this.props.ca
 }
 
 CAPartners.propTypes={
- getMyPartners: PropTypes.func.isRequired,
- capartners:PropTypes.object.isRequired , //The state mapped to a prop
- getPartnerTasks:PropTypes.func.isRequired
-}
+    getMyPartners: PropTypes.func.isRequired,
+    capartners:PropTypes.object.isRequired , //The state mapped to a prop
+    getPartnerTasks:PropTypes.func.isRequired
+   }
+
 const mapStateToProps = (state) =>
 ({
     ca: state.ca
