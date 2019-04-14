@@ -8,6 +8,53 @@ var Mongoose = require("mongoose");
 var ObjectId = Mongoose.Types.ObjectId
 
 
+const cron = require('cron')
+const notifier = require('node-notifier')
+
+
+
+const job = cron.job('* */30 * * * *', () => 
+    // console.log('helloo'),
+  //   getUsers(),
+     sendNotification('5c9114781c9d440000a926ce')
+
+);
+job.start()
+
+async function sendNotification(Id){
+  const ID= ObjectId(Id)
+  const user = await users.findOne(ID)
+  const notif= user.notifications
+  console.log(notif)
+  notif.forEach(element => {
+
+    notifier.notify({
+      title: 'New Notification' ,
+      message: element.notificationContent,
+      //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
+      sound: true, // Only Notification Center or Windows Toasters
+      wait: true // Wait with callback, until user action is taken against notification
+    }, function (err, response) {});
+  
+    console.log(element.notifID)
+    notifier.on('click', function(notifierObj, options) {
+       users.updateOne({'_id':ID, }, 
+                       {$set: {'notifications.$[i].read': true, 'notifications.$[i].unread': false}},
+                       { arrayFilters: [{ "i.notifID": element.notifID }]},
+                       function(err, model){}); 
+
+      // element.read= true,
+      // element.unread= false
+      // // Triggers if `wait: true` and user clicks notification
+    //  console.log('The user clicked on the Notification!');
+    });
+  });
+     
+ 
+ 
+}
+
+
 //nourhan -------------------------------------------------------------------------------------------------------------------
 const message = require('../../models/messages');
 
