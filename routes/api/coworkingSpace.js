@@ -10,6 +10,10 @@ const validator = require('../../Validations/CoworkingSpaceValidations');
 const users = require('../../models/UserProfile');
 const User = require('../../models/UserProfile');
 const users = require("../../models/UserProfile");
+
+var ObjectId = Mongoose.Types.ObjectId;
+var objectid = require('mongodb').ObjectID
+
 const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule')
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
