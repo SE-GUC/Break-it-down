@@ -6,6 +6,9 @@ const router = express.Router();
 const mongoose = require("mongoose");
 // Models should be removed
 const User = require("../../models/UserProfile");
+const users = require("../../models/UserProfile");
+
+var ObjectId = Mongoose.Types.ObjectId;
 //nourhan
 var objectid = require("mongodb").ObjectID;
 
