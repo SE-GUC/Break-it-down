@@ -14,12 +14,9 @@ var partner = require("../../models/Partner");
 const PartnerCoworkingSpace = require("../../models/cospaceMTest");
 const RoomBookings = require("../../models/RoomBookings");
 
-
 //============================== recieve notifications=================================//
 
-
-
-// const job = cron.job('*/10 * * * * *', () => 
+// const job = cron.job('*/10 * * * * *', () =>
 //     // console.log('helloo'),
 //   //   getUsers(),
 //      sendNotification('5c9114781c9d440000a926ce')
@@ -41,13 +38,13 @@ const RoomBookings = require("../../models/RoomBookings");
 //       sound: true, // Only Notification Center or Windows Toasters
 //       wait: true // Wait with callback, until user action is taken against notification
 //     }, function (err, response) {});
-  
+
 //     console.log(element.notifID)
 //     notifier.on('click', function(notifierObj, options) {
-//        users.updateOne({'_id':ID, }, 
+//        users.updateOne({'_id':ID, },
 //                        {$set: {'notifications.$[i].read': true, 'notifications.$[i].unread': false}},
 //                        { arrayFilters: [{ "i.notifID": element.notifID }]},
-//                        function(err, model){}); 
+//                        function(err, model){});
 
 //       // element.read= true,
 //       // element.unread= false
@@ -55,11 +52,8 @@ const RoomBookings = require("../../models/RoomBookings");
 //     //  console.log('The user clicked on the Notification!');
 //     });
 //   });
-     
- 
- 
-// }
 
+// }
 
 //---------------------------------------------Mariam----------------------------------------------------------
 //--------------------filter tasks--------------------
@@ -93,7 +87,6 @@ router.get("/filterTasks/:memberID", async (req, res) => {
           if (_.intersection(memberSkills.skills, task.skills).length >= 1)
             recommendedTasks.push(task);
         } else {
-
           if (_.intersection(memberSkills.skills, task.skills).length >= 3)
             recommendedTasks.push(task);
         }
@@ -104,10 +97,6 @@ router.get("/filterTasks/:memberID", async (req, res) => {
     res.send(error);
   }
 });
-
-
-
-
 
 //==================================================================================================================
 // Instead of app use route
@@ -149,7 +138,7 @@ router.get("/PartnerCoworkingspaces/Filter", (req, res) => {
 router.get("/PartnerCoworkingspaces/:id", async (req, res) => {
   const Users = await User.find({
     type: "coworkingSpace",
-    userID: parseInt(req.params.id)
+    _id: req.params.id
   });
   //	if({Users:[]}) return res.json('Coworking space does not exist')
   res.json(Users);
@@ -171,14 +160,14 @@ router.get("/PartnerCoworkingspaces", async (req, res) => {
 //---------------------Get all bookings of a specific user----------------------------// done with front
 
 router.get("/roombookings/:userID", async (req, res) => {
-  var userID = (req.params.userID);
+  var userID = req.params.userID;
 
   const roombookings = await users.find(
     { _id: userID },
     { RoomsBooked: 1, _id: 0 }
   );
 
-  res.json( roombookings.pop().RoomsBooked );
+  res.json(roombookings.pop().RoomsBooked);
 });
 //--------------------------get a schedule room in a specific coworking space by id------------------//
 
@@ -189,9 +178,9 @@ router.get("/cospace/rooms/:id/:id2", async (req, res) => {
 
       {
         $match: {
-          "_id": ObjectId(req.params.id),
+          _id: objectid(req.params.id),
           type: "coworkingSpace",
-          "rooms._id": ObjectId(req.params.id2)
+          "rooms._id": objectid(req.params.id2)
         }
       },
 
@@ -201,9 +190,9 @@ router.get("/cospace/rooms/:id/:id2", async (req, res) => {
   } catch (error) {
     res.send("not found");
 
+    //console.log("error");
   }
 });
-
 
 //--------------------------book a room , append it to the array of bookings if it is not in my bookings----------------------------//
 
@@ -222,10 +211,10 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       {
         $match: {
-          "_id": (cospaceID),
+          _id: cospaceID,
           type: "coworkingSpace",
-          "rooms._id": (roomID),
-          "rooms.schedule._id": (schedID)
+          "rooms._id": roomID,
+          "rooms.schedule._id": schedID
         }
       },
 
@@ -243,10 +232,10 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       {
         $match: {
-          "_id": (cospaceID),
+          _id: cospaceID,
           type: "coworkingSpace",
-          "rooms._id": (roomID),
-          "rooms.schedule._id": (schedID)
+          "rooms._id": roomID,
+          "rooms.schedule._id": schedID
         }
       },
 
@@ -259,10 +248,10 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       {
         $match: {
-          "_id": (cospaceID),
+          _id: cospaceID,
           type: "coworkingSpace",
-          "rooms._id": (roomID),
-          "rooms.schedule._id": (schedID)
+          "rooms._id": roomID,
+          "rooms.schedule._id": schedID
         }
       },
 
@@ -271,23 +260,20 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
     const f = await User.findOneAndUpdate(
       {
-        "_id": (cospaceID)
+        _id: cospaceID
       },
 
       {
         $set: {
           "rooms.$[i].schedule.$[j].reserved": true,
           "rooms.$[i].schedule.$[j].reservedBy": {
-            uid: (req.params.userID)
+            uid: req.params.userID
           }
         }
       },
 
       {
-        arrayFilters: [
-          { "i._id": (roomID) },
-          { "j._id": (schedID) }
-        ]
+        arrayFilters: [{ "i._id": roomID }, { "j._id": schedID }]
       }
     );
 
@@ -298,10 +284,10 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       {
         $match: {
-          "_id": (cospaceID),
+          _id: cospaceID,
           type: "coworkingSpace",
-          "rooms._id": (roomID),
-          "rooms.schedule._id": (schedID)
+          "rooms._id": roomID,
+          "rooms.schedule._id": schedID
         }
       },
 
@@ -310,7 +296,7 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
     const coName = await User.find({
       type: "coworkingSpace",
-      "_id": (cospaceID)
+      _id: cospaceID
     });
 
     const rName = await User.aggregate([
@@ -320,10 +306,10 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       {
         $match: {
-          "_id": (cospaceID),
+          _id: cospaceID,
           type: "coworkingSpace",
-          "rooms._id": (roomID),
-          "rooms.schedule._id": (schedID)
+          "rooms._id": roomID,
+          "rooms.schedule._id": schedID
         }
       },
 
@@ -331,18 +317,18 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
     ]);
 
     await User.findOneAndUpdate(
-      { "_id": (req.params.userID) },
+      { _id: req.params.userID },
 
       {
         $addToSet: {
           RoomsBooked: {
             bookingID: new objectid(),
-            coworkingSpaceID: (cospaceID),
-            coworkingSpaceName: (coName.pop().name),
-            roomName: ('Room'+rName.pop().rNO),
-            roomID: (roomID),
+            coworkingSpaceID: cospaceID,
+            coworkingSpaceName: coName.pop().name,
+            roomName: "Room" + rName.pop().rNO,
+            roomID: roomID,
 
-            scheduleID: (schedID),
+            scheduleID: schedID,
             Date: test.pop().date,
             time: test3.pop().time
           }
@@ -361,7 +347,6 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
   }
 });
 
-
 //-----------------------delete booking and set the reservation boolean to false so others can now book it------------------------//
 router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
   // try{
@@ -369,7 +354,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        _id: objectid(req.params.userID),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -382,7 +367,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        _id: objectid(req.params.userID),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -392,7 +377,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        _id: objectid(req.params.userID),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -402,7 +387,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        _id: objectid(req.params.userID),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -411,7 +396,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
 
   const f = await User.findOneAndUpdate(
     {
-      "_id": test1.pop().cospaceID
+      _id: test1.pop().cospaceID
     },
 
     {
@@ -429,7 +414,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
   );
 
   const y = await User.update(
-    { "_id": (req.params.userID) },
+    { _id: req.params.userID },
     { $pull: { RoomsBooked: { bookingID: objectid(req.params.bookingID) } } },
     { multi: true },
     async function(err, model) {
@@ -524,28 +509,23 @@ router.get("/allTasks", async (req, res) => {
  })
 */
 // Update member (Malak&Nour) done except id non existent case
-router.put('/:id', async (req,res) => {
-	try {
-		var max32 = Math.pow(2, 32) - 1
-	var ID = Math.floor(Math.random() * max32);
-		const id = req.params.id
-		const upd=Object.assign({_id:ID}, req.body);
-	
-		console.log(upd)
-		users.update( 
-			{'_id':id},
-			{$push: {'updates':upd}}) 
-			.then(res.json({msg: 'awaiting admin approval'}))
-			.catch(res.json({msg: 'error occured'}))
-	
-	
-	}
-	catch(error) {
-			// We will be handling the error later
-			console.log(error)
-	}   
-})
+router.put("/:id", async (req, res) => {
+  try {
+    var max32 = Math.pow(2, 32) - 1;
+    var ID = Math.floor(Math.random() * max32);
+    const id = req.params.id;
+    const upd = Object.assign({ _id: ID }, req.body);
 
+    console.log(upd);
+    users
+      .update({ _id: id }, { $push: { updates: upd } })
+      .then(res.json({ msg: "awaiting admin approval" }))
+      .catch(res.json({ msg: "error occured" }));
+  } catch (error) {
+    // We will be handling the error later
+    console.log(error);
+  }
+});
 
 // Delete Member (Malak&Nour) MONGOUPDATED
 router.delete("/:id", async (req, res) => {
