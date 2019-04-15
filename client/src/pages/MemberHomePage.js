@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
+import MemberSidenav from "../components/MemberSidenav";
 //import coworkingspace from "./viewCoworkingSpaces";
 export default class MemberHomePage extends Component {
   render() {
@@ -11,7 +12,7 @@ export default class MemberHomePage extends Component {
           {" "}
           <div>
             {" "}
-            <NavbarPage whichPage="Home" />{" "}
+            <NavbarPage whichPage="Home" /> <MemberSidenav />;
           </div>{" "}
         </Route>
 

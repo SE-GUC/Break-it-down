@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
+import MemberSidenav from "../components/MemberSidenav";
 class specificRoom extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +34,7 @@ class specificRoom extends Component {
           {" "}
           <div>
             {" "}
-            <NavbarPage whichPage="coworkingspace" />{" "}
+            <NavbarPage whichPage="coworkingspace" /> <MemberSidenav />;
           </div>{" "}
         </Route>
         <h1>{this.state.name}</h1>

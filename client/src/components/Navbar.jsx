@@ -8,7 +8,7 @@ import {
   NavItem
 } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
-import Logo from "../Logo.svg";
+import Logo1 from "../Logo1.svg";
 class NavbarPage extends Component {
   state = {
     whichPage: this.props.whichPage
@@ -18,7 +18,7 @@ class NavbarPage extends Component {
       <Navbar style={{ backgroundColor: "#005a73" }}>
         <Nav className="mr-auto">
           <text>..............</text>
-          <img style={{ width: 200, height: 70 }} src={Logo} />;
+          <img style={{ width: 200, height: 70 }} src={Logo1} />;
           <Nav.Link href="/">Home</Nav.Link>
           <NavItem>
             <Nav.Link href="/viewCoworkingSpace/">viewCoworkingSpace</Nav.Link>

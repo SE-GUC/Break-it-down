@@ -20,7 +20,7 @@ class MemberMyRoomBooking extends Component {
   // Retrieves the list of items from the Express app
   getList = async () => {
     const id = this.props.match.params.id;
-    await fetch(`http://localhost:4000/api/member/roombookings/${id}/`)
+    await fetch(`http://localhost:4000/api/partner/roombookings/${id}/`)
       .then(res => res.json())
       .then(list => this.setState({ list }));
     //  console.log(this.state.list)

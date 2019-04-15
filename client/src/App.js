@@ -28,6 +28,12 @@ import MemberProfile from "./pages/profileMember";
 import ProfileCO from "./pages/profileCO";
 import MemberMyRoomBooking from "./pages/MemberMyRoomBooking";
 import MemberViewAllmembers from "./pages/MemberViewAllmembers";
+import CAHome from "./pages/CAHome";
+import CAPartners from "./components/CAPartners";
+import consultancyAgencyStories from "./components/consultancyAgencyStories"
+import CATasks from "./components/CATasks";
+import EventList from './components/EventList'
+import TaskList from './components/TaskList'
 class App extends Component {
   render() {
     const App = () => (
@@ -130,6 +136,14 @@ class App extends Component {
             component={ViewRoomBookings}
           />
           <Route exact path="/MemberProfile" component={MemberProfile} />
+          <Route exact path="/ConsultancyAgency" component={CAHome} />
+          <Route exact path="/ConsultancyAgency/Partners" component={consultancyAgencyStories} />
+        
+          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
+          <Route exact path="/Tasks" component={TaskList}/>
+    <Route exact path="/Events" component={EventList}/>
+
+
         </Router>
       </div>
     );

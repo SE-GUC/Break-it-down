@@ -76,6 +76,32 @@ router.get('/viewmessages', async (req, res) => {
     const updt=await Message.find()
     res.json({ data: updt })
 })
+//---Get my partner----// Malak
+router.get('/Partners/:_id', async (req, res) => {
+
+	//the id is currently hardcoded with postman, it is my own id and should be taken from the token
+	try{
+		users.findById(req.params._id)
+		.then(myca =>{
+			res.json({partners:myca.partners})})
+	
+	}
+	catch{
+		res.json({msg:"yuf"})
+	}
+	
+	})
+	//----------------viewTasks----------------
+router.get('/viewTasks/:_id', async (req, res) =>{
+	try{
+		users.findById(req.params._id)
+		.then(partner =>
+			res.json({tasks:partner.tasks}))
+	}
+	catch{
+		res.json({msg:"error"})
+	}
+})
 
 //-----------------------------------------Mariam-------------------------------------------------------------------
 //--------------Filter applicants-----------------------------
@@ -195,16 +221,6 @@ const ConsultancyAgencys = await ConsultancyAgency.find()
 res.json({data: ConsultancyAgencys})
 })
 
-//--------------get specific consultancy agencies-----------
-router.get('/:id', (req, res) => {
-const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-
-if (found) {
-	res.json(consultancyAgencys.filter(consultancyAgency => consultancyAgency.id == (req.params.id)));
-} else {
-	res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
-}
-});
 
 //--------------------------------nourhan----------------------------------------------
 
@@ -505,33 +521,38 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
 
 //--------------get specific consultancy agencies-----------
 router.get('/:id', (req, res) => {
-	const found = consultancyAgencys.some(consultancyAgency => consultancyAgency.id == (req.params.id));
-  
-	if (found) {
-	  res.json(consultancyAgencys.filter(consultancyAgency => consultancyAgency.id == (req.params.id)));
-	} else {
-	  res.status(404).json({ msg: `No Consultancy Agency with the id of ${req.params.id}` });
+
+	users.findById(req.params.id)
+	.then( ca =>{
+		res.json(ca)
 	}
-  });
-
-//------------------Update consultancyAgency (Malak&Nour) done except id non existent case--------------
-router.put('/:id', async (req,res) => {
-try {
-	const id = req.params.id
-		const consultancyAgency = await ConsultancyAgency.findOne({id})
-	// if(!consultancyAgency) return res.status(404).send({error: 'consultancyAgency does not exist'})
-// const isValidated = validator.updateValidation(req.body)
-	//if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-		
-		const updatedConsultancyAgency = await ConsultancyAgency.updateOne(req.body)
-
-	res.json({msg: 'consultancyAgency updated successfully'})
+	)
 }
-catch(error) {
-		// We will be handling the error later
-		console.log(error)
-}  
-})
+)
+
+//------------------Update consultancyAgency (Malak&Nour)--------------
+router.put('/:id', async (req,res) => {
+	try {
+		var max32 = Math.pow(2, 32) - 1
+	var ID = Math.floor(Math.random() * max32);
+		const id = req.params.id
+		const upd=Object.assign({_id:ID}, req.body);
+	
+		console.log(upd)
+		users.update( 
+			{'_id':id},
+			{$push: {'updates':upd}}) 
+			.then(res.json({msg: 'awaiting admin approval'}))
+			.catch(res.json({msg: 'error occured'}))
+	
+	
+	}
+	catch(error) {
+			// We will be handling the error later
+			console.log(error)
+	}  
+	})
+
 
 
 //---------------Delete consultancyAgency (Malak&Nour) MONGOUPDATED----------------

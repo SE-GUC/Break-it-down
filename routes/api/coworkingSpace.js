@@ -587,23 +587,27 @@ newPartnerCoworkingSpace
 //console.log("can not create")}
 });
 // Update PartnerCoworkingSpace (Malak&Nour) done except id non existent case
-router.put('/updateCospace2/:id', async (req,res) => {
-try {
-const id = req.params.id
-const CoworkingSpace = await users.findOne({id})
-// if(!CoworkingSpace) return res.status(404).send({error: 'PartnerCoworkingSpace does not exist'})
-// const isValidated = validator.updateValidation(req.body)
-//if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-
-const updatedPartnerCoworkingSpace = await users.updateOne(req.body)
-
-res.json({msg: 'CowrkingSpace updated successfully', data: CoworkingSpace})
-}
-catch(error) {
-    // We will be handling the error later
-    console.log(error)
-}  
-})
+// Update PartnerCoworkingSpace (Malak&Nour) done except id non existent case
+router.put("/updateCospace2/:id", async (req, res) => {
+  try {
+    var max32 = Math.pow(2, 32) - 1
+  var ID = Math.floor(Math.random() * max32);
+    const id = req.params.id
+    const upd=Object.assign({_id:ID}, req.body);
+  
+    users.update( 
+      {'_id':id},
+      {$push: {'updates':upd}}) 
+      .then(res.json({msg: 'awaiting admin approval'}))
+      .catch(res.json({msg: 'error occured'}))
+  
+  
+  }
+  catch(error) {
+      // We will be handling the error later
+      console.log(error)
+  }  
+});
 
 // Delete PartnerCoworkingSpace (Malak&Nour) MONGOUPDATED
 router.delete('/deleteCospace/:id', async (req,res) => {
