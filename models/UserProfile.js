@@ -154,6 +154,9 @@ tasks: {
         description: {
           type: String
         },
+        lirtenHubVerified: {
+          type: Boolean
+        },
         wantsConsultant: {
           type: Boolean
         },
@@ -240,7 +243,18 @@ updates:{type:Array,required: false,
    },
 
     }]
+},
+    notifications:{
+  type:Array,
+  "items":[{
+      notificationContent:{type:String,required:true} , 
+      read:{type:Boolean,required:false},
+      unread:{type:Boolean,required:false},
+      notifID:{type:Number,required:false}
+  }]
+  
 }
+    
 });
 
 UserSchema.plugin(autoIncrement.plugin,{ model: 'users', field: 'userID' });

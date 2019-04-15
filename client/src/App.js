@@ -4,11 +4,9 @@ import "./App.css";
 import Home from "./pages/HomeCS";
 import List from "./pages/List";
 import CreateRoom from "./pages/CreateRoom";
-import Update from "./pages/Update";
 import CreateSch from "./pages/Createsch";
 import ViewRoom from "./pages/ViewRoom";
 import AllRooms from "./pages/AllRooms";
-import ViewInfo from "./pages/Cospaceinfo";
 import Login from "./pages/login";
 import SignUp from "./pages/signUp";
 import SignUpMember from "./pages/signUpMember";
@@ -17,7 +15,7 @@ import SignUpCoworkingSpace from "./pages/signUpCoworkingSpace";
 import SignUpConsultancyAgency from "./pages/signUpConsultancyAgency";
 import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization";
 import taskDescription from "./pages/taskDescription";
-import UserHomePage from "./pages/UserHomePage";
+import MemberHomePage from "./pages/MemberHomePage";
 import viewcoWorkingSpace from "./pages/viewCoworkingspace";
 import specificCoworkingSpace from "./pages/specificCoworkingSpace";
 import specificRoom from "./pages/specificRoom";
@@ -26,7 +24,16 @@ import Admin from "./pages/Admin";
 import Suggestions from "./components/Suggestions";
 import UpdateRoomBooking from "./components/UpdateRoomBooking";
 import ViewRoomBookings from "./components/ViewRoomBookings";
-
+import MemberProfile from "./pages/profileMember";
+import ProfileCO from "./pages/profileCO";
+import MemberMyRoomBooking from "./pages/MemberMyRoomBooking";
+import MemberViewAllmembers from "./pages/MemberViewAllmembers";
+import CAHome from "./pages/CAHome";
+import CAPartners from "./components/CAPartners";
+import consultancyAgencyStories from "./components/consultancyAgencyStories"
+import CATasks from "./components/CATasks";
+import EventList from './components/EventList'
+import TaskList from './components/TaskList'
 class App extends Component {
   render() {
     const App = () => (
@@ -34,6 +41,7 @@ class App extends Component {
         <Router>
           <Route exact path="/" component={Login} />
 
+          <Route exact path="/MemberHomePage" component={MemberHomePage} />
           <Route exact path="/signup" component={SignUp} />
 
           <Route exact path="/signup/member" component={SignUpMember} />
@@ -54,7 +62,8 @@ class App extends Component {
             component={SignUpEducationalOrganization}
           />
 
-          <Route exact path="/coworkingSpace" component={Home} />
+          <Route exact path="/coworkingSpace" component={ProfileCO} />
+
           <Route
             exact
             path="/coworkingSpace/viewRoomSchedule/:coID/:rID"
@@ -64,16 +73,6 @@ class App extends Component {
             exact
             path="/coworkingSpace/create/:coID"
             component={CreateRoom}
-          />
-          <Route
-            exact
-            path="/coworkingSpace/updateCospace/:coID"
-            component={Update}
-          />
-          <Route
-            exact
-            path="/coworkingSpace/viewInfo/:coID"
-            component={ViewInfo}
           />
           <Route
             exact
@@ -96,7 +95,7 @@ class App extends Component {
             path="/coworkingSpace/viewRoom/:coID/:rID"
             component={ViewRoom}
           />
-          <Route exact path="/" component={UserHomePage} />
+
           <Route
             exact
             path="/viewCoworkingspace"
@@ -112,30 +111,39 @@ class App extends Component {
             path="/specificRoom/:Coid/:Roid"
             component={specificRoom}
           />
+          <Route exact path="/AllMembersmem" component={MemberViewAllmembers} />
           <Route
             exact
-            path="/viewCoworkingspace"
-            component={viewcoWorkingSpace}
+            path="/RoombookingsMem/:id"
+            component={MemberMyRoomBooking}
           />
-          <Route
-            exact
-            path="/specificCoworkingSpace/:id"
-            component={specificCoworkingSpace}
-          />
-          <Route
-            exact
-            path="/specificRoom/:Coid/:Roid"
-            component={specificRoom}
-          />
+
           <Route exact path="/admin/updates" component={MainUpdates} />
 
           <Route exact path="/admin" component={Admin} />
 
           <Route exact path="/user/suggestions" component={Suggestions} />
 
-          <Route exact path="/user/updateRoomBooking" component={UpdateRoomBooking} />
+          <Route
+            exact
+            path="/user/updateRoomBooking"
+            component={UpdateRoomBooking}
+          />
 
-          <Route exact path="/user/viewRoomBooking" component={ViewRoomBookings} />
+          <Route
+            exact
+            path="/user/viewRoomBooking"
+            component={ViewRoomBookings}
+          />
+          <Route exact path="/MemberProfile" component={MemberProfile} />
+          <Route exact path="/ConsultancyAgency" component={CAHome} />
+          <Route exact path="/ConsultancyAgency/Partners" component={consultancyAgencyStories} />
+        
+          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
+          <Route exact path="/Tasks" component={TaskList}/>
+    <Route exact path="/Events" component={EventList}/>
+
+
         </Router>
       </div>
     );

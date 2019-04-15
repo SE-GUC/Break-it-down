@@ -31,3 +31,137 @@
     transform: rotate(360deg);
   }
 }
+
+.profile-pic {
+  height: 6vmin;
+  margin-right: 10px;
+  border-radius: 50px;
+}
+
+a {
+  color: #343a40;
+}
+
+a:hover {
+  color: #173798;
+  text-decoration: none;
+}
+
+.BackGround {
+  height: 500px;
+  width: 1300px;
+}
+
+.desc {
+  /* text-align: right;
+  width:400;
+  height: 500;
+  white-space: pre-line; */
+  width: 500px;
+  margin-left: 900px;
+  border: 3px solid #73AD21;
+  float: left;
+  
+}
+
+.img2 {
+  width: 400px;
+  height: 300;
+  margin-right: 600px;
+  /* float: right; */
+}
+
+#wrapper { 
+    width: 1000px;
+    height: 100%;
+    border: 1px solid black;
+    height: 300px;
+    align-self:center;
+    overflow: hidden; /* add this to contain floated children */
+}
+#first {
+    margin-top: 0px;
+    width: 400px;
+    float:left; /* add this */
+}
+#second {
+  margin-top: 50px;
+  margin-left: 60px;
+    width: 500px;
+    float: left; /* add this */
+}
+
+#COfooter {
+  width:1505px;
+  height: 150px;
+  background-color: #fec79a;
+}
+
+#navbar{
+  background-color: #022525
+}
+
+.rounded-circle {
+  border-radius: 50%!important;
+  background-color: #084c4b;
+}
+
+.logo {
+  height: 6vmin;
+  margin-right: 10px;
+  border-radius: 100px;
+}
+
+#Drop {
+  margin-left: 10px;
+  margin-top: 1px;
+}
+
+#facilities {
+  text-align: start;
+  margin-left: 160px;
+  width: 400px;
+  height: 100%;
+  border: 1px solid grey;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#list {
+  margin-right: 310px; 
+  font-family: 'Courier New', Courier, monospace;
+  color: grey
+}
+
+#title {
+  margin-right: 250px; 
+  color:rgb(85, 80, 80) !important;
+}
+
+#addF {
+  margin-left: 360px; 
+ 
+  /* margin-bottom: 100px; */
+}
+
+.close {
+  cursor: pointer;
+  position: absolute;
+  margin-top: 12px;
+  right: 30%;
+  padding: 12px 16px;
+  transform: translate(0%, -50%);
+}
+
+#facilities{
+  margin-left: 320px;
+}
+
+#ed1{
+  margin-left: 555px;
+}
+/* .close:hover {background: #bbb;} */

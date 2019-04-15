@@ -10,19 +10,19 @@ export const getEvents = () =>  dispatch =>{
   }))
 
 
-  /*dispatch(setItemsLoading());
-  axios
-    .get('/api/Members')
-    .then(res =>
-      dispatch({
-        type: GET_ITEMS,
-        payload: res.data
-      })
-    )
-    .catch(err =>
-        console.log(err)
-    );*/
+
 };
+
+export const addEvent = (item) =>  dispatch =>{
+
+  console.log(item)
+  axios.post('/api/Events',item)
+  .then(res => dispatch({
+    type: ADD_EVENT,
+    payload: item
+  }))
+}
+
 
 export const setLoading= () => {
   return {

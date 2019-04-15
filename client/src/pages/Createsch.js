@@ -8,7 +8,7 @@ class Createsch extends Component {
         e.preventDefault();
         
         let databody ={
-        "id" : e.target.elements.id.value,
+        "scheduleNumber" : e.target.elements.id.value,
        "Date" : e.target.elements.Date.value,
         "time" : e.target.elements.time.value,
       //  "reserved" : false,

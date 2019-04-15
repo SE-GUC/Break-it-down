@@ -1,15 +1,21 @@
 import React, { Component } from "react";
 import { Jumbotron, Button, Col, Form } from "react-bootstrap";
 import axios from "axios";
+import validator from "../validations/validation";
 
 function simulateNetworkRequest() {
   return new Promise(resolve => setTimeout(resolve, 2000));
+}
+function getValue(item) {
+  var value = item.name;
+  return value;
 }
 
 class signUpConsultancyAgency extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
       isLoading: false,
       inputList: [],
@@ -20,9 +26,13 @@ class signUpConsultancyAgency extends Component {
       website: "",
       phoneNumber: "",
       description: "",
-      address: ""
+      address: "",
+      city: "Egypt",
+      boardMembers: [{ name: "" }],
+      reports: [{ name: "" }]
     };
   }
+
   updateName(evt) {
     this.setState({
       name: evt.target.value
@@ -67,31 +77,90 @@ class signUpConsultancyAgency extends Component {
     });
   }
 
+  handleChange(e) {
+    console.log(e.target.value);
+    this.setState({ city: e.target.value });
+  }
+
   async handleSubmit(event) {
     console.log("handled");
 
-    await axios
-      .post("http://localhost:4000/api/CreateAccount/consultancyAgency", {
-        name: this.state.name,
-        password: this.state.password,
-        email: this.state.email,
-        address: this.state.address,
-        website: this.state.website,
-        phoneNumber: this.state.phoneNumber,
-        description: this.state.description
-      })
-      .then(function(response) {
-        console.log("consultancy agency create is successful");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    const info = {
+      name: this.state.name,
+      password: this.state.password,
+      email: this.state.email,
+      address: this.state.city + "-" + this.state.address,
+      website: this.state.website,
+      phoneNumber: this.state.phoneNumber,
+      description: this.state.description,
+      boardMembers: this.state.boardMembers.map(getValue),
+      reports: this.state.reports.map(getValue)
+    };
+    const isValidated = validator.createAccountValidation(info);
+    if (isValidated.error) alert(isValidated.error.details[0].message);
+    else
+      await axios
+        .post("http://localhost:4000/api/CreateAccount/consultancyAgency", info)
+        .then(function(response) {
+          console.log("consultancy agency create is successful");
+          alert(
+            "Congratulations! Your account has been created successfully. Login to Lirten Hub to get started."
+          );
+          event.preventDefault();
+          window.location = "/";
+        })
+        .catch(function(error) {
+          alert("Use another email, this email is taken");
+          console.log(error);
+        });
   }
 
   handleSelect(eventKey) {
     alert(`selected ${eventKey}`);
     this.setState({ value: eventKey });
   }
+
+  handleBoardMemberNameChange = idx => evt => {
+    const newBoardMember = this.state.boardMembers.map((boardMember, sidx) => {
+      if (idx !== sidx) return boardMember;
+      return { ...boardMember, name: evt.target.value };
+    });
+
+    this.setState({ boardMembers: newBoardMember });
+  };
+
+  handleAddBoardMember = () => {
+    this.setState({
+      boardMembers: this.state.boardMembers.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveBoardMember = idx => () => {
+    this.setState({
+      boardMembers: this.state.boardMembers.filter((s, sidx) => idx !== sidx)
+    });
+  };
+
+  handleReportNameChange = idx => evt => {
+    const newReport = this.state.reports.map((report, sidx) => {
+      if (idx !== sidx) return report;
+      return { ...report, name: evt.target.value };
+    });
+
+    this.setState({ reports: newReport });
+  };
+
+  handleAddReport = () => {
+    this.setState({
+      reports: this.state.reports.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveReport = idx => () => {
+    this.setState({
+      reports: this.state.reports.filter((s, sidx) => idx !== sidx)
+    });
+  };
 
   render() {
     return (
@@ -153,16 +222,20 @@ class signUpConsultancyAgency extends Component {
 
               <Form.Group as={Col} controlId="formGridCity">
                 <Form.Label>City</Form.Label>
-                <Form.Control as="select">
-                  <option>other</option>
-                  <option>10th of Ramadan City</option>
-                  <option>6 of October</option>
-                  <option>Alexandria</option>
-                  <option>Cairo</option>
-                  <option>Giza</option>
-                  <option>Helwan</option>
-                  <option>Cairo</option>
-                  <option>New Cairo</option>
+                <Form.Control
+                  as="select"
+                  value={this.state.city}
+                  onChange={e => this.handleChange(e)}
+                >
+                  <option value="Egypt">other</option>
+                  <option value="10th of Ramadan City">
+                    10th of Ramadan City
+                  </option>
+                  <option value="6 of October">6 of October</option>
+                  <option value="Alexandria">Alexandria</option>
+                  <option value="Cairo">Cairo</option>
+                  <option value="Giza">Giza</option>
+                  <option value="Helwan">Helwan</option>
                 </Form.Control>
               </Form.Group>
             </Form.Row>
@@ -183,89 +256,68 @@ class signUpConsultancyAgency extends Component {
               />
             </Form.Group>
             <Form.Row>
-              <Form.Group as={Col} controlId="formGridBoardMember1">
+              <Form.Group as={Col} controlId="formGridBoardMember">
                 <Form.Label>Board Members</Form.Label>
-                <Form.Control placeholder="Board Member 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formBoardMember2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridBoardMember3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridBoardMember4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Board Member 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridPartner1">
-                <Form.Label>Partners</Form.Label>
-                <Form.Control placeholder="Partner 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPartner4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Partner 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Group controlId="formGridBoardEvents">
-              <Form.Label>Upcoming Event</Form.Label>
-              <Form.Control />
-            </Form.Group>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridReport1">
-                <Form.Label>Reports & Research Links</Form.Label>
-                <Form.Control placeholder="Report Title 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReport2">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Report Title 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReport3">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Report Title 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReport4">
-                <Form.Label>.</Form.Label>
-                <Form.Control placeholder="Report Title 4" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridReportLink1">
-                <Form.Control placeholder="Link 1" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReportLink2">
-                <Form.Control placeholder="Link 2" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReportLink3">
-                <Form.Control placeholder="Link 3" />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridReportLink4">
-                <Form.Control placeholder="Link 4" />
-              </Form.Group>
-            </Form.Row>
+                {this.state.boardMembers.map((boardMember, idx) => (
+                  <div className="boardMember">
+                    <input
+                      type="text"
+                      placeholder={`Board Member ${idx + 1} `}
+                      value={boardMember.name}
+                      onChange={this.handleBoardMemberNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveBoardMember(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
 
-            <Form.Group id="formGridCheckbox">
-              <Form.Check
-                type="checkbox"
-                label="Agreed to terms & conditions"
-              />
-            </Form.Group>
+                <button
+                  type="button"
+                  onClick={this.handleAddBoardMember}
+                  className="small"
+                >
+                  Add
+                </button>
+              </Form.Group>
+
+              <Form.Group as={Col} controlId="formGridReport">
+                <Form.Label>Reports & Research Links</Form.Label>
+                {this.state.reports.map((report, idx) => (
+                  <div className="report">
+                    <input
+                      type="text"
+                      placeholder={`Report ${idx + 1} `}
+                      value={report.name}
+                      onChange={this.handleReportNameChange(idx)}
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleRemoveReport(idx)}
+                      className="small"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={this.handleAddReport}
+                  className="small"
+                >
+                  Add
+                </button>
+              </Form.Group>
+            </Form.Row>
 
             <Button
               variant="flat"
               size="xxl"
-              type="submit"
+              type="button"
               onClick={event => this.handleSubmit(event)}
             >
               Submit

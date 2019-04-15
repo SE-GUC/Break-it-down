@@ -1,22 +1,30 @@
 import React, { Component } from "react";
-import { Nav, Navbar, Form, FormControl, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-
+import {
+  Nav,
+  Navbar,
+  Form,
+  FormControl,
+  Button,
+  NavItem
+} from "react-bootstrap";
+import { Link, NavLink } from "react-router-dom";
+import Logo1 from "../Logo1.svg";
 class NavbarPage extends Component {
   state = {
     whichPage: this.props.whichPage
   };
   render() {
     return (
-      <Navbar bg="dark" variant="dark" sticky="top">
+      <Navbar style={{ backgroundColor: "#005a73" }}>
         <Nav className="mr-auto">
-          <Link to={`/`}>
-            <button className="btn btn-link m-2">Home</button>
-          </Link>
-          <Link to={`/viewCoworkingSpace`}>
-            <button className="btn btn-link m-2">viewCoworkingSpace</button>
-          </Link>
+          <text>..............</text>
+          <img style={{ width: 200, height: 70 }} src={Logo1} />;
+          <Nav.Link href="/">Home</Nav.Link>
+          <NavItem>
+            <Nav.Link href="/viewCoworkingSpace/">viewCoworkingSpace</Nav.Link>
+          </NavItem>
         </Nav>
+
         <Form inline>
           <FormControl type="text" placeholder="Search" className="mr-sm-2" />
           <Button variant="outline-info">Search</Button>

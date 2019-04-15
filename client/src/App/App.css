@@ -9,7 +9,10 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-image: url("../back2.jpg");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -17,6 +20,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  text-align: center;
 }
 
 .App-link {

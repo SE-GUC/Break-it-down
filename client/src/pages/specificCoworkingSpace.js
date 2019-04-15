@@ -2,12 +2,14 @@ import React, { Component } from "react";
 
 import { Link, BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
+import MemberSidenav from "../components/MemberSidenav";
 class List extends Component {
   // Initialize the state
   constructor(props) {
     super(props);
     this.state = {
-      list: []
+      list: [],
+      type: "member"
     };
   }
 
@@ -28,6 +30,13 @@ class List extends Component {
   };
 
   render() {
+    let sidenav;
+
+    if (this.state.type === "member") {
+      sidenav = <MemberSidenav />;
+    } else {
+      sidenav = <MemberSidenav />;
+    }
     const { list } = this.state;
     return (
       <div className="App">
@@ -35,7 +44,7 @@ class List extends Component {
           {" "}
           <div>
             {" "}
-            <NavbarPage whichPage="coworkingspace" />{" "}
+            <NavbarPage whichPage="coworkingspace" /> <MemberSidenav />;
           </div>{" "}
         </Route>
         <h1>{list.name}</h1>
@@ -58,7 +67,7 @@ class List extends Component {
                     <div key={room.id}>
                       <Link
                         to={{
-                          pathname: `/specificRoom/${el.userID}/${room.id}`,
+                          pathname: `/specificRoom/${el._id}/${room._id}`,
                           state: { name: el.name }
                         }}
                       >

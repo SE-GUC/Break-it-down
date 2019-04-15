@@ -2,11 +2,11 @@
 const express = require("express");
 const app = express();
 //--------------------passport--------------------
-const passport = require('passport')
+const passport = require("passport");
 
 //--------------------cors---------------
 const cors = require("cors");
-const path=require("path")
+const path = require("path");
 
 //--------------------api--------------------
 const admin = require("./routes/api/admin");
@@ -19,6 +19,7 @@ const member = require("./routes/api/member");
 const Event = require("./routes/api/Event");
 const consultancyAgency = require("./routes/api/consultancyAgency");
 const eo = require("./routes/api/educationalOrganization");
+const posts = require("./routes/api/Posts");
 
 //------------------forChatting------------------------
 // const User = require("./models/ChatUser");
@@ -44,30 +45,18 @@ mongoose
 // //production mode
 // if(process.env.NODE_ENV === 'production') {
 //   app.use(express.static(path.join(__dirname, 'client/build')));
-  
+
 //   app.get('*', (req, res) => {
 //     res.sendfile(path.join(__dirname = 'client/build/index.html'));
 //   })
 // }
 //build mode
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/public/index.html'));
-})
-if(process.env.NODE_ENV === 'production'){
-  app.use(express.static(client.build));
-
-  app.get('*',(req,res) =>{
-    res.sendFile(path.resolve(__dirname, 'client', 'build','index.html'));
-
-  })
-}
 
 //--------------------Init middleware--------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 //app.use(passport.initialize())
-
 
 //--------------------Configure passport--------------------
 //require('./config/passport')(passport)
@@ -102,15 +91,24 @@ app.use("/api/educationalOrganization", eo);
 app.use("/api/partner", partner);
 app.use("/api/consultancyAgency", ca);
 app.use("/api/CreateAccount", ProfilesAPI);
+app.use("/api/posts", posts);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/public/index.html"));
+});
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(client.build));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {
   res.status(404).send({ err: "We can not find what you are looking for" });
 });
 
-
-
 //--------------------Server--------------------
-  const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4000;
 //const port = 4001;
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`));
