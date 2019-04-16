@@ -50,6 +50,9 @@ mongoose
 //     res.sendfile(path.join(__dirname = 'client/build/index.html'));
 //   })
 // }
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/public/index.html"));
+});
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 
@@ -99,9 +102,7 @@ app.use("/api/partner", partner);
 app.use("/api/consultancyAgency", ca);
 app.use("/api/CreateAccount", ProfilesAPI);
 app.use("/api/posts", posts);
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/public/index.html"));
-});
+
 
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {
