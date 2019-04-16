@@ -22,5 +22,5 @@ const RoomSchema = new Schema({
     }
 
 })
-RoomSchema.plugin(autoIncrement.plugin,'cospaceRooms');
+
 module.exports = Room = mongoose.model('cospaceRooms', RoomSchema)
