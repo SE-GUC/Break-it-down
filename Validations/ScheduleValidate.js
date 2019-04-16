@@ -3,9 +3,9 @@ const Joi = require('joi')
 module.exports = {
     createValidation: request => {
         const createSchema = {
-            id: Joi.number().required(),
-           Date: Joi.date(), 
-           time: Joi.number().required(),
+            
+           Date: Joi.date().required(), 
+           time: Joi.number().required()
            
         }
 
@@ -14,10 +14,10 @@ module.exports = {
 
     updateValidation: request => {
         const updateSchema = {
-            id: Joi.number().required(),
+            
             Date: Joi.date(), 
-            time: Joi.number().required(),
-            reserved: Joi.boolean().required()
+            time: Joi.number()
+           
         }
 
         return Joi.validate(request, updateSchema)
