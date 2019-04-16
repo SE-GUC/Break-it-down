@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 class SuggestionEntry extends Component {
   getStyle= () =>{
       return {
-        background: '#005a73',
+        background: '#FFFFEB',
         padding: '10px',
-        borderBottom: '1px #B5A642 solid',
+        borderBottom: '1px #005a73 solid',
         textDecoration: 'none',
         textAlign: 'center'
 
@@ -17,7 +17,7 @@ class SuggestionEntry extends Component {
   render() { 
    return (
         <div style={this.getStyle()}>
-            <p style={{color:'#ffff4b'}}>
+            <p style={{color:'#005a73'}}>
             {(this.props.cospace.name===undefined?"Coworking Space: unknown name ":"Coworking Space: "+this.props.cospace.name)}<br/>
             {(this.props.cospace.email===undefined?"Email: unknown ":"Email: "+this.props.cospace.email)}<br/>
             {(this.props.cospace.address===undefined?"Address: unknown ":"Address: "+this.props.cospace.address)}<br/>

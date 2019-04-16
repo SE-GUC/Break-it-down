@@ -109,6 +109,5 @@ app.use((req, res) => {
 
 //--------------------Server--------------------
 const port = process.env.PORT || 4000;
-//const port = 4001;
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`));

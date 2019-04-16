@@ -34,10 +34,10 @@ class MainUpdates extends Component {
 
   render() {
     return (
-      <div className="MainUpdates" style={{ backgroundColor:  '#005a73'}}>
+      <div className="MainUpdates" style={{ backgroundColor:  '#FFFFEB'}}>
       <AdminSidenav/>
       <AdminNavbar/>
-      <h1 style={{color:'#ffff4b',textAlign:'center'}}>User updates</h1>
+      <h1 style={{color:'#005a73',textAlign:'center'}}>User updates</h1>
       <Updates updates={this.state.updates}  approve={this.approve} disapprove={this.disapprove} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>

@@ -30,16 +30,16 @@ class UpdateRoomBooking extends Component {
 
   render() {
     return (
-      <div className="UpdateRoomBooking" style={{ backgroundColor: "#005a73" }}>
-        <h1 style={{ color: "#ffff4b", textAlign: "center" }}>
+      <div className="UpdateRoomBooking" style={{ backgroundColor: "#FFFFEB" }}>
+        <h1 style={{ color: "#005a73", textAlign: "center" }}>
           Update your booking{" "}
         </h1>
 
         <form onSubmit={this.onSubmit.bind(this)}>
-          <div class="form-group" style={{ backgroundColor: "#005a73" }}>
+          <div class="form-group" style={{ backgroundColor: "#FFFFEB" }}>
             <label
               for="capacity"
-              style={{ color: "#ffff4b", textAlign: "center" }}
+              style={{ color: "#005a73", textAlign: "center" }}
             >
               Capacity
             </label>

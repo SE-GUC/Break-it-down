@@ -14,7 +14,7 @@ export default class AdminSidenav extends Component {
           render={({ location, history }) => (
             <React.Fragment>
               <SideNav
-                style={{ backgroundColor: "#005a73" }}
+                style={{ backgroundColor: "#FFFFEB" }}
                 onSelect={selected => {
                   const to = "/" + selected;
                   window.location = to;
@@ -24,14 +24,14 @@ export default class AdminSidenav extends Component {
                 <SideNav.Nav defaultSelected="home">
                   <NavItem eventKey="admin">
                     <NavIcon>
-                      <SvgIcon size={20} icon={home} />
+                      <SvgIcon size={20} style={{color: '#005a73'}} icon={home} />
                     </NavIcon>
                     <NavText>Home</NavText>
                   </NavItem>
 
                   <NavItem eventKey="admin/updates">
                     <NavIcon>
-                      <SvgIcon size={20} icon={key} />
+                      <SvgIcon size={20} icon={key} style={{color: '#005a73'}}/>
                     </NavIcon>
                     <NavText>View user updates</NavText>
                   </NavItem>

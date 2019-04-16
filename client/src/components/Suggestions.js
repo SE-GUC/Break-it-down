@@ -24,8 +24,8 @@ class Suggestions extends Component {
 
   render() {
     return (
-      <div className="Suggestions" style={{ backgroundColor:  '#005a73'}}>
-      <h1 style={{color:'#ffff4b',textAlign:'center'}}>Coworking Space Suggestions</h1>
+      <div className="Suggestions" style={{ backgroundColor:  '#FFFFEB'}}>
+      <h1 style={{color:'#005a73',textAlign:'center'}}>Coworking Space Suggestions</h1>
       <SuggestionItems coworkingSpace={this.state.coworkingSpace} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>
