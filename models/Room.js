@@ -14,7 +14,11 @@ const RoomSchema = new Schema({
     type: Number,
     required: true,
     },
+   roomNumber: {
+        type: Number,
+        required: true
 
+    },
     schedule: {
         type: Array,
         required: true,
