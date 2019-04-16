@@ -50,13 +50,13 @@ mongoose
 //     res.sendfile(path.join(__dirname = 'client/build/index.html'));
 //   })
 // }
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/public/index.html"));
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/client/public/index.html"));
+// });
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 
-  app.get("*", (req, res) => {
+  app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
@@ -79,16 +79,16 @@ var io = require("socket.io")(http);
 app.use(cors());
 
 //--------------------Home Page--------------------
-app.get("/", (req, res) => {
-  res.send(`<h1>Home page</h1>
-    <p> REGISTER OR SIGN UP <p>
-    <a href="/api/admin">Admin</a>
-    <a href="/api/coworkingSpace">Partner Coworking Space</a>
-    <a href="/api/consultancyAgency">consultancyAgency</a>
-    <a href="/api/educationalOrganization">Educational Organization</a>
-    <a href="/api/member">Member</a>
-    <a href="/api/partner">Partner</a>`);
-});
+// app.get("/", (req, res) => {
+//   res.send(`<h1>Home page</h1>
+//     <p> REGISTER OR SIGN UP <p>
+//     <a href="/api/admin">Admin</a>
+//     <a href="/api/coworkingSpace">Partner Coworking Space</a>
+//     <a href="/api/consultancyAgency">consultancyAgency</a>
+//     <a href="/api/educationalOrganization">Educational Organization</a>
+//     <a href="/api/member">Member</a>
+//     <a href="/api/partner">Partner</a>`);
+// });
 
 //--------------------Direct routes to appropriate files--------------------
 app.use("/api/coworkingSpace", coworkingSpace);
