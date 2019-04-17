@@ -17,7 +17,6 @@ class MainUpdates extends Component {
     axios.get('/api/admin/viewUpdates')
     .then(res=>{
       const updates=res.data
-      console.log(updates)
       this.setState({updates:updates,isLoading:false})
     })
     .catch(error => this.setState({ error, isLoading: false }));
