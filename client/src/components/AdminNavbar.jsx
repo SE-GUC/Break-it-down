@@ -16,7 +16,7 @@ class NavbarPage extends Component {
 
     onSubmit(e) {
 		e.preventDefault();
-        axios .get(`http://localhost:4000/api/admin/viewUser/${this.state.id}`)
+        axios .get(`/api/admin/viewUser/${this.state.id}`)
        .then(res => {  alert("Name: "+res.data.name+"\nEmail:"+res.data.email  );  
 	   })
        .catch(error =>{
