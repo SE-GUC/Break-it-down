@@ -18,7 +18,7 @@ class partnermyschedule extends Component {
   getDescription = async () => {
     const id = this.props.match.params.id;
     const id2 = this.props.match.params.id2;
-    await fetch(`http://localhost:4000/api/partner/cospace/rooms/${id}/${id2}`)
+    await fetch(`/api/partner/cospace/rooms/${id}/${id2}`)
       .then(res => res.json())
       .then(descript => this.setState({ descript }));
   };

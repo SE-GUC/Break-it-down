@@ -26,7 +26,7 @@ class partnercreateTask extends Component {
     }
     const PID = this.props.match.params.PID
     console.log("hiiiiii")
-    await fetch(`http://localhost:4000/api/partner/createTask/${PID}`, {
+    await fetch(`/api/partner/createTask/${PID}`, {
          method: 'POST',
          body: JSON.stringify(databody),
          headers: {

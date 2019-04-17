@@ -19,7 +19,7 @@ class partnerbook extends Component {
     const id2 = this.props.match.params.id2;
     const id3 = this.props.match.params.id3;
     await fetch(
-      `http://localhost:4000/api/partner/cospace/rooms/${userID}/${id}/${id2}/${id3}`,
+      `/api/partner/cospace/rooms/${userID}/${id}/${id2}/${id3}`,
       {
         method: "PUT"
       }

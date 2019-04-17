@@ -19,7 +19,7 @@ class partnerdeletebook extends Component {
     const userID = this.props.match.params.userID;
     const bookingID = this.props.match.params.bookingID;
     await fetch(
-      `http://localhost:4000/api/partner/RoomBookings/${userID}/${bookingID}`,
+      `/api/partner/RoomBookings/${userID}/${bookingID}`,
       {
         method: "DELETE"
       }

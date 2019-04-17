@@ -22,7 +22,7 @@ class partnermyRoomBookings extends Component {
 
   getDescription = async () => {
     const userID = this.props.match.params.userID;
-    await fetch(`http://localhost:4000/api/partner/roombookings/${userID}`)
+    await fetch(`/api/partner/roombookings/${userID}`)
       .then(res => res.json())
       .then(descript => this.setState({ descript }));
   };

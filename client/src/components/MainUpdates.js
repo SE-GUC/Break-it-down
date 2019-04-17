@@ -14,7 +14,7 @@ class MainUpdates extends Component {
   }
 
   componentDidMount(){
-    axios.get('http://localhost:4000/api/admin/viewUpdates')
+    axios.get('/api/admin/viewUpdates')
     .then(res=>{
       const updates=res.data
       this.setState({updates:updates,isLoading:false})
@@ -24,12 +24,12 @@ class MainUpdates extends Component {
   }
 
   approve = (id,_id) => {
-    axios.put(`http://localhost:4000/api/admin/approveUpdates/${id}/${_id}`)
+    axios.put(`/api/admin/approveUpdates/${id}/${_id}`)
 
   }
 
   disapprove = (id,_id) => {
-    axios.delete(`http://localhost:4000/api/admin/disapproveUpdates/${id}/${_id}`)
+    axios.delete(`/api/admin/disapproveUpdates/${id}/${_id}`)
   }
 
   render() {
