@@ -37,7 +37,7 @@ class ProfileMember extends Component {
   }
 
   async getMemberProfile() {
-    await fetch(`http://localhost:4000/api/member/viewMember`)
+    await fetch(`/api/member/viewMember`)
       .then(res => res.json())
       .then(data => this.setState({ data }));
   }

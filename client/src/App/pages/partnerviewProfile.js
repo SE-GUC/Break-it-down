@@ -17,7 +17,7 @@ class partnerviewProfile extends Component {
 
   getDescription = async () => {
     const PID = this.props.match.params.PID;
-    await fetch(`http://localhost:4000/api/partner/viewProfile/${PID}`)
+    await fetch(`/api/partner/viewProfile/${PID}`)
       .then(res => res.json())
       .then(descript => this.setState({ descript }));
   };

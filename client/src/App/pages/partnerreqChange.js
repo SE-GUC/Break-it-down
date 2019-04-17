@@ -21,7 +21,7 @@ class partnerreqChange extends Component {
     }
     const PID = this.props.match.params.PID
     const TID = this.props.match.params.TID
-    await fetch(`http://localhost:4000/api/partner/RequestDescriptionChange/${PID}/${TID}`, {
+    await fetch(`/api/partner/RequestDescriptionChange/${PID}/${TID}`, {
          method: 'PUT',
          body: JSON.stringify(databody),
          headers: {

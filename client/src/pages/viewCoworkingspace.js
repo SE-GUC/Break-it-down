@@ -13,7 +13,7 @@ class viewCoworkingSpaces extends Component {
   // Retrieves the list of items from the Express app
   getList = async () => {
     //const coID = this.props.match.params.coID;
-    await fetch(`http://localhost:4000/api/member/PartnerCoworkingspaces/`)
+    await fetch(`/api/member/PartnerCoworkingspaces/`)
       .then(res => res.json())
       .then(list => this.setState({ list }));
   };

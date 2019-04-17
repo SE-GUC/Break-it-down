@@ -26,7 +26,7 @@ class Login extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("http://localhost:4000/api/CreateAccount/login", info)
+        .post("/api/CreateAccount/login", info)
         .then(function(response) {
           console.log("login is successful");
           /*event.preventDefault();
@@ -39,7 +39,7 @@ class Login extends Component {
   }
 
   async handleGoogle() {
-    const profile = await axios.get("http://localhost:4000/auth/google");
+    const profile = await axios.get("/auth/google");
     console.log("using google");
   }
 

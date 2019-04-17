@@ -32,7 +32,7 @@ class Facilities extends Component {
       getList = async () => {
         const coID = this.props.coID;
         await fetch(
-          `http://localhost:4000/api/coworkingSpace/viewCoworkingSpace/${coID}`
+          `/api/coworkingSpace/viewCoworkingSpace/${coID}`
         )
           .then(res => res.json())
           .then(info => this.setState({ info }));
@@ -48,7 +48,7 @@ class Facilities extends Component {
         let databody = [c];
         console.log(databody);
     
-        fetch(`http://localhost:4000/api/coworkingSpace/deletefacility/${coID}`, {
+        fetch(`/api/coworkingSpace/deletefacility/${coID}`, {
           method: "DELETE",
           body: JSON.stringify(databody),
           headers: {
@@ -68,7 +68,7 @@ class Facilities extends Component {
         let databody = [c];
         console.log(databody);
     
-        fetch(`http://localhost:4000/api/coworkingSpace/addfacility/${coID}`, {
+        fetch(`/api/coworkingSpace/addfacility/${coID}`, {
           method: "POST",
           body: JSON.stringify(databody),
           headers: {

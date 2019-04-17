@@ -20,7 +20,7 @@ class partnerreview extends Component {
         const PID = this.props.match.params.PID
         const TID = this.props.match.params.TID
 
-        await fetch(`http://localhost:4000/api/partner/ReviewandRate/${PID}/${TID}`, {
+        await fetch(`/api/partner/ReviewandRate/${PID}/${TID}`, {
              method: 'PUT',
              body: JSON.stringify(databody),
              headers: {

@@ -12,9 +12,9 @@ class Suggestions extends Component {
   }
 
 
-  //id will change to generic type when linking  `http://localhost:4000/api/coworkingSpace/CoworkingSpace/Suggestions/${eid}`
+  //id will change to generic type when linking  `/api/coworkingSpace/CoworkingSpace/Suggestions/${eid}`
   componentDidMount(){
-    axios.get('http://localhost:4000/api/coworkingSpace/CoworkingSpace/Suggestions/6')
+    axios.get('/api/coworkingSpace/CoworkingSpace/Suggestions/6')
     .then(res=>{
       const coworkingSpace=res.data
       this.setState({coworkingSpace:coworkingSpace,isLoading:false})})

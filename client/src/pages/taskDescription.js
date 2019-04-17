@@ -21,7 +21,7 @@ class taskDescription extends Component {
   getDescription = async () => {
     const PID = this.props.match.params.PID;
     const TID = this.props.match.params.TID;
-    await fetch(`http://localhost:4000/api/admin/CheckTaskDescriptions/${PID}/${TID}`)
+    await fetch(`/api/admin/CheckTaskDescriptions/${PID}/${TID}`)
     .then(res => res.json())
     .then(descript => this.setState({ descript }));
   //  console.log(this.state.description);

@@ -100,7 +100,7 @@ class signUpConsultancyAgency extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("http://localhost:4000/api/CreateAccount/consultancyAgency", info)
+        .post("/api/CreateAccount/consultancyAgency", info)
         .then(function(response) {
           console.log("consultancy agency create is successful");
           alert(

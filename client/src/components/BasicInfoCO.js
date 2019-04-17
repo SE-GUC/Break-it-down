@@ -74,7 +74,7 @@ class CoDesc extends Component {
     //   const rID = this.props.match.params.rID;
     // console.log(rID)
     await fetch(
-      `http://localhost:4000/api/coworkingSpace/viewCoworkingSpace/${coID}`
+      `/api/coworkingSpace/viewCoworkingSpace/${coID}`
     )
       .then(res => res.json())
       .then(info => this.setState({ info }));
@@ -93,7 +93,7 @@ class CoDesc extends Component {
     };
     console.log(databody);
     const coID = this.props.coID;
-    fetch(`http://localhost:4000/api/coworkingspace/updateCospace/${coID}`, {
+    fetch(`/api/coworkingspace/updateCospace/${coID}`, {
       method: "PUT",
       body: JSON.stringify(databody),
       headers: {

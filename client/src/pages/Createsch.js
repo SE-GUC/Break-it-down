@@ -18,7 +18,7 @@ class Createsch extends Component {
        //console.log(id);
        const coID = this.props.match.params.coID;
        const rID = this.props.match.params.rID;
-       fetch(`http://localhost:4000/api/coworkingspace/createSchedule/${coID}/${rID}`, {
+       fetch(`/api/coworkingspace/createSchedule/${coID}/${rID}`, {
             method: 'POST',
             body: JSON.stringify(databody),
             headers: {

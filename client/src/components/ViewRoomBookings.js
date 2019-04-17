@@ -18,7 +18,7 @@ class ViewRoomBookings extends Component {
 
   //id will change to generic type when linking with authorization
   componentDidMount(){
-    axios.get('http://localhost:4000/api/partner/roombookings/5c9113101c9d440000a926cc')
+    axios.get('/api/partner/roombookings/5c9113101c9d440000a926cc')
     .then(res=>{
       const roomBooking=res.data
       this.setState({roomBooking:roomBooking,isLoading:false})})

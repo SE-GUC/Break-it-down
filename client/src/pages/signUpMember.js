@@ -138,7 +138,7 @@ class signUpMember extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("http://localhost:4000/api/CreateAccount/member", info)
+        .post("/api/CreateAccount/member", info)
         .then(function(response) {
           console.log("member create is successful");
           alert(

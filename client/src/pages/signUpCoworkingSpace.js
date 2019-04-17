@@ -104,7 +104,7 @@ class signUpCoworkingSpace extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("http://localhost:4000/api/CreateAccount/coworkingSpace", info)
+        .post("/api/CreateAccount/coworkingSpace", info)
         .then(function(response) {
           console.log("coworking space create is successful");
           alert(
