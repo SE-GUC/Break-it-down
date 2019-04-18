@@ -20,7 +20,7 @@ class RoomBookingEntry extends Component {
         <p style={{color:'#005a73'}}>
         {(this.props.roomBooking.Date===undefined?"Booking Date: unknown ":"Booking Date: "+this.props.roomBooking.Date)}<br/>
         {(this.props.roomBooking.time===undefined?"Booking time: unknown ":"Booking time: "+this.props.roomBooking.time)}<br/>
-        <a href = "http://localhost:3000/user/updateRoomBooking">
+        <a href = "https://jobs4us.herokuapp.com/user/updateRoomBooking">
         <button onClick={this.props.update.bind(this,this.props.id)} type="button" class="btn btn-outline-warning">Update</button></a>
        
          </p>
