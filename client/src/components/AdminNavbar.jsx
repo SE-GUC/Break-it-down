@@ -16,7 +16,7 @@ class NavbarPage extends Component {
 
     onSubmit(e) {
 		e.preventDefault();
-        axios .get(`http://localhost:4000/api/admin/viewUser/${this.state.id}`)
+        axios .get(`/api/admin/viewUser/${this.state.id}`)
        .then(res => {  alert("Name: "+res.data.name+"\nEmail:"+res.data.email  );  
 	   })
        .catch(error =>{
@@ -27,7 +27,7 @@ class NavbarPage extends Component {
 
     render() {
         return (
-            <Navbar style={{ backgroundColor: "#005a73" }}>
+            <Navbar style={{ backgroundColor: "#FFFFEB" }}>
                 <Nav className="mr-auto">
                     <text>..............</text>
                     <img style={{ width: 200, height: 70 }} src={Logo2} />
@@ -39,7 +39,7 @@ class NavbarPage extends Component {
                 </Form>
                 <Nav.Link href="#home">SignOut</Nav.Link>
 
-                <footer class="page-footer font-small blue" style={{backgroundColor:  '#005a73',color:'#ffff4b',textAlign:'center'
+                <footer class="page-footer font-small blue" style={{backgroundColor:  '#FFFFEB',color:'#005a73',textAlign:'center'
                 ,position:'fixed', bottom: '0', width: '100%', padding: '1rem'}}>
                 <div class="footer-copyright text-center py-3">© 2019 Copyright: LIRTENHUB</div>  </footer>
 

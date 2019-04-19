@@ -20,7 +20,7 @@ class partnerviewConsultancies extends Component {
     const PID = this.props.match.params.PID;
     const TID = this.props.match.params.TID;
     await fetch(
-      `http://localhost:4000/api/partner/viewConsultancy/${PID}/${TID}`
+      `/api/partner/viewConsultancy/${PID}/${TID}`
     )
       .then(res => res.json())
       .then(descript => this.setState({ descript }));

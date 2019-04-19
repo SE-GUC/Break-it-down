@@ -23,7 +23,7 @@ class ViewInfo extends Component {
     //console.log(coID)
     const rID = this.props.match.params.rID;
    // console.log(rID)
-    await fetch(`http://localhost:4000/api/coworkingSpace/viewCoworkingSpace/${coID}`)
+    await fetch(`/api/coworkingSpace/viewCoworkingSpace/${coID}`)
     .then(res => res.json())
     .then(info=> this.setState({ info }));
     

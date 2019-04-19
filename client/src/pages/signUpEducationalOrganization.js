@@ -93,7 +93,7 @@ class signUpEducationalOrganization extends Component {
     else
       await axios
         .post(
-          "http://localhost:4000/api/CreateAccount/educationalOrganization",
+          "/api/CreateAccount/educationalOrganization",
           info
         )
         .then(function(response) {

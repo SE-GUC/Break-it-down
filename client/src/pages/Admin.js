@@ -11,10 +11,10 @@ class Admin extends Component {
   render() {
     return (
       <BrowserRouter>
-      <div className="App" style={{ backgroundColor:  '#005a73'}}>
+      <div className="App" style={{ backgroundColor:  '#FFFFEB'}}>
       <AdminSidenav/>
       <AdminNavbar/>
-      <h1 style={{color:'#ffff4b',textAlign:'center'}}>Welcome Dear Admin</h1>
+      <h1 style={{color:'#005a73',textAlign:'center'}}>Welcome Dear Admin</h1>
       </div>
       </BrowserRouter>
     );

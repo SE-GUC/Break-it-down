@@ -51,7 +51,7 @@ class Profile extends Component {
     
     const coID = this.state.coID;
     await fetch(
-      `http://localhost:4000/api/coworkingSpace/viewCoworkingSpace/${coID}`
+      `/api/coworkingSpace/viewCoworkingSpace/${coID}`
     )
       .then(res => res.json())
       .then(info => this.setState({ info }));

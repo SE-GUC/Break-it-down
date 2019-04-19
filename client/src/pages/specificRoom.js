@@ -19,7 +19,7 @@ class specificRoom extends Component {
     const Coid = this.props.match.params.Coid;
     const Roid = this.props.match.params.Roid;
     await fetch(
-      `http://localhost:4000/api/member/cospace/rooms/${Coid}/${Roid}`
+      `/api/member/cospace/rooms/${Coid}/${Roid}`
     )
       .then(res => res.json())
       .then(list => this.setState({ list }))

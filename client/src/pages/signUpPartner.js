@@ -91,7 +91,7 @@ class signUpPartner extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("http://localhost:4000/api/CreateAccount/partner", info)
+        .post("/api/CreateAccount/partner", info)
         .then(function(response) {
           console.log("partner create is successful");
           alert(

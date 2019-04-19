@@ -14,7 +14,7 @@ class MainUpdates extends Component {
   }
 
   componentDidMount(){
-    axios.get('http://localhost:4000/api/admin/viewUpdates')
+    axios.get('/api/admin/viewUpdates')
     .then(res=>{
       const updates=res.data
       this.setState({updates:updates,isLoading:false})
@@ -24,20 +24,20 @@ class MainUpdates extends Component {
   }
 
   approve = (id,_id) => {
-    axios.put(`http://localhost:4000/api/admin/approveUpdates/${id}/${_id}`)
+    axios.put(`/api/admin/approveUpdates/${id}/${_id}`)
 
   }
 
   disapprove = (id,_id) => {
-    axios.delete(`http://localhost:4000/api/admin/disapproveUpdates/${id}/${_id}`)
+    axios.delete(`/api/admin/disapproveUpdates/${id}/${_id}`)
   }
 
   render() {
     return (
-      <div className="MainUpdates" style={{ backgroundColor:  '#005a73'}}>
+      <div className="MainUpdates" style={{ backgroundColor:  '#FFFFEB'}}>
       <AdminSidenav/>
       <AdminNavbar/>
-      <h1 style={{color:'#ffff4b',textAlign:'center'}}>User updates</h1>
+      <h1 style={{color:'#005a73',textAlign:'center'}}>User updates</h1>
       <Updates updates={this.state.updates}  approve={this.approve} disapprove={this.disapprove} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>

@@ -20,7 +20,7 @@ class partnerlifeCycle extends Component {
   getList = async () => {
     const PID = this.props.match.params.PID;
     const TID = this.props.match.params.TID;
-    await fetch(`http://localhost:4000/api/partner/TaskLifeCycle/${PID}/${TID}`)
+    await fetch(`/api/partner/TaskLifeCycle/${PID}/${TID}`)
       .then(res => res.json())
       .then(list => this.setState({ list }));
     //console.log(this.state.list);

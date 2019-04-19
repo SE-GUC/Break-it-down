@@ -60,7 +60,7 @@ class List extends Component {
     console.log(rID);
     console.log(JSON.stringify(databody));
     fetch(
-      `http://localhost:4000/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`,
+      `/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`,
       {
         method: "PUT",
         body: JSON.stringify(databody),
@@ -86,7 +86,7 @@ class List extends Component {
     const rID = this.props.match.params.rID;
     console.log(rID);
     await fetch(
-      `http://localhost:4000/api/coworkingspace/viewroomschedule/${coID}/${rID}`
+      `/api/coworkingspace/viewroomschedule/${coID}/${rID}`
     )
       .then(res => res.json())
       .then(list => this.setState({ list }));
@@ -116,7 +116,7 @@ class List extends Component {
     console.log(databody);
 
     fetch(
-      `http://localhost:4000/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`,
+      `/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`,
       {
         method: "DELETE",
         headers: {

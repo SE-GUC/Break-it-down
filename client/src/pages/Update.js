@@ -27,7 +27,7 @@ class Update extends Component {
     }
 
        const coID = this.props.match.params.coID;
-       fetch(`http://localhost:4000/api/coworkingspace//updateCospace/${coID}`, {
+       fetch(`/api/coworkingspace//updateCospace/${coID}`, {
             method: 'PUT',
             body: JSON.stringify(databody),
             headers: {

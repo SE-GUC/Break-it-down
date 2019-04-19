@@ -22,7 +22,7 @@ class List extends Component {
   getList = async () => {
     const id = this.props.match.params.id;
     await fetch(
-      `http://localhost:4000/api/member/PartnerCoworkingspaces/${id}/`
+      `/api/member/PartnerCoworkingspaces/${id}/`
     )
       .then(res => res.json())
       .then(list => this.setState({ list }));

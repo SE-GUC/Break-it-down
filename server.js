@@ -50,6 +50,10 @@ mongoose
 //     res.sendfile(path.join(__dirname = 'client/build/index.html'));
 //   })
 // }
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/client/public/index.html"));
+// });
+
 //build mode
 
 //--------------------Init middleware--------------------
@@ -69,16 +73,16 @@ var io = require("socket.io")(http);
 app.use(cors());
 
 //--------------------Home Page--------------------
-app.get("/", (req, res) => {
-  res.send(`<h1>Home page</h1>
-    <p> REGISTER OR SIGN UP <p>
-    <a href="/api/admin">Admin</a>
-    <a href="/api/coworkingSpace">Partner Coworking Space</a>
-    <a href="/api/consultancyAgency">consultancyAgency</a>
-    <a href="/api/educationalOrganization">Educational Organization</a>
-    <a href="/api/member">Member</a>
-    <a href="/api/partner">Partner</a>`);
-});
+// app.get("/", (req, res) => {
+//   res.send(`<h1>Home page</h1>
+//     <p> REGISTER OR SIGN UP <p>
+//     <a href="/api/admin">Admin</a>
+//     <a href="/api/coworkingSpace">Partner Coworking Space</a>
+//     <a href="/api/consultancyAgency">consultancyAgency</a>
+//     <a href="/api/educationalOrganization">Educational Organization</a>
+//     <a href="/api/member">Member</a>
+//     <a href="/api/partner">Partner</a>`);
+// });
 
 //--------------------Direct routes to appropriate files--------------------
 app.use("/api/coworkingSpace", coworkingSpace);
@@ -92,16 +96,16 @@ app.use("/api/partner", partner);
 app.use("/api/consultancyAgency", ca);
 app.use("/api/CreateAccount", ProfilesAPI);
 app.use("/api/posts", posts);
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/public/index.html"));
-});
+
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(client.build));
+  app.use(express.static("client/build"));
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
+
+
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {
   res.status(404).send({ err: "We can not find what you are looking for" });
@@ -109,6 +113,5 @@ app.use((req, res) => {
 
 //--------------------Server--------------------
 const port = process.env.PORT || 4000;
-//const port = 4001;
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`));

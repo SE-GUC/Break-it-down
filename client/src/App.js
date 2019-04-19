@@ -36,9 +36,10 @@ import EventList from './components/EventList'
 import TaskList from './components/TaskList'
 class App extends Component {
   render() {
-    const App = () => (
-      <div className="App">
-        <Router>
+
+    return (
+         <Router>
+           <div className="App"> 
           <Route exact path="/" component={Login} />
 
           <Route exact path="/MemberHomePage" component={MemberHomePage} />
@@ -46,11 +47,7 @@ class App extends Component {
 
           <Route exact path="/signup/member" component={SignUpMember} />
           <Route exact path="/signup/partner" component={SignUpPartner} />
-          <Route
-            exact
-            path="/signup/coworkingspace"
-            component={SignUpCoworkingSpace}
-          />
+          <Route exact path="/signup/coworkingspace" component={SignUpCoworkingSpace}/>
           <Route
             exact
             path="/signup/consultancyagency"
@@ -143,14 +140,7 @@ class App extends Component {
           <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
 
-
-        </Router>
-      </div>
-    );
-
-    return (
-      <Router>
-        <App />
+    </div>
       </Router>
     );
   }

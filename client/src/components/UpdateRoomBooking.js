@@ -13,12 +13,12 @@ class UpdateRoomBooking extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  //id will change to generic type when linking  `http://localhost:4000/api/coworkingSpace/update/booking/${bid}/${uid}`
+  //id will change to generic type when linking  `/api/coworkingSpace/update/booking/${bid}/${uid}`
   onSubmit(e) {
 	e.preventDefault();
     axios
       .put(
-        "http://localhost:4000/api/coworkingSpace/update/booking/4/5c9113101c9d440000a926cc", { capacity: this.state.capacity })
+        "/api/coworkingSpace/update/booking/4/5c9113101c9d440000a926cc", { capacity: this.state.capacity })
       .then(res => {
         alert("Your Room Booking was updated successfully!");
       })
@@ -30,16 +30,16 @@ class UpdateRoomBooking extends Component {
 
   render() {
     return (
-      <div className="UpdateRoomBooking" style={{ backgroundColor: "#005a73" }}>
-        <h1 style={{ color: "#ffff4b", textAlign: "center" }}>
+      <div className="UpdateRoomBooking" style={{ backgroundColor: "#FFFFEB" }}>
+        <h1 style={{ color: "#005a73", textAlign: "center" }}>
           Update your booking{" "}
         </h1>
 
         <form onSubmit={this.onSubmit.bind(this)}>
-          <div class="form-group" style={{ backgroundColor: "#005a73" }}>
+          <div class="form-group" style={{ backgroundColor: "#FFFFEB" }}>
             <label
               for="capacity"
-              style={{ color: "#ffff4b", textAlign: "center" }}
+              style={{ color: "#005a73", textAlign: "center" }}
             >
               Capacity
             </label>

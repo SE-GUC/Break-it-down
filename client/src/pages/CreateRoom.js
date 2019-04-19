@@ -27,7 +27,7 @@ class CreateRoom extends Component {
     
        //console.log(id);
        const coID = this.props.match.params.coID
-       fetch(`http://localhost:4000/api/coworkingspace/createRoom/${coID}`, {
+       fetch(`/api/coworkingspace/createRoom/${coID}`, {
             method: 'POST',
             body: JSON.stringify(databody),
             headers: {

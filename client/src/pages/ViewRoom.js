@@ -23,7 +23,7 @@ class ViewRoom extends Component {
     //console.log(coID)
     const rID = this.props.match.params.rID;
    // console.log(rID)
-    await fetch(`http://localhost:4000/api/coworkingSpace/viewRoom/${coID}/${rID}`)
+    await fetch(`/api/coworkingSpace/viewRoom/${coID}/${rID}`)
     .then(res => res.json())
     .then(room=> this.setState({ room }));
     
