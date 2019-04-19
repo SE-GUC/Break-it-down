@@ -19,6 +19,13 @@ class consultancyAgencyStories extends Component{
         camessage:null,
         //dropdownOpen:false
     }
+
+    componentDidCatch(error, info) {
+      // Display fallback UI
+     // this.setState({ hasError: true });
+      // You can also log the error to an error reporting service
+     // logErrorToMyService(error, info);
+    }
   
 toggle =() => {
     this.setState(prevState => ({

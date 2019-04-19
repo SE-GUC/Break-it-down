@@ -1,5 +1,5 @@
 import uuid from 'uuid'
-import {FILTER_TASKS, LOADING, GET_MEMBERS, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS} from '../actions/types'
+import {FILTER_TASKS, LOADING, GET_MEMBERS, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS, FETCH_RESOURCES_FAIL} from '../actions/types'
 const initialState={
     members:[],
     mypartners:[],
@@ -41,6 +41,7 @@ export default function(state= initialState, action){
                 taskapplicants: action.payload,
                 loading: false
             }   
+         
         case LOADING: 
            return{
                ...state,

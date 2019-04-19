@@ -13,7 +13,9 @@ const recommendedAppl = require('../../models/RecommendedApplicants');
 var path = require('path');
 
 var objectid = require('mongodb').ObjectID
-
+const jwt = require("jsonwebtoken");
+const tokenKey = require("../../config/keys").secretOrKey;
+var store = require("store");
 
 
 //============================== recieve notifications=================================//
@@ -68,20 +70,43 @@ var objectid = require('mongodb').ObjectID
 //-----------------------chat-----------------------------
 
 router.get('/chat',function(req,res){
-    res.sendFile(path.resolve('./indexx.html'));
-	});
+    jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+      if (err) {
+        //If error send Forbidden (403)
+        console.log("ERROR: Could not connect to the protected route");
+        res.sendStatus(403);
+      } else {
+        res.sendFile(path.resolve('./indexx.html'));
+      }
+    });
+  });
+
 	
 	//----------------------------------view messages---------------------------------- 
 router.get('/viewmessages', async (req, res) => {
-    const updt=await Message.find()
-    res.json({ data: updt })
+    jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+      if (err) {
+        //If error send Forbidden (403)
+        console.log("ERROR: Could not connect to the protected route");
+        res.sendStatus(403);
+      } else {
+        const updt=await Message.find()
+        res.json({ data: updt })
+      }
+  });
+   
 })
 //---Get my partner----// Malak
-router.get('/Partners/:_id', async (req, res) => {
+router.get('/Partners', async (req, res) => {
 
-	//the id is currently hardcoded with postman, it is my own id and should be taken from the token
-	try{
-		users.findById(req.params._id)
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {  
+      	try{
+		users.findById(authorizedData.id)
 		.then(myca =>{
 			res.json({partners:myca.partners})})
 	
@@ -90,6 +115,9 @@ router.get('/Partners/:_id', async (req, res) => {
 		res.json({msg:"yuf"})
 	}
 	
+    }
+  });
+
 	})
 	//----------------viewTasks----------------
 router.get('/viewTasks/:_id', async (req, res) =>{

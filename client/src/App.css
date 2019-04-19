@@ -120,7 +120,7 @@ a:hover {
 #facilities {
   text-align: start;
   margin-left: 160px;
-  width: 400px;
+  width: 50%;
   height: 100%;
   border: 1px solid grey;
   border-top-left-radius: 10px;
@@ -147,14 +147,26 @@ a:hover {
  
   /* margin-bottom: 100px; */
 }
-
-.close {
+.closefacil {
   cursor: pointer;
   position: absolute;
   margin-top: 12px;
   right: 30%;
   padding: 12px 16px;
   transform: translate(0%, -50%);
+}
+.close {
+  cursor: pointer;
+  position: absolute;
+  margin-top: 12px;
+  right: 5%;
+  padding: 12px 16px;
+  transform: translate(0%, -50%);
+}
+
+.button:hover{
+  font-size: 20px;
+  transition: 0.5s;
 }
 
 #facilities{
@@ -164,4 +176,22 @@ a:hover {
 #ed1{
   margin-left: 555px;
 }
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+.w100 {
+  font-weight: 100;
+}
+.w200 {
+  font-weight: 200;
+}
+.w300 {
+  font-weight: 300;
+}
+.w400 {
+  font-weight: 400;
+}
+
+
+
 /* .close:hover {background: #bbb;} */

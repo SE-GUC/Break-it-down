@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS} from './types'
+import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS,FETCH_RESOURCES_FAIL} from './types'
 
 export const filterTasks = (memberID) =>  dispatch =>{
   dispatch(setLoading());
@@ -25,12 +25,12 @@ export const contactAdmin = (message) =>  dispatch =>{
   }))
 }
 export const getMyPartners = () =>  dispatch =>{
-  const myidfromtoken= "5c9113101c9d440000a926cc" //temp until we figure out tokens
-  axios.get('/api/ConsultancyAgency/Partners/'+myidfromtoken)
+  axios.get('/api/ConsultancyAgency/Partners')
   .then(res => dispatch({
     type: GET_MY_PARTNERS,
     payload: res.data
   }))
+
 }
 export const getPartnerTasks = (_id) =>  dispatch =>{
   console.log(_id)
@@ -40,6 +40,10 @@ export const getPartnerTasks = (_id) =>  dispatch =>{
     type: GET_PARTNER_TASKS,
     payload: res.data
   })})
+  .catch(dispatch({
+    //type: GET_PARTNER_TASKS,
+    payload: "error"
+  }))
 }
 export const getApplicants = (idp,idt) =>  dispatch =>{
   axios.get('/api/Partner/view/'+idp+'/'+idt)
