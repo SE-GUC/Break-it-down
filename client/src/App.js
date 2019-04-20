@@ -34,6 +34,7 @@ import consultancyAgencyStories from "./components/consultancyAgencyStories"
 import CATasks from "./components/CATasks";
 import EventList from './components/EventList'
 import TaskList from './components/TaskList'
+import CAVisitingPartner from "./pages/CAVisitingPartner";
 class App extends Component {
   render() {
 
@@ -139,6 +140,8 @@ class App extends Component {
           <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
           <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
+    <Route exact path="/ConsultancyAgency/Partner/:_id" component={CAVisitingPartner}/>
+
 
     </div>
       </Router>

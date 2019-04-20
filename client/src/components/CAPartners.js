@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import '../App.css';
+import { withRouter } from 'react-router-dom';
 import {Container, ListGroup, ListGroupItem, Button, Modal, ModalHeader, ModalBody, ModalFooter , Form, FormGroup, Label, Input, FormText} from 'reactstrap';
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
 import {connect} from 'react-redux'
-import {getMyPartners,getPartnerTasks} from '../actions/ConsultancyAgencyActions'
+import {getMyPartners,getPartnerTasks,getThePartner} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
 import CASidenav from './CASidenav';
+import CAVisitingPartner from '../pages/CAVisitingPartner';
 
 class CAPartners extends Component{
     
@@ -15,9 +17,12 @@ class CAPartners extends Component{
     componentDidMount(){
  }
  onPartnerClick =(_id) =>{
-     this.toggle();
-    this.props.getPartnerTasks(_id);
- }
+   //  this.toggle();
+   let path = `/ConsultancyAgency/Partner/`+_id;
+   this.props.history.push({
+       pathname:path,
+       data:_id
+    })}
  toggle=()=> {
     this.setState(prevState => ({
       modal: !prevState.modal
@@ -38,7 +43,7 @@ const {partnertasks}=this.props.ca
             {mypartners.map( item => (
                <CSSTransition key={item._id} timeout={500} >
                <ListGroupItem >
-                <Button block outline color= "warning" onClick={this.onPartnerClick.bind(this,item._id)}>{item.name} </Button>
+                <Button block outline color= "warning" onClick={this.onPartnerClick.bind(this,item._id)}> {item.name} </Button>
                    
                 </ListGroupItem>
                 </CSSTransition>
@@ -88,4 +93,4 @@ const mapStateToProps = (state) =>
     ca: state.ca
 });
 
-export default connect(mapStateToProps, {getMyPartners,getPartnerTasks})(CAPartners)
+export default withRouter(connect(mapStateToProps, {getMyPartners,getPartnerTasks,getThePartner})(CAPartners))

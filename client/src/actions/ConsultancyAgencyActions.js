@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS,FETCH_RESOURCES_FAIL} from './types'
+import {FILTER_TASKS,GET_MEMBERS, LOADING, CONTACT_ADMIN, GET_MY_PARTNERS,GET_PARTNER_TASKS,GET_APPLICANTS, GET_MY_TASKS,GET_THE_PARTNER} from './types'
 
 export const filterTasks = (memberID) =>  dispatch =>{
   dispatch(setLoading());
@@ -40,10 +40,7 @@ export const getPartnerTasks = (_id) =>  dispatch =>{
     type: GET_PARTNER_TASKS,
     payload: res.data
   })})
-  .catch(dispatch({
-    //type: GET_PARTNER_TASKS,
-    payload: "error"
-  }))
+
 }
 export const getApplicants = (idp,idt) =>  dispatch =>{
   axios.get('/api/Partner/view/'+idp+'/'+idt)
@@ -64,6 +61,15 @@ export const getMyTasks = () =>  dispatch =>{
   }))
 }
 
+
+export const getThePartner = (id) =>  dispatch =>{
+  dispatch(setLoading());
+  axios.get('/api/Partner/'+id)
+  .then(res => dispatch({
+    type: GET_THE_PARTNER,
+    payload: res.data
+  }))
+}
 
 
 

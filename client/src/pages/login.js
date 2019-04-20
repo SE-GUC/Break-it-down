@@ -156,7 +156,14 @@ class Login extends Component {
         return (
           <div></div>
       );
-    }
+    } else if (this.state.type === "consultancyAgency") {
+      // console.log(this.state.coID)
+       
+         this.props.history.push(`/consultancyAgency/`)
+         return (
+           <div></div>
+       );
+     }
   }
 }
 

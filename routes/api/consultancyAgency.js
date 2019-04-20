@@ -119,9 +119,14 @@ router.get('/Partners', async (req, res) => {
   });
 
 	})
-	//----------------viewTasks----------------
+	//----------------viewTasks---------------- of a certain partner
 router.get('/viewTasks/:_id', async (req, res) =>{
-	try{
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {	try{
 		users.findById(req.params._id)
 		.then(partner =>
 			res.json({tasks:partner.tasks}))
@@ -129,12 +134,23 @@ router.get('/viewTasks/:_id', async (req, res) =>{
 	catch{
 		res.json({msg:"error"})
 	}
-})
+     //put code here
+    }
+  });
+});
+
+
 
 //-----------------------------------------Mariam-------------------------------------------------------------------
 //--------------Filter applicants-----------------------------
-router.put("/filterApplicants/:partnerID/:taskID/:consultID", async (req, res) => {
-  try {
+router.put("/filterApplicants/:partnerID/:taskID/", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+     try {
 
     //Partner tasks
     const tasks = await users.aggregate([
@@ -147,7 +163,7 @@ router.put("/filterApplicants/:partnerID/:taskID/:consultID", async (req, res) =
       },
       { $project: { tasks: 1, _id: 0 } }
 		]);
-		if((tasks[0].tasks.consultancyAssignedID	== req.params.consultID)===false)
+		if((tasks[0].tasks.consultancyAssignedID	== authorizedData.id)===false)
 		  return res.json("You are not assigned to this task.")
     if (tasks[0].tasks.approved === false)
       return res.json("Task is not approved yet. Please tune in for approval.");
@@ -199,8 +215,12 @@ router.put("/filterApplicants/:partnerID/:taskID/:consultID", async (req, res) =
     return res.json(max.applicant);
   } catch (error) {
     res.json(error.message);
-  }
+  }//put code here
+    }
+  });
 });
+  
+
 
 
 
@@ -209,21 +229,46 @@ router.put("/filterApplicants/:partnerID/:taskID/:consultID", async (req, res) =
 //------------look for a particular coworking space-----------
 var objectid = require('mongodb').ObjectID
 router.get('/PartnerCoworkingspaces/:id',async (req,res) =>{
-
-const Users =await users.find({type:'coworkingspace',userID:parseInt(req.params.id)})
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {const Users =await users.find({type:'coworkingspace',userID:parseInt(req.params.id)})
 if(!Users) return res.json('Coworking space does not exist')
 res.json({ data: Users });
-}); 
+     //put code here
+    }
+  });
+});
+
+
 
 //------------------view all coworking spaces---------------
 router.get('/PartnerCoworkingspaces',async (req, res) =>{
-const Users = await users.find({type:'coworkingspace'})
-	res.json({ data: Users })
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+  
+      const Users = await users.find({type:'coworkingspace'})
+      res.json({ data: Users })    }
+  });
 });
 
-router.post('/messages', async (req, res) => {
 
-	try{
+
+//--- MESSAGES
+
+router.post('/messages', async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {	try{
 
 				var message = new Message(req.body);
 				console.log(req.body);
@@ -241,21 +286,42 @@ router.post('/messages', async (req, res) => {
 		return console.log('error',error);
 
 	}	
-})
+    }
+  });
+});
+
+
 
 //--------------get all consultancy agencies-----------
-router.get('/', async (req,res) => {
-const ConsultancyAgencys = await ConsultancyAgency.find()
-res.json({data: ConsultancyAgencys})
-})
+
+router.get('/All', async (req,res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+     const ConsultancyAgencys = await ConsultancyAgency.find()
+      res.json({data: ConsultancyAgencys})
+    }
+  });
+});
+
+
 
 
 //--------------------------------nourhan----------------------------------------------
 
 //--------------apply for a task-----------
-router.put("/apply/:pid/:tid/:agid", async (req, res) => {
-  const tid = objectid(req.params.tid);
-  const aid = objectid(req.params.agid);
+router.put("/apply/:pid/:tid/", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+       const tid = objectid(req.params.tid);
+  const aid = objectid(authorizedData.id);
   const tmp = await users.findOneAndUpdate(
     { "_id": objectid(req.params.pid), "tasks._id": tid },
     {
@@ -265,24 +331,44 @@ router.put("/apply/:pid/:tid/:agid", async (req, res) => {
     }
   );
   res.send("applied successfully");
+    }
+  });
 });
+
+
 
 //---------------------Get all bookings of a specific user----------------------------// done with front
 
-router.get("/roombookings/:userID", async (req, res) => {
-  var userID = (req.params.userID);
+router.get("/roombookings/", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      var userID = (authorizedData.id);
 
   const roombookings = await users.find(
     { _id: userID },
     { RoomsBooked: 1, _id: 0 }
   );
 
-  res.json( roombookings.pop().RoomsBooked );
+    res.json( roombookings.pop().RoomsBooked );
+    }
+  });
 });
+ 
+
 //--------------------------get a schedule room in a specific coworking space by id------------------//
 
 router.get("/cospace/rooms/:id/:id2", async (req, res) => {
-  try {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      try {
     const test = await User.aggregate([
       { $unwind: "$rooms" },
 
@@ -301,13 +387,23 @@ router.get("/cospace/rooms/:id/:id2", async (req, res) => {
     res.send("not found");
 
   }
+    }
+  });
 });
+ 
+
 
 
 //--------------------------book a room , append it to the array of bookings if it is not in my bookings----------------------------//
 
-router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
-  const schedID = objectid(req.params.id3);
+router.put("/cospace/rooms/:id/:id2/:id3", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      const schedID = objectid(req.params.id3);
 
   const cospaceID = objectid(req.params.id);
 
@@ -377,7 +473,7 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
         $set: {
           "rooms.$[i].schedule.$[j].reserved": true,
           "rooms.$[i].schedule.$[j].reservedBy": {
-            uid: (req.params.userID)
+            uid: (authorizedData.id)
           }
         }
       },
@@ -430,7 +526,7 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
     ]);
 
     await User.findOneAndUpdate(
-      { "_id": (req.params.userID) },
+      { "_id": (authorizedData.id) },
 
       {
         $addToSet: {
@@ -458,12 +554,21 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
     res.send("Not found");
   }
-});
+}});
+    
+  });
 
+ 
 
 //-----------------------delete booking and set the reservation boolean to false so others can now book it------------------------//
-router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
-  // try{
+router.delete("/RoomBookings/:bookingID", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+// try{
   const test = await User.aggregate([
     { $unwind: "$RoomsBooked" },
     {
@@ -481,7 +586,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        "_id": objectid(authorizedData.id),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -491,7 +596,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        "_id": objectid(authorizedData.id),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -501,7 +606,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
     { $unwind: "$RoomsBooked" },
     {
       $match: {
-        "_id": objectid(req.params.userID),
+        "_id": objectid(authorizedData.id),
         "RoomsBooked.bookingID": objectid(req.params.bookingID)
       }
     },
@@ -528,7 +633,7 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
   );
 
   const y = await User.update(
-    { "_id": (req.params.userID) },
+    { "_id": (authorizedData.id) },
     { $pull: { RoomsBooked: { bookingID: objectid(req.params.bookingID) } } },
     { multi: true },
     async function(err, model) {
@@ -538,7 +643,10 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
       }
     }
   );
-});
+}}
+);    }
+)
+  
  
  
 
@@ -547,144 +655,207 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
 //-----------------------------------------------------------------------------------------------
 
 
-//--------------get specific consultancy agencies-----------
-router.get('/:id', (req, res) => {
+//--------------get specific me asconsultancy agencies-----------
 
-	users.findById(req.params.id)
-	.then( ca =>{
-		res.json(ca)
-	}
-	)
-}
-)
+router.get('/', (req, res) => {
+    jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+
+      users.findById(authorizedData.id)
+      .then( ca =>{
+        res.json(ca)
+      }    )
+    }
+  });
+});
+
+//--------------get specific consultancy agencies-----------
+
+router.get('/:_id', (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+  if (err) {
+    //If error send Forbidden (403)
+    console.log("ERROR: Could not connect to the protected route");
+    res.sendStatus(403);
+  } else {
+
+    users.findById(req.params._id)
+    .then( ca =>{
+      res.json(ca)
+    }    )
+  }
+});
+});
+
+
 
 //------------------Update consultancyAgency (Malak&Nour)--------------
-router.put('/:id', async (req,res) => {
-	try {
-		var max32 = Math.pow(2, 32) - 1
-	var ID = Math.floor(Math.random() * max32);
-		const id = req.params.id
-		const upd=Object.assign({_id:ID}, req.body);
-	
-		console.log(upd)
-		users.update( 
-			{'_id':id},
-			{$push: {'updates':upd}}) 
-			.then(res.json({msg: 'awaiting admin approval'}))
-			.catch(res.json({msg: 'error occured'}))
-	
-	
-	}
-	catch(error) {
-			// We will be handling the error later
-			console.log(error)
-	}  
-	})
+router.put('/', async (req,res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      try {
+        var max32 = Math.pow(2, 32) - 1
+      var ID = Math.floor(Math.random() * max32);
+        const id = authorizedData.id
+        const upd=Object.assign({_id:ID}, req.body);
+      
+        console.log(upd)
+        users.update( 
+          {'_id':id},
+          {$push: {'updates':upd}}) 
+          .then(res.json({msg: 'awaiting admin approval'}))
+          .catch(res.json({msg: 'error occured'}))
+      
+      
+      }
+      catch(error) {
+          // We will be handling the error later
+          console.log(error)
+      }     }
+  });
+});
+	 
+
 
 
 
 //---------------Delete consultancyAgency (Malak&Nour) MONGOUPDATED----------------
-router.delete('/:id', async (req,res) => {
-try {
-	const id = req.params.id
-	const deletedConsultancyAgency = await ConsultancyAgency.findByIdAndRemove(id)
-	res.json({msg:'ConsultancyAgency was deleted successfully', data: deletedConsultancyAgency})
-}
-catch(error) {
-		// We will be handling the error later
-		console.log(error)
-}  
-})
+router.delete('/', async (req,res) => {
+    jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+      if (err) {
+        //If error send Forbidden (403)
+        console.log("ERROR: Could not connect to the protected route");
+        res.sendStatus(403);
+      } else {
+        try {
+          const id = req.params.id
+          const deletedConsultancyAgency = await ConsultancyAgency.findByIdAndRemove(id)
+          res.json({msg:'ConsultancyAgency was deleted successfully', data: deletedConsultancyAgency})
+        }
+        catch(error) {
+            // We will be handling the error later
+            console.log(error)
+        }      }
+    });
+  });
+  
+
 
 
 
 //------------delete booking from user array + change reserved to false in coworking space array----------
-router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
+router.delete('/RoomBookings/:bookingID', async (req,res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    }
+     else {
+      try {
+        const userID=parseInt(authorizedData.id);
+        const bookingID= parseInt(req.params.bookingID);
+        
+            const temp = await users.find({userID});
+            if(!temp[0])res.send('user id does not exist');
+        const book = temp[0].RoomsBooked;
+        const temp2 =await book.find(r => r.bookingID === bookingID);
+        if(!temp2){
+      
+            res.status(404).send('The booking with the given id is not found');
+      
+            return;
+      
+        };
+        const roomID=parseInt(temp2.roomID);
+        const scheduleID=parseInt(temp2.scheduleID);
+        const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
+        //res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
+        //,'rooms.id':roomID,'rooms.schedule.id':scheduleID
+        //'rooms.$.schedule.reserved':false
+        users.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
+        {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
+        
+        users.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} }
+        }, function(err, model){})
+        
+        
+        res.send('booking has been deleted successfully')
+      }
+      
+      catch(error) {
+          console.log(error)
+      
+      }  
+      
+      } 
+    });    }
+  );
 
-try {
-	const userID=parseInt(req.params.userID);
-	const bookingID= parseInt(req.params.bookingID);
-	
-			const temp = await users.find({userID});
-			if(!temp[0])res.send('user id does not exist');
-	const book = temp[0].RoomsBooked;
-	const temp2 =await book.find(r => r.bookingID === bookingID);
-	if(!temp2){
 
-			res.status(404).send('The booking with the given id is not found');
-
-			return;
-
-	};
-	const roomID=parseInt(temp2.roomID);
-	const scheduleID=parseInt(temp2.scheduleID);
-	const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
-	//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
-	//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
-	//'rooms.$.schedule.reserved':false
-	users.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID}, 
-	{$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
-	
-	users.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} }
-	}, function(err, model){})
-	
-	
-	res.send('booking has been deleted successfully')
-}
-
-catch(error) {
-		console.log(error)
-
-}  
-
-});
 
 //----------------assign managerial roles to tasks----------------
 
 router.put('/assign/:partnerID/:taskID/:memberID', async (req,res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      try {
 
-try {
+        const partnerID=parseInt(req.params.partnerID)
+      
+        const taskID=parseInt(req.params.taskID)
+      
+        const memberID=parseInt(req.params.memberID)
+      
+        const partner = await users.find({userID:partnerID});
+      
+        if(!partner) res.send("Partner id is incorrect or this partner does not exist ")
+      
+        //res.send(partner[0].tasks)
+        const taskArray= partner[0].tasks;
+        
+        const task=await taskArray.find(r => r.taskID === taskID)
+      
+        if(!task) res.send("This task does not exist");
+      
+        if(!task.wantsConsultant) res.send("You don't have access to this task")
+      
+        //set assigneeID to inserted member ID
+        users.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+        {$set: {'tasks.$.assigneeID':memberID}}, function(err, model){});
+      
+        //set life cycle 'assigned' stage to true
+        users.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
+        {$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
+        
+        res.send('Member has been assigned to task successfully')
+      
+      }
+      
+      catch(error) {
+      
+          // We will be handling the error later
+      
+          console.log(error)
+      
+      }  
+      
+      }}
+      )   }
+);
 
-	const partnerID=parseInt(req.params.partnerID)
-
-	const taskID=parseInt(req.params.taskID)
-
-	const memberID=parseInt(req.params.memberID)
-
-	const partner = await users.find({userID:partnerID});
-
-	if(!partner) res.send("Partner id is incorrect or this partner does not exist ")
-
-	//res.send(partner[0].tasks)
-	const taskArray= partner[0].tasks;
-	
-	const task=await taskArray.find(r => r.taskID === taskID)
-
-	if(!task) res.send("This task does not exist");
-
-	if(!task.wantsConsultant) res.send("You don't have access to this task")
-
-	//set assigneeID to inserted member ID
-	users.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
-	{$set: {'tasks.$.assigneeID':memberID}}, function(err, model){});
-
-	//set life cycle 'assigned' stage to true
-	users.update({ 'userID':partnerID,'tasks.taskID':taskID}, 
-	{$set: {'tasks.$.lifeCycle.1':true}}, function(err, model){});
-	
-	res.send('Member has been assigned to task successfully')
-
-}
-
-catch(error) {
-
-		// We will be handling the error later
-
-		console.log(error)
-
-}  
-
-});
 
 
 
