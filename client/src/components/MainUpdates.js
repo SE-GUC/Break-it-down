@@ -3,14 +3,13 @@ import '../App.css';
 import Updates from './Updates'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import AdminSidenav from './AdminSidenav'
 import AdminNavbar from './AdminNavbar'
 
 class MainUpdates extends Component {
    state={
     updates:[],
     isLoading:true,
-    error:null
+    error:null,
   }
 
   componentDidMount(){
@@ -25,7 +24,6 @@ class MainUpdates extends Component {
 
   approve = (id,_id) => {
     axios.put(`/api/admin/approveUpdates/${id}/${_id}`)
-
   }
 
   disapprove = (id,_id) => {
@@ -34,10 +32,9 @@ class MainUpdates extends Component {
 
   render() {
     return (
-      <div className="MainUpdates" style={{ backgroundColor:  '#FFFFEB'}}>
-      <AdminSidenav/>
+      <div className="MainUpdates" style={{ backgroundColor:  '#ffffff'}}>
       <AdminNavbar/>
-      <h1 style={{color:'#005a73',textAlign:'center'}}>User updates</h1>
+      <h1 style={{color:'#000000',textAlign:'center'}}>User updates</h1>
       <Updates updates={this.state.updates}  approve={this.approve} disapprove={this.disapprove} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>

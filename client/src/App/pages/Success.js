@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import horse from "../../horsy.gif";
+
 class Success extends Component {
     state = {  }
 
@@ -7,13 +9,7 @@ class Success extends Component {
             <div>
         <h1 style={{color:'green'}}>Your Task was created successfully</h1>
         <p style={{color:'green'}}>your task is pending approval</p>
-        <div class="spinner-border text-success" role="status">
-
-        <span class="sr-only">Loading...</span>
-       
-  
-         </div>
-
+        <img style={{ width: 100, height: 70 }} src={horse} />
 
          </div>
       

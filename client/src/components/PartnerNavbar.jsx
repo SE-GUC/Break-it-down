@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Nav, Navbar, Form, FormControl, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Logo2 from "../../../src/Logo2.png"
+import Logo2 from "../../../src/Logo2.svg"
 
 class PartnerNavbar extends Component {
   state = {

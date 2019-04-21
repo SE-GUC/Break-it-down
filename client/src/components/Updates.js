@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import UpdateItem from './UpdateItems';
 import PropTypes from 'prop-types';
 import horse from "../horsy.gif";
-//<div class="spinner-border text-info" role="status">
-//<span class="sr-only">Loading...</span> </div>
 
 class Updates extends Component {
   render() {
