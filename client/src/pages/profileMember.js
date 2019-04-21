@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import profile from "../profile.svg";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
+import Basics from "../components/BasicInfoMember";
+import { Link } from "react-router-dom";
 import {
   faPhone,
   faAt,
@@ -10,7 +12,8 @@ import {
   faBirthdayCake,
   faTools,
   faAward,
-  faRocket
+  faRocket,
+  faStar
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -28,18 +31,40 @@ class ProfileMember extends Component {
     super(props);
     this.state = {
       view: "Info",
-      data: []
+      memID: window.location.pathname.split("/").pop(),
+      rating: null,
+      data: [],
+      list: []
     };
   }
+  getList = async () => {
+    await fetch(`/api/member/viewMyTasks`)
+      .then(res => res.json())
+      .then(list => this.setState({ list }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  };
 
-  componentWillMount() {
+  componentDidMount() {
     this.getMemberProfile();
+    this.getList();
   }
 
   async getMemberProfile() {
-    await fetch(`/api/member/viewMember`)
+    const memID = this.state.memID;
+    console.log(memID);
+    await fetch(`/api/member/viewMember/`)
       .then(res => res.json())
-      .then(data => this.setState({ data }));
+      .then(data => this.setState({ data }))
+      .then(memID => this.setState({ memID }));
+    console.log(memID);
+    console.log(this.state.data);
+    await fetch(`/api/member/MyRating/`)
+      .then(res => res.json())
+      .then(rating => this.setState({ rating }));
   }
 
   handleButtonClick(evt) {
@@ -49,9 +74,9 @@ class ProfileMember extends Component {
     if (evt.target.value === "Tasks") this.setState({ view: "Tasks" });
   }
   render() {
-    //console.log(window.localStorage.getItem("access_token"));
     const view = this.state.view;
-    let data = this.state.data || [];
+    const list = this.state.list;
+    let data = this.state.data;
     console.log(data.skills);
     let output;
     let badge = this.state.data.activation ? (
@@ -67,31 +92,42 @@ class ProfileMember extends Component {
       output = (
         <div>
           <ul>
-            <div>
+            <dev>
               <h4>
-                <FontAwesomeIcon icon={faTools} /> Skills
                 <FontAwesomeIcon icon={faTools} />
+                Skills
+                {/* <FontAwesomeIcon icon={faTools} /> */}
               </h4>
-              <p>{data.skills}</p>
-              <hr />
-            </div>
+            </dev>
+
+            <p>{data.skills}</p>
+            <hr />
+
             <div>
               <h4>
                 <FontAwesomeIcon icon={faRocket} />
                 Interests
-                <FontAwesomeIcon icon={faRocket} />
+                {/* <FontAwesomeIcon icon={faRocket} /> */}
               </h4>
-              <hr />
               <p>{data.interests}</p>
+              <hr />
             </div>
             <div>
               <h4>
                 <FontAwesomeIcon icon={faAward} />
                 Certificates
-                <FontAwesomeIcon icon={faAward} />
+                {/* <FontAwesomeIcon icon={faAward} /> */}
               </h4>
-              <hr />
               <p>{data.certificates}</p>
+              <hr />
+            </div>
+            <div>
+              <h4>
+                <FontAwesomeIcon icon={faStar} />
+                Rating
+              </h4>
+              <p>{this.state.rating}</p>
+              <hr />
             </div>
           </ul>{" "}
         </div>
@@ -102,7 +138,45 @@ class ProfileMember extends Component {
           <Post />
         </div>
       );
-    if (view === "Tasks") output = <h1>Tasks</h1>;
+    if (view === "Tasks")
+      output = (
+        <div>
+          {list.map(el => (
+            <div
+              key={el.userID}
+              class="card border-secondary mb-3"
+              style={{ width: "800px", margin: "0 auto" }}
+            >
+              <h5 class="card-header">{"Name:" + " " + el.name}</h5>
+              <br />
+              <div class="list-group">
+                <button
+                  class="list-group-item list-group-item-action"
+                  disabled={el.description}
+                >
+                  {" Description: " + el.description}
+                </button>
+                <button
+                  class="list-group-item list-group-item-action"
+                  disabled={el.description}
+                >
+                  {" field: " + el.field}
+                </button>
+                <Link to={`/MemberStartTask/${el.taskID}`}>
+                  <button variant="primary" size="lg" color="blue" active>
+                    Start this task
+                  </button>
+                </Link>
+                <Link to={`/MemberEndTask/${el.taskID}`}>
+                  <button variant="primary" size="lg" color="blue" active>
+                    end this task
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
 
     return (
       <div>
@@ -134,7 +208,7 @@ class ProfileMember extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button variant="outline-dark">Send Message</Button>
                   </ul>
 
                   <ul>
@@ -143,24 +217,9 @@ class ProfileMember extends Component {
                       {badge}
                     </h3>
                     <Row>
-                      <p className="text-muted">Member</p>
+                      <p className="text-muted">Profile type: Member</p>
                     </Row>
-                    <Row>
-                      <FontAwesomeIcon icon={faPhone} />
-                      <p> Phone:{data.phoneNumber}</p>
-                    </Row>
-                    <Row>
-                      <FontAwesomeIcon icon={faAt} />
-                      <p> Email:{data.email}</p>
-                    </Row>
-                    <Row>
-                      <FontAwesomeIcon icon={faMapMarkerAlt} />
-                      <p> Address:{data.address}</p>
-                    </Row>
-                    <Row>
-                      <FontAwesomeIcon icon={faBirthdayCake} />
-                      <p> Birthday:{data.birthday}</p>
-                    </Row>
+                    <Basics memID={this.state.memID} />
                   </ul>
                 </Row>
               </Card.Body>
