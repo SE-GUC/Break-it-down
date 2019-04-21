@@ -30,24 +30,48 @@ import MemberMyRoomBooking from "./pages/MemberMyRoomBooking";
 import MemberViewAllmembers from "./pages/MemberViewAllmembers";
 import CAHome from "./pages/CAHome";
 import CAPartners from "./components/CAPartners";
-import consultancyAgencyStories from "./components/consultancyAgencyStories"
+import consultancyAgencyStories from "./components/consultancyAgencyStories";
 import CATasks from "./components/CATasks";
-import EventList from './components/EventList'
-import TaskList from './components/TaskList'
+import EventList from "./components/EventList";
+import TaskList from "./components/TaskList";
+import MemberTasks from "./pages/MemberTasks";
+import MemberRecommendedTasks from "./pages/MemberRecommendedTasks";
+import Memberdeletebook from "./pages/Memberdeletebook";
+import Memberapplytasks from "./pages/Memberapplytasks";
+import MemberStartTask from "./pages/MemberStartTask";
+import MemberEndTask from "./pages/MemberEndTask";
 class App extends Component {
   render() {
-
     return (
-         <Router>
-           <div className="App"> 
+      <Router>
+        <div className="App">
           <Route exact path="/" component={Login} />
-
-          <Route exact path="/MemberHomePage" component={MemberHomePage} />
+          <Route exact path="/MemberTasks" component={MemberTasks} />
+          <Route
+            exact
+            path="/MemberRecommendedTasks/"
+            component={MemberRecommendedTasks}
+          />
+          <Route
+            exact
+            path="/MemberStartTask/:taskID"
+            component={MemberStartTask}
+          />
+          <Route
+            exact
+            path="/MemberEndTask/:taskID"
+            component={MemberEndTask}
+          />
+          <Route exact path="/MemberHomePage/:id" component={MemberHomePage} />
           <Route exact path="/signup" component={SignUp} />
 
           <Route exact path="/signup/member" component={SignUpMember} />
           <Route exact path="/signup/partner" component={SignUpPartner} />
-          <Route exact path="/signup/coworkingspace" component={SignUpCoworkingSpace}/>
+          <Route
+            exact
+            path="/signup/coworkingspace"
+            component={SignUpCoworkingSpace}
+          />
           <Route
             exact
             path="/signup/consultancyagency"
@@ -111,8 +135,13 @@ class App extends Component {
           <Route exact path="/AllMembersmem" component={MemberViewAllmembers} />
           <Route
             exact
-            path="/RoombookingsMem/:id"
+            path="/RoombookingsMem/"
             component={MemberMyRoomBooking}
+          />
+          <Route
+            exact
+            path="/RoomBookings/:bookingID"
+            component={Memberdeletebook}
           />
 
           <Route exact path="/admin/updates" component={MainUpdates} />
@@ -134,13 +163,16 @@ class App extends Component {
           />
           <Route exact path="/MemberProfile" component={MemberProfile} />
           <Route exact path="/ConsultancyAgency" component={CAHome} />
-          <Route exact path="/ConsultancyAgency/Partners" component={consultancyAgencyStories} />
-        
-          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
-          <Route exact path="/Tasks" component={TaskList}/>
-    <Route exact path="/Events" component={EventList}/>
+          <Route
+            exact
+            path="/ConsultancyAgency/Partners"
+            component={consultancyAgencyStories}
+          />
 
-    </div>
+          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
+          <Route exact path="/Tasks" component={TaskList} />
+          <Route exact path="/Events" component={EventList} />
+        </div>
       </Router>
     );
   }
