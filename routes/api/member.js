@@ -7,105 +7,81 @@ const mongoose = require("mongoose");
 // Models should be removed
 const User = require("../../models/UserProfile");
 const users = require("../../models/UserProfile");
-
-
+const jwt = require("jsonwebtoken");
+const tokenKey = require("../../config/keys").secretOrKey;
+var store = require("store");
 //nourhan
 var objectid = require("mongodb").ObjectID;
+var ObjectId = require("mongodb").ObjectID;
 
 var Members = require("../../models/Member");
 var partner = require("../../models/Partner");
 const PartnerCoworkingSpace = require("../../models/cospaceMTest");
 const RoomBookings = require("../../models/RoomBookings");
-
-//============================== recieve notifications=================================//
-
-// const job = cron.job('*/10 * * * * *', () =>
-//     // console.log('helloo'),
-//   //   getUsers(),
-//      sendNotification('5c9114781c9d440000a926ce')
-
-// );
-// //job.start()
-
-// async function sendNotification(Id){
-//   const ID= ObjectId(Id)
-//   const user = await users.findOne(ID)
-//   const notif= user.notifications
-//   console.log(notif)
-//   notif.forEach(element => {
-
-//     notifier.notify({
-//       title: 'New Notification' ,
-//       message: element.notificationContent,
-//       //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
-//       sound: true, // Only Notification Center or Windows Toasters
-//       wait: true // Wait with callback, until user action is taken against notification
-//     }, function (err, response) {});
-
-//     console.log(element.notifID)
-//     notifier.on('click', function(notifierObj, options) {
-//        users.updateOne({'_id':ID, },
-//                        {$set: {'notifications.$[i].read': true, 'notifications.$[i].unread': false}},
-//                        { arrayFilters: [{ "i.notifID": element.notifID }]},
-//                        function(err, model){});
-
-//       // element.read= true,
-//       // element.unread= false
-//       // // Triggers if `wait: true` and user clicks notification
-//     //  console.log('The user clicked on the Notification!');
-//     });
-//   });
-
-// }
+const underscore = require("underscore");
+//---------------------------------------------Mariam----------------------------------------------------------
+//--------------------filter tasks--------------------
 
 //---------------------------------------------Mariam----------------------------------------------------------
 //--------------------filter tasks--------------------
-router.get("/filterTasks/:memberID", async (req, res) => {
-  try {
-    //Member skills: array of strings
-    const memberSkills = await users.findOne(
-      { type: "member", _id: objectid(req.params.memberID) },
-      { skills: 1, _id: 0 }
-    );
-    //return res.json(memberSkills)
-    //Member field
-    const memberField = await users.findOne(
-      { type: "member", _id: objectid(req.params.memberID) },
-      { field: 1, _id: 0 }
-    );
-    //Resulting tasks
-    var recommendedTasks = [];
-    //All partner tasks: array of objects & each obj is an array having the tasks (objects) of a certain partner
-    const grptasks = await users.find(
-      { type: "partner" },
-      { tasks: 1, _id: 0 }
-    );
-    grptasks.forEach(partnerTasks => {
-      partnerTasks.tasks.forEach(task => {
-        if (
-          task.approved === true &&
-          task.lifeCycle[1] === false &&
-          task.field === memberField.field
-        ) {
-          if (_.intersection(memberSkills.skills, task.skills).length >= 1)
-            recommendedTasks.push(task);
-        } else {
-          if (_.intersection(memberSkills.skills, task.skills).length >= 3)
-            recommendedTasks.push(task);
+router.get("/filterTasks", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      try {
+        //Member skills: array of strings
+        const memberSkills = await users.findOne(
+          { type: "member", _id: authorizedData.id },
+          { skills: 1, _id: 0 }
+        );
+        //return res.json(memberSkills)
+        //Member field
+        const memberField = await users.findOne(
+          { type: "member", _id: authorizedData.id },
+          { field: 1, _id: 0 }
+        );
+        //return res.json(memberField)
+
+        //Resulting tasks
+        var recommendedTasks = [];
+        //All partner tasks: array of objects & each obj is an array having the tasks (objects) of a certain partner
+        const grptasks = await users.find(
+          { type: "partner" },
+          { tasks: 1, _id: 0 }
+        );
+        for (var i = 0; i < grptasks.length; i++) {
+          for (var j = 0; j < grptasks[i].tasks.length; j++) {
+            const temp = grptasks[i].tasks[j];
+            if (temp.approved !== undefined && temp.lifeCycle !== undefined) {
+              if (temp.approved && !temp.lifeCycle[1]) {
+                if (
+                  temp.field === memberField.field &&
+                  underscore.intersection(memberSkills.skills, temp.skills)
+                    .length >= 1
+                ) {
+                  recommendedTasks.push(temp);
+                } //return res.json(grptasks[i].tasks[j])
+                else if (
+                  underscore.intersection(memberSkills.skills, temp.skills)
+                    .length >= 2
+                ) {
+                  recommendedTasks.push(temp);
+                }
+              }
+            }
+          }
         }
-      });
-    });
-    res.json(recommendedTasks);
-  } catch (error) {
-    res.send(error);
-  }
+        res.json(recommendedTasks);
+      } catch (error) {
+        res.send(error);
+      }
+    }
+  });
 });
-
-//==================================================================================================================
-// Instead of app use route
-// No need to write the full route
-// res.json() Automatically sends a status of 200
-
 //Search  coworking spaces by location and capacity
 router.get("/PartnerCoworkingspaces/Filter", (req, res) => {
   if (req.body.location && req.body.capacity)
@@ -153,24 +129,26 @@ router.get("/PartnerCoworkingspaces", async (req, res) => {
   res.json(Users);
 });
 
-//--------------------------------nourhan----------------------------------------------
-
-// router.get('/',async(req,res)=>{
-// 	const m =await User.find({type : "member"});
-// 	res.json([{name:"nourhan", age:30},{name:"alia", age:20}])
-// })
-
 //---------------------Get all bookings of a specific user----------------------------// done with front
 
-router.get("/roombookings/:userID", async (req, res) => {
-  var userID = req.params.userID;
+router.get("/roombookings/", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      var userID = authorizedData.id;
 
-  const roombookings = await users.find(
-    { _id: userID },
-    { RoomsBooked: 1, _id: 0 }
-  );
+      const roombookings = await users.find(
+        { _id: userID },
+        { RoomsBooked: 1, _id: 0 }
+      );
 
-  res.json(roombookings.pop().RoomsBooked);
+      res.json(roombookings.pop().RoomsBooked);
+    }
+  });
 });
 //--------------------------get a schedule room in a specific coworking space by id------------------//
 
@@ -351,84 +329,94 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 });
 
 //-----------------------delete booking and set the reservation boolean to false so others can now book it------------------------//
-router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
-  // try{
-  const test = await User.aggregate([
-    { $unwind: "$RoomsBooked" },
-    {
-      $match: {
-        _id: objectid(req.params.userID),
-        "RoomsBooked.bookingID": objectid(req.params.bookingID)
-      }
-    },
-    { $project: { "RoomsBooked.bookingID": 1, _id: 0 } }
-  ]);
+//-----------------------delete booking and set the reservation boolean to false so others can now book it------------------------//
+router.delete("/RoomBookings/:bookingID", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      // try{
+      const test = await User.aggregate([
+        { $unwind: "$RoomsBooked" },
+        {
+          $match: {
+            _id: ObjectId(authorizedData.id),
+            "RoomsBooked.bookingID": objectid(req.params.bookingID)
+          }
+        },
+        { $project: { "RoomsBooked.bookingID": 1, _id: 0 } }
+      ]);
 
-  if (test == 0) return res.send({ data: "booking does not exist." });
+      if (test == 0) return res.send({ data: "booking does not exist." });
 
-  const test1 = await User.aggregate([
-    { $unwind: "$RoomsBooked" },
-    {
-      $match: {
-        _id: objectid(req.params.userID),
-        "RoomsBooked.bookingID": objectid(req.params.bookingID)
-      }
-    },
-    { $project: { cospaceID: "$RoomsBooked.coworkingSpaceID", _id: 0 } }
-  ]);
-  const test2 = await User.aggregate([
-    { $unwind: "$RoomsBooked" },
-    {
-      $match: {
-        _id: objectid(req.params.userID),
-        "RoomsBooked.bookingID": objectid(req.params.bookingID)
-      }
-    },
-    { $project: { roomid: "$RoomsBooked.roomID", _id: 0 } }
-  ]);
-  const test3 = await User.aggregate([
-    { $unwind: "$RoomsBooked" },
-    {
-      $match: {
-        _id: objectid(req.params.userID),
-        "RoomsBooked.bookingID": objectid(req.params.bookingID)
-      }
-    },
-    { $project: { scheduID: "$RoomsBooked.scheduleID", _id: 0 } }
-  ]);
+      const test1 = await User.aggregate([
+        { $unwind: "$RoomsBooked" },
+        {
+          $match: {
+            _id: ObjectId(authorizedData.id),
+            "RoomsBooked.bookingID": objectid(req.params.bookingID)
+          }
+        },
+        { $project: { cospaceID: "$RoomsBooked.coworkingSpaceID", _id: 0 } }
+      ]);
+      const test2 = await User.aggregate([
+        { $unwind: "$RoomsBooked" },
+        {
+          $match: {
+            _id: ObjectId(authorizedData.id),
+            "RoomsBooked.bookingID": objectid(req.params.bookingID)
+          }
+        },
+        { $project: { roomid: "$RoomsBooked.roomID", _id: 0 } }
+      ]);
+      const test3 = await User.aggregate([
+        { $unwind: "$RoomsBooked" },
+        {
+          $match: {
+            _id: ObjectId(authorizedData.id),
+            "RoomsBooked.bookingID": objectid(req.params.bookingID)
+          }
+        },
+        { $project: { scheduID: "$RoomsBooked.scheduleID", _id: 0 } }
+      ]);
 
-  const f = await User.findOneAndUpdate(
-    {
-      _id: test1.pop().cospaceID
-    },
+      const f = await User.findOneAndUpdate(
+        {
+          _id: test1.pop().cospaceID
+        },
 
-    {
-      $set: {
-        "rooms.$[i].schedule.$[j].reserved": false,
-        "rooms.$[i].schedule.$[j].reservedBy": {}
-      }
-    },
-    {
-      arrayFilters: [
-        { "i._id": test2.pop().roomid },
-        { "j._id": test3.pop().scheduID }
-      ]
+        {
+          $set: {
+            "rooms.$[i].schedule.$[j].reserved": false,
+            "rooms.$[i].schedule.$[j].reservedBy": {}
+          }
+        },
+        {
+          arrayFilters: [
+            { "i._id": test2.pop().roomid },
+            { "j._id": test3.pop().scheduID }
+          ]
+        }
+      );
+
+      const y = await User.update(
+        { _id: ObjectId(authorizedData.id) },
+        {
+          $pull: { RoomsBooked: { bookingID: objectid(req.params.bookingID) } }
+        },
+        { multi: true },
+        async function(err, model) {
+          if (err) return handleError(res, err);
+          else {
+            res.json({ data: "reservation was deleted successfully" });
+          }
+        }
+      );
     }
-  );
-
-  const y = await User.update(
-    { _id: req.params.userID },
-    { $pull: { RoomsBooked: { bookingID: objectid(req.params.bookingID) } } },
-    { multi: true },
-    async function(err, model) {
-      if (err) return handleError(res, err);
-      else {
-        res.json({ data: "reservation was deleted successfully" });
-      }
-    }
-  );
+  });
 });
-
 //------------------------------------------------------------------------------------------
 
 // Get all Members (Malak&Nour) MONGOUPDATED
@@ -438,7 +426,30 @@ router.get("/", async (req, res) => {
   const r = await User.find({ type: "member" });
   res.json(r);
 });
-
+//Get profile
+router.get("/viewMember", (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      try {
+        const member = await User.findOne({
+          type: "member",
+          _id: authorizedData.id
+        });
+        if (member === undefined || member.length == 0)
+          return res.json("Member does not exist");
+        res.json(member);
+      } catch (error) {
+        res.json(error.message);
+      }
+      console.log("SUCCESS: Connected to protected route y");
+    }
+  });
+});
 //Get specific member -Mariam
 router.get("/viewMember/:id", async (req, res) => {
   try {
@@ -468,49 +479,6 @@ router.get("/allTasks", async (req, res) => {
   res.json(tasks);
 });
 
-//this method is needed in the new database not the old one
-// Create a new member (Malak&Nour) MONGOUPDATED
-// router.post('/', async(req, res) => {
-// const {type,name, birthday,email ,SSN ,phoneNumber ,field, skills,interests ,jobsCompleted,certificates }=req.body
-// const member = await Members.findOne({email})
-// if(member) return res.status(400).json({error: 'Email already exists'})
-
-// 	const newMember = new Member({
-// 		name,
-// 		birthday,
-// 		email,
-// 		SSN,
-// 		phoneNumber,
-// 		field,
-// 		skills,
-// 		interests,
-// 		jobsCompleted,
-// 		certificates,
-// 		MemberTasks:[],
-// 		activation:false,
-// 	})
-// 	newMember
-// 	.save()
-// 	.then(member => res.json({data :member}))
-// 	.catch(err => res.json({error: 'Can not create member'}))
-// });
-
-/*router.put('/:id', async (req,res) => {
-    try {
-     const id = req.params.id
-     const book = await Book.findOne({id})
-     if(!book) return res.status(404).send({error: 'Book does not exist'})
-     const isValidated = validator.updateValidation(req.body)
-     if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
-     const updatedBook = await Book.updateOne(req.body)
-     res.json({msg: 'Book updated successfully'})
-    }
-    catch(error) {
-        // We will be handling the error later
-        console.log(error)
-    }  
- })
-*/
 // Update member (Malak&Nour) done except id non existent case
 router.put("/:id", async (req, res) => {
   try {
@@ -556,7 +524,69 @@ router.get("/view/:id", async (req, response) => {
     response.send(data);
   }
 });
+router.put("/ApplyForTask/:idp/:idt", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      const memID = authorizedData.id;
+      const partnerID = objectid(req.params.idp);
+      const partner = await User.findOne(partnerID);
+      const taskIDb = parseInt(req.params.idt);
+      var taskapp = {};
+      var applicantsapp = [];
+      var array_of_tasks = partner.tasks;
 
+      for (var i = 0; i < array_of_tasks.length; i++) {
+        if (
+          array_of_tasks[i].taskID === taskIDb &&
+          array_of_tasks[i].approved === true
+        )
+          taskapp = array_of_tasks[i]; //you have a task that is approved with this given id
+      }
+      applicantsapp = taskapp.applicants;
+      //console.log(taskapp);
+      var app = [];
+
+      for (var j = 0; j < applicantsapp.length; j++) {
+        if (
+          applicantsapp[j].accepted === true &&
+          applicantsapp[j].assigned === true &&
+          applicantsapp[j].applicantID !== memID
+        ) {
+          app.push(applicantsapp[j]);
+        }
+      }
+
+      if (app.length === 0) {
+        applicantsapp.push({
+          applicantID: memID,
+          accepted: false,
+          assigned: false
+        });
+
+        User.update(
+          { _id: partnerID, "tasks.taskID": taskIDb },
+          { $set: { "tasks.$.applicants": applicantsapp } },
+          function(err, model) {}
+        );
+
+        const partnerx = await User.findOne(partnerID);
+        var final;
+        for (var i = 0; i < partnerx.tasks.length; i++) {
+          if (partnerx.tasks[i].taskID === taskIDb)
+            final = partnerx.tasks[i].applicants;
+        }
+        //console.log(final)
+        res.json("applied successful");
+      } else
+        res.json("you can't apply for a task that already has a chosen member");
+    }
+  });
+});
 //---------------------------get the recommended tasks based on my field---------------------//
 
 router.get("/recoTasks/:idM", async (req, res) => {
@@ -593,116 +623,121 @@ router.get("/recoTasks/:idM", async (req, res) => {
 });
 //------------------------------- member gets his average rating  -----------------------------------//
 
-router.get("/MyRating/:MID", async (req, response) => {
-  const MID = parseInt(req.params.MID);
-  const member = await User.findOne({ type: "member", userID: MID });
-  const AllMyRatings = member.allRatings;
-  const Rlength = AllMyRatings.length;
-  //console.log(Rlength)
-  var sum = 0;
-  var avg = 0;
+router.get("/MyRating/", async (req, response) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      response.sendStatus(403);
+    } else {
+      const MID = authorizedData.id;
+      const member = await User.findOne({ type: "member", _id: MID });
+      const AllMyRatings = member.allRatings;
+      const Rlength = AllMyRatings.length;
+      var sum = 0;
+      var avg = 0;
 
-  if (Rlength !== 0) {
-    sum = AllMyRatings.reduce(function(sum, b) {
-      return sum + b;
-    });
-    //console.log(sum)
-    avg = Math.floor(sum / Rlength);
-    // console.log(avg)
-    response.json(avg);
-  } else response.json(0);
+      if (Rlength !== 0) {
+        sum = AllMyRatings.reduce(function(sum, b) {
+          return sum + b;
+        });
+        //console.log(sum)
+        avg = Math.floor(sum / Rlength);
+        // console.log(avg)
+        response.json(avg);
+
+        res.json(member);
+      } else response.json(0);
+
+      console.log("SUCCESS: Connected to protected route y");
+    }
+  });
 });
 
-//------------------------apply for a task---------------------//
-
-router.put("/ApplyForTask/:id/:idp/:idt", async (req, res) => {
-  const memID = parseInt(req.params.id);
-  const partnerID = parseInt(req.params.idp);
-  const partner = await User.findOne({ type: "partner", userID: partnerID });
-
-  const taskIDb = parseInt(req.params.idt);
-  var taskapp = {};
-  var applicantsapp = [];
-  var array_of_tasks = partner.tasks;
-
-  for (var i = 0; i < array_of_tasks.length; i++) {
-    if (
-      array_of_tasks[i].taskID === taskIDb &&
-      array_of_tasks[i].approved === true
-    )
-      taskapp = array_of_tasks[i]; //you have a task that is approved with this given id
-  }
-  applicantsapp = taskapp.applicants;
-  //console.log(taskapp);
-  var app = [];
-
-  for (var j = 0; j < applicantsapp.length; j++) {
-    if (
-      applicantsapp[j].accepted === true &&
-      applicantsapp[j].assigned === true &&
-      applicantsapp[j].applicantID !== memID
-    ) {
-      app.push(applicantsapp[j]);
+router.get("/viewMyTasks", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      response.sendStatus(403);
+    } else {
+      const id = authorizedData.id;
+      // const id  = req.params.id;
+      const member = await User.findOne({ type: "member", _id: objectid(id) });
+      const myTasks = member.memberTasks;
+      res.json(myTasks);
     }
-  }
 
-  if (app.length === 0) {
-    applicantsapp.push({
-      applicantID: memID,
-      accepted: false,
-      assigned: false
-    });
+    console.log("SUCCESS: Connected to protected route y");
+  });
+});
+//----------------------Start task-----------------------------------------//
+router.put("/startMyTask/:taskID", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      response.sendStatus(403);
+    } else {
+      const id = authorizedData.id;
+      const taskID = objectid(req.params.taskID);
+      // const pid = objectid(req.params.id)
+      const member = await User.findOne({
+        type: "partner",
+        _id: objectid(pid)
+      });
 
-    User.update(
-      { userID: partnerID, "tasks.taskID": taskIDb },
-      { $set: { "tasks.$.applicants": applicantsapp } },
-      function(err, model) {}
-    );
-
-    const partnerx = await User.findOne({ type: "partner", userID: partnerID });
-    var final;
-    for (var i = 0; i < partnerx.tasks.length; i++) {
-      if (partnerx.tasks[i].taskID === taskIDb)
-        final = partnerx.tasks[i].applicants;
+      const updatedpartner = await User.findOneAndUpdate(
+        { _id: pid },
+        {
+          $set: {
+            "tasks.$[i].lifeCycle.2": true
+          }
+        },
+        { arrayFilters: [{ "i._id": taskID }] }
+      );
+      //res.json(updatedpartner)
     }
-    //console.log(final)
-    res.json(final);
-  } else
-    res.json("you can't apply for a task that already has a chosen member");
+
+    console.log("SUCCESS: Connected to protected route y");
+  });
 });
 
-//not working since it's only deleting the first booking
-//delete booking from user array + change reserved to false in coworking space array
-//------------delete booking from user array + change reserved to false in coworking space array----------
-// router.delete('/RoomBookings/:userID/:bookingID', async (req,res) => {
-// 	try {
-// 		const userID=parseInt(req.params.userID);
-// 		const bookingID= (req.params.bookingID);
+//----------------------End task-----------------------------------------//
+router.put("/endMyTask/:taskID", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      response.sendStatus(403);
+    } else {
+      const id = authorizedData.id;
+      const taskID = objectid(req.params.taskID);
+      //const pid = objectid(req.params.id)
+      const member = await User.findOne({
+        type: "partner",
+        _id: objectid(pid)
+      });
 
-//         const temp = await User.find({userID});
-//         if(!temp[0])res.send('user id does not exist');
-// 		const book = temp[0].RoomsBooked;
-// 		console.log(book);
-// 		const temp2 =await book.find(r => r.bookingID === bookingID);
-//     if(!temp2){
+      const updatedpartner = await User.findOneAndUpdate(
+        { _id: pid },
+        {
+          $set: {
+            "tasks.$[i].lifeCycle.3": true
+          }
+        },
+        { arrayFilters: [{ "i._id": taskID }] }
+      );
+      //res.json(updatedpartner)
+    }
 
-// 		res.status(404).send('The booking with the given id is not found');
-// 		return;
-// 	};
-// 		const roomID=parseInt(temp2.roomID);
-// 		const scheduleID=parseInt(temp2.scheduleID);
-// 		const coworkingSpaceID=parseInt(temp2.coworkingSpaceID);
-// 		//res.send(roomID+" "+scheduleID+""+coworkingSpaceID);
-// 		//,'rooms.id':roomID,'rooms.schedule.id':scheduleID
-// 		//'rooms.$.schedule.reserved':false
-//     User.update({'type':'coworkingspace','userID':coworkingSpaceID,'rooms.id':roomID,'rooms.schedule.id':scheduleID},
-//     {$set: {'rooms.$.schedule.reserved':false}}, function(err, model){});
-
-// 	User.updateOne( {userID}, { $pull: { RoomsBooked: {bookingID:bookingID} } }, function(err, model){})
-//     res.send('booking has been deleted successfully')
-//     }catch(error) {
-// 			console.log(error)
-// 		}
-// });
+    console.log("SUCCESS: Connected to protected route y");
+  });
+});
+//----------------------Get my tasks-----------------------------------------//
 
 module.exports = router;
