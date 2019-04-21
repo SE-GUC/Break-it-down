@@ -56,10 +56,7 @@ constructor(props) {
       description: this.state.eventdesc,
       location: this.state.location
     }
-    this.state.eventname=null
-    this.state.eventdate=null
-    this.state.eventdesc=null
-    this.state.location=null
+
     axios.post('/api/Events',newEvent)
     .then(res => {
 

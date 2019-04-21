@@ -30,6 +30,11 @@ export const getMyPartners = () =>  dispatch =>{
     type: GET_MY_PARTNERS,
     payload: res.data
   }))
+  .catch(error => {
+    alert("Your session has expired. Please login again");
+    window.location = "/";
+    return error;
+  });
 
 }
 export const getPartnerTasks = (_id) =>  dispatch =>{
@@ -53,12 +58,16 @@ export const getApplicants = (idp,idt) =>  dispatch =>{
 }
 
 export const getMyTasks = () =>  dispatch =>{
-  const myidfromtoken= "5c9113101c9d440000a926cc" //temp until we figure out tokens
-  axios.get('/api/ConsultancyAgency/'+myidfromtoken)
+  axios.get('/api/ConsultancyAgency/')
   .then(res => dispatch({
     type: GET_MY_TASKS,
     payload: res.data
   }))
+  .catch(error => {
+    alert("Your session has expired. Please login again");
+    window.location = "/";
+    return error;
+  });
 }
 
 
@@ -69,6 +78,11 @@ export const getThePartner = (id) =>  dispatch =>{
     type: GET_THE_PARTNER,
     payload: res.data
   }))
+  .catch(error => {
+    alert("Your session has expired. Please login again");
+    window.location = "/";
+    return error;
+  });
 }
 
 

@@ -348,13 +348,13 @@ router.put("/apply/:pid/:tid/", async (req, res) => {
       console.log("ERROR: Could not connect to the protected route");
       res.sendStatus(403);
     } else {
-       const tid = objectid(req.params.tid);
-        const aid = objectid(authorizedData.id);
+       const tid = parseInt(req.params.tid);
+
   const tmp = await users.findOneAndUpdate(
     { "_id": objectid(req.params.pid), "tasks.taskID": tid },
     {
       $addToSet: {
-        "tasks.$.consultancies": { agencyID: aid, accepted: false, assigned: false }
+        "tasks.$.consultancies": { consultancyID: authorizedData.id, accepted: false, assigned: false }
       }
     }
   );

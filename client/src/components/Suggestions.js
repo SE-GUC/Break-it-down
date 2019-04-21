@@ -24,7 +24,7 @@ class Suggestions extends Component {
       this.setState({coworkingSpace:coworkingSpace,isLoading:false})})
       .catch(error => this.setState({ error, isLoading: false }));
 
-  }
+  } 
 
   render() {
     return (

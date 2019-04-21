@@ -8,7 +8,9 @@ import store from './store'
 
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.css";
+import "semantic-ui/dist/semantic.min.css";
 import {Provider} from 'react-redux'
+
 render(<Provider store={store}>
   <BrowserRouter>
     <App />

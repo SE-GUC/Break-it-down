@@ -60,7 +60,11 @@ class CAHome extends Component {
         this.setState({me:res.data})
     }
  
-        )
+        ).catch(error => {
+          alert("Your session has expired. Please login again");
+          window.location = "/";
+          return error;
+        });
 }
 catch{
     console.log("fi moshkela")

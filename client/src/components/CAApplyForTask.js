@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import '../App.css';
-import {Container, ListGroup, ListGroupItem, Button} from 'reactstrap'
+import {Container, ListGroup, ListGroupItem, Button,Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
 import {connect} from 'react-redux'
 import {getTasks,getAvailableTasks} from '../actions/TaskActions'
@@ -11,17 +11,34 @@ import axios from 'axios';
 
 class CAApply extends Component{
 
- componentDidMount(){
-    this.props.getAvailableTasks();
+    constructor(props) {
+        super(props);
+        this.state = {
+          modal: false,
 
- }
+        }
+        this.toggle = this.toggle.bind(this)
+
+    }
+
+    toggle() {
+        this.setState(prevState => ({
+          modal: !prevState.modal
+        }));
+      }
 
  onApplication=(pid,taskID)=>{
      axios.put("/api/ConsultancyAgency/apply/"+pid+"/"+taskID)
-     .then(res=>console.log(res))
-     console.log(pid)
-     console.log(taskID)
+     .then(
+         this.toggle(), 
+      
+     )
+
      
+}
+componentWillMount(){
+    this.props.getAvailableTasks();
+
 }
 
 
@@ -48,6 +65,13 @@ render(){
             </TransitionGroup>
         </ListGroup>
     </Container>
+    
+    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className} centered>
+          <ModalBody>
+           Application Successful :)
+            </ModalBody>
+        </Modal>
+
     </div>   
 
     );
