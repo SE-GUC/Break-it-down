@@ -21,7 +21,7 @@ import {
   Container,
   ButtonGroup,
 } from "react-bootstrap";
-import {ListGroup, Modal, ModalHeader, ModalBody, ModalFooter , Label,Form, FormGroup, Input, FormText} from 'reactstrap';
+import {ListGroup, Modal, ModalHeader,ModalBody , ModalFooter , Label,Form, FormGroup, Input, FormText} from 'reactstrap';
 
 
 class CAHome extends Component {
@@ -30,10 +30,19 @@ class CAHome extends Component {
     this.state = {
       view: "Info",
       me:{},
-      modal: false
+      modal: false,
+      modal2: false,
+      uname:null,
+      uemail:null,
+      uaddress:null,
+      uwebsite:null,
+      uphoneNumber:null,
+      udescription:null,
+     
     }
     this.onChange = this.onChange.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.toggle2 = this.toggle2.bind(this);
 
 }
 
@@ -64,32 +73,48 @@ catch{
       modal: !prevState.modal
     }));
   }
+  toggle2() {
+    this.setState(prevState => ({
+      modal2: !prevState.modal2
+    }));
+  }
+
 
   onChange= e => {
-
     this.setState({
       [e.target.name]:e.target.value}
       );
-  }
+    };
+   
 
-  onSubmit= e=> {
-    if(this.state.caname==null||this.state.cadesc==null||this.state.caemail==null||this.state.address==null){
-      this.toggle2();
-      return;
-    }
-    const newca={name: this.state.caname,
-      email: this.state.caemail,
-      description: this.state.cadesc,
-      address: this.state.address
-    }
-    this.props.addca(newca);
-    this.state.caname=null
-    this.state.caemail=null
-    this.state.cadesc=null
-     this.state.address=null
-    this.toggle();
+  
   
 
+  onSubmit= e=> {
+   
+    const updatedCa=
+    {name: this.state.uname,
+      email: this.state.uemail,
+      description: this.state.udescription,
+      address: this.state.uaddress,
+      website: this.state.uwebsite,
+      phoneNumber: this.state.uphoneNumber
+
+    }
+    axios.put('/api/ConsultancyAgency/',updatedCa)
+
+ 
+    this.state.uname=null
+    this.state.uemail=null
+    this.state.udescription=null
+    this.state.uaddress=null
+    this.state.uwebsite=null
+    this.state.uphoneNumber=null
+
+
+    this.toggle2(); 
+    this.toggle();
+    
   }
 
 
@@ -150,27 +175,29 @@ catch{
 
     `}
         </style>
+        <CASidenav></CASidenav>
+
 
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
         <ModalHeader toggle={this.toggle}>Edit Profile</ModalHeader>
         <ModalBody>
         <Label for="caname">Name</Label>
-        <Input type="text" name="name" id="caname" placeholder="" value={this.state.me.name} onChange={this.onChange}/>
+        <Input type="text" name="uname" id="caname" placeholder="" defaultValue={this.state.me.name} onChange={this.onChange}/>
        
         <Label for="cadescription">Description</Label>
-        <Input type="textarea" name="description" id="cadesc" value={this.state.me.description}  onChange={this.onChange}/>
+        <Input type="textarea" name="udescription" id="cadesc" defaultValue={this.state.me.description}  onChange={this.onChange}/>
     
         <Label for="address">Address</Label>
-        <Input type="text" name="address" id="caaddress" value= {this.state.me.address} onChange={this.onChange}/>
+        <Input type="text" name="uaddress" id="caaddress" defaultValue= {this.state.me.address} onChange={this.onChange}/>
 
         <Label for="caemail">Email</Label>
-        <Input type="email" name="email" id="caemail" value= {this.state.me.email} onChange={this.onChange}/>
+        <Input type="email" name="uemail" id="caemail" defaultValue= {this.state.me.email} onChange={this.onChange}/>
  
         <Label for="cawebsite">Website</Label>
-        <Input type="text" name="website" id="cawebsite" value= {this.state.me.website} onChange={this.onChange}/>
+        <Input type="text" name="uwebsite" id="cawebsite" defaultValue= {this.state.me.website} onChange={this.onChange}/>
 
         <Label for="caphone">Phone Number</Label>
-        <Input type="text" name="phoneNumber" id="caphone" value= {this.state.me.phoneNumber}  onChange={this.onChange}/>
+        <Input type="text" name="uphoneNumber" id="caphone" defaultValue= {this.state.me.phoneNumber}  onChange={this.onChange}/>
    
         <ModalFooter>
           <Button color="primary" onClick={this.onSubmit}>Submit</Button>{' '}
@@ -181,8 +208,6 @@ catch{
         </ModalBody>
      
         </Modal>
-    )
-}
 
         <Jumbotron fluid>
           <Container>
@@ -265,7 +290,13 @@ Board Members                </Button>
             </Card>
           </Container>
         </Jumbotron>
-        <CASidenav></CASidenav>
+
+        <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className} centered>
+          <ModalBody>
+           The edit request was sent to an admin, waiting their approval :)
+            </ModalBody>
+        </Modal>
+
       </div>
     );
   }

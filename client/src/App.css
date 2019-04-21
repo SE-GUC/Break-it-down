@@ -120,7 +120,7 @@ a:hover {
 #facilities {
   text-align: start;
   margin-left: 160px;
-  width: 50%;
+  width: 400px;
   height: 100%;
   border: 1px solid grey;
   border-top-left-radius: 10px;
@@ -147,26 +147,14 @@ a:hover {
  
   /* margin-bottom: 100px; */
 }
-.closefacil {
+
+.close {
   cursor: pointer;
   position: absolute;
   margin-top: 12px;
   right: 30%;
   padding: 12px 16px;
   transform: translate(0%, -50%);
-}
-.close {
-  cursor: pointer;
-  position: absolute;
-  margin-top: 12px;
-  right: 5%;
-  padding: 12px 16px;
-  transform: translate(0%, -50%);
-}
-
-.button:hover{
-  font-size: 20px;
-  transition: 0.5s;
 }
 
 #facilities{
@@ -176,22 +164,54 @@ a:hover {
 #ed1{
   margin-left: 555px;
 }
-* {
-  font-family: 'Montserrat', sans-serif;
-}
-.w100 {
-  font-weight: 100;
-}
-.w200 {
-  font-weight: 200;
-}
-.w300 {
-  font-weight: 300;
-}
-.w400 {
-  font-weight: 400;
+.bm-item {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 10px;
+  color: #d1d1d1;
+  transition: color 0.2s;
 }
 
+.bm-item:hover {
+  color: white;
+}
 
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+}
 
+.bm-burger-bars {
+  background: #373a47;
+}
+
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+.bm-cross {
+  background: #bdc3c7;
+}
+
+.bm-menu {
+  background: #373a47;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+.bm-item-list {
+  color: #b8b7ad;
+}
+
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
 /* .close:hover {background: #bbb;} */

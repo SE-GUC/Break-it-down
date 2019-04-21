@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 
 import uuid from 'uuid'
 import CAPartners from './CAPartners';
+import CASidenav from './CASidenav';
 
 
 class consultancyAgencyStories extends Component{
@@ -80,8 +81,8 @@ render(){
     return(
    
  
-    <Container  >
-   
+    <div>
+   <CASidenav></CASidenav>
     <CAPartners/>
 
 <Container>
@@ -120,7 +121,7 @@ render(){
         </Modal>
 
 
-    </Container>
+ </div>
 
     );
     }}

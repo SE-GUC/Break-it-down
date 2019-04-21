@@ -35,6 +35,9 @@ import CATasks from "./components/CATasks";
 import EventList from './components/EventList'
 import TaskList from './components/TaskList'
 import CAVisitingPartner from "./pages/CAVisitingPartner";
+import CAMyEvents from "./components/CAMyEvents";
+import CAApplyForTask from "./components/CAApplyForTask";
+
 class App extends Component {
   render() {
 
@@ -141,6 +144,8 @@ class App extends Component {
           <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
     <Route exact path="/ConsultancyAgency/Partner/:_id" component={CAVisitingPartner}/>
+    <Route exact path="/ConsultancyAgency/MyEvents/" component={CAMyEvents}/>
+    <Route exact path="/ConsultancyAgency/AllTasks" component={CAApplyForTask}/>
 
 
     </div>

@@ -14,8 +14,7 @@ class CAPartners extends Component{
     state = {
         modal: false,
           } 
-    componentDidMount(){
- }
+
  onPartnerClick =(_id) =>{
    //  this.toggle();
    let path = `/ConsultancyAgency/Partner/`+_id;
@@ -34,8 +33,9 @@ const {mypartners}=this.props.ca
 const {partnertasks}=this.props.ca
     return(
     
-    <Container  >
-        <CASidenav></CASidenav>
+    <div>
+        
+        <Container>
         <h1> My Partners </h1>
         <br/>
         <ListGroup >
@@ -48,13 +48,7 @@ const {partnertasks}=this.props.ca
                 </ListGroupItem>
                 </CSSTransition>
           ))}
-          {/*{ {mypartners.map(({_id,name,email}) => (
-               <CSSTransition key={_id} timeout={500} >
-                <ListGroupItem >
-                    {name} {email}
-                </ListGroupItem>
-                </CSSTransition>
-          ))}} THIS IS THE CORRECT ONE THIS IS UNTIL THE DATABASE IS FIXED*/}
+  
             </TransitionGroup>
         </ListGroup>
         <br/>
@@ -74,7 +68,8 @@ const {partnertasks}=this.props.ca
                  </ListGroup>    
              </ModalBody>
        </Modal>
-    </Container>
+       </Container>
+    </div>
  
 
     );

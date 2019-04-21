@@ -96,6 +96,34 @@ router.get('/viewmessages', async (req, res) => {
   });
    
 })
+//// VIEW TASKS AVAILABLE FOR APPLICATION malak
+router.get("/allTasks", async (req, res) => {
+  //const member = await  User.find({type:"member"})
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      const partner = await User.find({ type: "partner" });
+      var tasks = [];
+      for (var i = 0; i < partner.length; i++) {
+        for (var j = 0; j < partner[i].tasks.length; j++) {
+          if (partner[i].tasks[j].approved === true&&partner[i].tasks[j].wantsConsultant === true && 
+            !partner[i].tasks[j].consultancyAssignedID && (
+            (partner[i].tasks[j].consultancies&&!partner[i].tasks[j].consultancies.some(consult=> consult.consultancyID===authorizedData.id))||!partner[i].tasks[j].consultancies)){
+            const taskok={...(partner[i].tasks[j]), pid:partner[i]._id, pname:partner[i].name,taskID:partner[i].tasks[j].taskID}
+            tasks.push(taskok);
+            console.log(partner[i].tasks[j])
+    
+          }
+        }
+      }
+      res.json(tasks);    }
+  });
+});
+ 
+
 //---Get my partner----// Malak
 router.get('/Partners', async (req, res) => {
 
@@ -119,7 +147,7 @@ router.get('/Partners', async (req, res) => {
   });
 
 	})
-	//----------------viewTasks---------------- of a certain partner
+	//----------------viewTasks---------------- of a certain partner Nour
 router.get('/viewTasks/:_id', async (req, res) =>{
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
     if (err) {
@@ -321,9 +349,9 @@ router.put("/apply/:pid/:tid/", async (req, res) => {
       res.sendStatus(403);
     } else {
        const tid = objectid(req.params.tid);
-  const aid = objectid(authorizedData.id);
+        const aid = objectid(authorizedData.id);
   const tmp = await users.findOneAndUpdate(
-    { "_id": objectid(req.params.pid), "tasks._id": tid },
+    { "_id": objectid(req.params.pid), "tasks.taskID": tid },
     {
       $addToSet: {
         "tasks.$.consultancies": { agencyID: aid, accepted: false, assigned: false }

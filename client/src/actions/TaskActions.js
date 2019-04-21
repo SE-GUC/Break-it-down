@@ -8,7 +8,16 @@ export const getTasks = () =>  dispatch =>{
     type: GET_TASKS,
     payload: res.data
   }))
+}
 
+  export const getAvailableTasks = () =>  dispatch =>{
+    dispatch(setLoading());
+    axios.get('/api/ConsultancyAgency/allTasks')
+    .then(res => dispatch({
+      type: GET_TASKS,
+      payload: res.data
+    }))
+  }
 
   /*dispatch(setItemsLoading());
   axios
@@ -22,7 +31,7 @@ export const getTasks = () =>  dispatch =>{
     .catch(err =>
         console.log(err)
     );*/
-};
+
 
 export const setLoading= () => {
   return {

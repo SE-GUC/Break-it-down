@@ -29,8 +29,9 @@ const {mytasks}=this.props.ca
 const {taskapplicants}=this.props.ca
 
     return(
-    <Container  >
+    <div  >
         <CASidenav></CASidenav>
+        <Container>
         <h1> My Assigned Tasks </h1>
         <br/>
         <ListGroup >
@@ -63,8 +64,8 @@ const {taskapplicants}=this.props.ca
                  </ListGroup>    
              </ModalBody>
        </Modal>
-
-    </Container>
+</Container>
+    </div>
  
 
     );
