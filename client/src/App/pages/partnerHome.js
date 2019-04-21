@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PartnerNavbar from "../../App/components/PartnerNavbar";
 import PartnerSidenav from "../../App/components/PartnerSidenav";
 
-//import Logo2 from "../../../src/Logo2.png"
 class partnerHome extends Component {
   state = {
     PID: "5c9114781c9d440000a926ce",

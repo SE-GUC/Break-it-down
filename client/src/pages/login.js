@@ -4,6 +4,10 @@ import { Link, NavLink } from "react-router-dom";
 import axios from "axios";
 import validator from "../validations/validation";
 import "bootstrap/dist/css/bootstrap.min.css";
+import ProfileCO from "./profileCO";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Redirect } from "react-router";
+import { BrowserHistory } from 'react-router-dom';
 
 class Login extends Component {
   constructor(props) {
@@ -12,11 +16,15 @@ class Login extends Component {
     this.state = {
       isLoading: false,
       email: "",
-      password: ""
+      password: "",
+      userID: null,
+      coID : null,
+      type: null
     };
+    this.handleSignIn = this.handleSignIn.bind(this);
   }
 
-  async handleSignIn(event) {
+  handleSignIn = event => {
     console.log("handled");
     const info = {
       email: this.state.email,
@@ -25,10 +33,24 @@ class Login extends Component {
     const isValidated = validator.loginValidation(info);
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
-      await axios
+      axios
         .post("/api/CreateAccount/login", info)
-        .then(function(response) {
-          console.log("login is successful");
+        .then(response => {
+          axios
+            .get("/api/CreateAccount/user/auth", {
+              headers: { Authorization: response.data }
+            })
+            .then(response => {
+              console.log(response.data.authorizedData.type);
+              this.setState({
+                coID: response.data.authorizedData.id,
+                type: response.data.authorizedData.type
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          // console.log(response.data);
           /*event.preventDefault();
           window.location = "/";*/
         })
@@ -36,8 +58,7 @@ class Login extends Component {
           alert("Wrong Password");
           console.log(error);
         });
-  }
-
+  };
   async handleGoogle() {
     const profile = await axios.get("/auth/google");
     console.log("using google");
@@ -60,10 +81,11 @@ class Login extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <style type="text/css">
-          {`
+    if (this.state.coID === null) {
+      return (
+        <div>
+          <style type="text/css">
+            {`
     .btn-flat {
       background-color: orange;
       color: white;
@@ -82,49 +104,65 @@ class Login extends Component {
   }
 
     `}
-        </style>
+          </style>
 
-        <Jumbotron>
-          <h1>Welcome to LIRTEN HUB!</h1>
-          <p>Create Your Own Future</p>
-          <Form>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                onChange={evt => this.updateEmail(evt)}
-              />
-            </Form.Group>
+          <Jumbotron>
+            <h1>Welcome to LIRTEN HUB!</h1>
+            <p>Create Your Own Future</p>
+            <Form>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Control
+                  type="email"
+                  placeholder="Email"
+                  onChange={evt => this.updateEmail(evt)}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="formBasicPassword">
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                onChange={evt => this.updatePassword(evt)}
-              />
-            </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  onChange={evt => this.updatePassword(evt)}
+                />
+              </Form.Group>
 
-            <Button
-              variant="flat"
-              size="xxl"
-              block
-              onClick={e => this.handleSignIn(e)}
-            >
-              SIGN IN
-            </Button>
-            <Link to={`/signUp`}>
-              <NavLink to="/signUp">Don't have an account yet? SIGN UP</NavLink>
-            </Link>
-          </Form>
-          <br />
-          <ButtonToolbar>
-            <Button variant="google" onClick={this.handleGoogle}>
-              Sign in with Google+
-            </Button>
-          </ButtonToolbar>
-        </Jumbotron>
-      </div>
-    );
+              <Button
+                variant="flat"
+                size="xxl"
+                block
+                onClick={e => this.handleSignIn(e)}
+              >
+                SIGN IN
+              </Button>
+              <Link to={`/signUp`}>
+                <NavLink to="/signUp">
+                  Don't have an account yet? SIGN UP
+                </NavLink>
+              </Link>
+            </Form>
+            <br />
+            <ButtonToolbar>
+              <Button variant="google" onClick={this.handleGoogle}>
+                Sign in with Google+
+              </Button>
+            </ButtonToolbar>
+          </Jumbotron>
+        </div>
+      );
+    } else if (this.state.type === "coworkingSpace") {
+     // console.log(this.state.coID)
+      
+        this.props.history.push(`/coworkingSpace/${this.state.coID}`)
+        return (
+          <div></div>
+      );
+    }
+    else if (this.state.type === "admin") {
+         this.props.history.push('/admin')
+         return (
+           <div></div>
+       );
+     }
   }
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Logo2 from "../../../src/Logo2.png";
+import Logo2 from "../../../src/Logo2.svg";
 import PartnerNavbar from "../components/PartnerNavbar";
 import PartnerSidenav from "../components/PartnerSidenav";
 

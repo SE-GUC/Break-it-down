@@ -5,16 +5,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, BrowserRouter} from "react-router-dom";
 import AdminSidenav from '../components/AdminSidenav'
 import AdminNavbar from '../components/AdminNavbar'
+import power from '../power.png'
 
 class Admin extends Component {
 
   render() {
     return (
       <BrowserRouter>
-      <div className="App" style={{ backgroundColor:  '#FFFFEB'}}>
-      <AdminSidenav/>
+      <div className="App" style={{ backgroundColor:  '#b1b1b1'}}>
       <AdminNavbar/>
-      <h1 style={{color:'#005a73',textAlign:'center'}}>Welcome Dear Admin</h1>
+      <img src={power} alt="You've got the power" style={{width: '100%'}} />
       </div>
       </BrowserRouter>
     );

@@ -34,7 +34,14 @@ import consultancyAgencyStories from "./components/consultancyAgencyStories"
 import CATasks from "./components/CATasks";
 import EventList from './components/EventList'
 import TaskList from './components/TaskList'
+import activateAccount from './pages/AdminActivateAccounts';
+import NotifyToSignContract from './pages/AdminNotifyToSignContract';
+
 class App extends Component {
+  componentWillMount() {
+    document.title = 'Lirten Hub'
+  }
+
   render() {
 
     return (
@@ -81,12 +88,7 @@ class App extends Component {
             path="/coworkingSpace/viewAllRooms/:coID"
             component={AllRooms}
           />
-          <Route
-            exact
-            path="/checkTaskDescriptions/:PID/:TID"
-            component={taskDescription}
-          />
-
+    
           <Route
             exact
             path="/coworkingSpace/viewRoom/:coID/:rID"
@@ -123,7 +125,7 @@ class App extends Component {
 
           <Route
             exact
-            path="/user/updateRoomBooking"
+            path="/user/updateRoomBooking/:BID"
             component={UpdateRoomBooking}
           />
 
@@ -139,7 +141,11 @@ class App extends Component {
           <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
           <Route exact path="/Tasks" component={TaskList}/>
     <Route exact path="/Events" component={EventList}/>
-
+    <Route exact path="/admin/mails" component={NotifyToSignContract} />
+          <Route exact path="/admin/activate" component={activateAccount} />
+          <Route exact path="/admin/notification" component={activateAccount} />
+          <Route exact path="/admin/taskDescription" component={taskDescription} />
+    
     </div>
       </Router>
     );

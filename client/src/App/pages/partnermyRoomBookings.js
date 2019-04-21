@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Logo2 from "../../../src/Logo2.png";
+import Logo2 from "../../../src/Logo2.svg";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PartnerNavbar from "../../App/components/PartnerNavbar";
