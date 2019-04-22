@@ -88,9 +88,7 @@ module.exports = {
   createPostValidation: request => {
     const loginSchema = {
       title: Joi.string().required(),
-      content: Joi.string().required(),
-      userID: Joi.required(),
-      likes: Joi.number()
+      content: Joi.string().required()
     };
     return Joi.validate(request, loginSchema);
   }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Jumbotron, Button, Col, Form } from "react-bootstrap";
+import { Button, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import validator from "../validations/validation";
 import {
@@ -108,7 +108,7 @@ class signUpCoworkingSpace extends Component {
         .then(function(response) {
           console.log("coworking space create is successful");
           alert(
-            "Congratulations! Your account has been created successfully. Login to Lirten Hub to get started."
+            "Congratulations! Your account has been created successfully. A member of Lirten Hub's team will contact you soon to activate your account."
           );
           event.preventDefault();
           window.location = "/";
@@ -202,171 +202,169 @@ class signUpCoworkingSpace extends Component {
     `}
         </style>
         <br />
-        <Jumbotron>
-          <h1>Create an account</h1>
-          <br />
-          <h3>Step 2: Fill in your details </h3>
-          <Form>
-            <Form.Group controlId="formGridName">
-              <Form.Label>Name</Form.Label>
+        <h1>Create an account</h1>
+        <br />
+        <h3>Step 2: Fill in your details </h3>
+        <Form>
+          <Form.Group controlId="formGridName">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              placeholder="Enter Name"
+              onChange={evt => this.updateName(evt)}
+            />
+          </Form.Group>
+          <Form.Row>
+            <Form.Group as={Col} controlId="formGridEmail">
+              <Form.Label>Email</Form.Label>
               <Form.Control
-                placeholder="Enter Name"
-                onChange={evt => this.updateName(evt)}
+                type="email"
+                placeholder="e.g. lirtenHub@email.com"
+                onChange={evt => this.updateEmail(evt)}
               />
             </Form.Group>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridEmail">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="e.g. lirtenHub@email.com"
-                  onChange={evt => this.updateEmail(evt)}
-                />
-              </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Password"
-                  onChange={evt => this.updatePassword(evt)}
-                />
-              </Form.Group>
-            </Form.Row>
-
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridAddress">
-                <Form.Label>Address</Form.Label>
-                <Form.Control
-                  placeholder="e.g. street, building"
-                  onChange={evt => this.updateAddress(evt)}
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formGridCity">
-                <Form.Label>City</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={this.state.city}
-                  onChange={e => this.handleChange(e)}
-                >
-                  <option value="Egypt">other</option>
-                  <option value="10th of Ramadan City">
-                    10th of Ramadan City
-                  </option>
-                  <option value="6 of October">6 of October</option>
-                  <option value="Alexandria">Alexandria</option>
-                  <option value="Cairo">Cairo</option>
-                  <option value="Giza">Giza</option>
-                  <option value="Helwan">Helwan</option>
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Group controlId="formGridPhoneNumber">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control onChange={evt => this.updatePhoneNumber(evt)} />
-            </Form.Group>
-            <Form.Group controlId="formGridWebsite">
-              <Form.Label>Website</Form.Label>
-              <Form.Control onChange={evt => this.updateWebsite(evt)} />
-            </Form.Group>
-            <Form.Group controlId="formGridDescription">
-              <Form.Label>Company Description</Form.Label>
+            <Form.Group as={Col} controlId="formGridPassword">
+              <Form.Label>Password</Form.Label>
               <Form.Control
-                as="textarea"
-                rows="3"
-                onChange={evt => this.updateDescription(evt)}
+                type="password"
+                placeholder="Password"
+                onChange={evt => this.updatePassword(evt)}
               />
             </Form.Group>
-            <div key={`custom-inline-${"radio"}`} className="mb-3">
-              <Form.Label>Facilities</Form.Label>
-              <br />
-              <FontAwesomeIcon icon={faWifi} />
-              <Form.Check
-                custom
-                inline
-                value="Free WiFi"
-                label="Free WiFi"
-                type={"radio"}
-                onChange={evt => this.handleWifi(evt)}
-                id={`custom-inline-${"radio"}-1`}
-              />
-              <FontAwesomeIcon icon={faRestroom} />
-              <Form.Check
-                custom
-                inline
-                value="Toilets"
-                label="Toilets"
-                type={"radio"}
-                onChange={this.handleToilets}
-                id={`custom-inline-${"radio"}-2`}
-              />
-              <FontAwesomeIcon icon={faUtensils} />
+          </Form.Row>
 
-              <Form.Check
-                custom
-                inline
-                label="Food & Drinks"
-                type={"radio"}
-                onChange={this.handleFood}
-                id={`custom-inline-${"radio"}-3`}
+          <Form.Row>
+            <Form.Group as={Col} controlId="formGridAddress">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                placeholder="e.g. street, building"
+                onChange={evt => this.updateAddress(evt)}
               />
-              <FontAwesomeIcon icon={faThermometerHalf} />
-              <Form.Check
-                custom
-                inline
-                label="Air Conditioning"
-                type={"radio"}
-                onChange={this.handleAirConditioning}
-                id={`custom-inline-${"radio"}-4`}
-              />
-              <FontAwesomeIcon icon={faCar} />
-              <Form.Check
-                custom
-                inline
-                label="Parking Area"
-                type={"radio"}
-                onChange={this.handleParking}
-                id={`custom-inline-${"radio"}-5`}
-              />
-              <FontAwesomeIcon icon={faPrint} />
-              <Form.Check
-                custom
-                inline
-                label="Printing & Scanning"
-                type={"radio"}
-                onChange={this.handlePrinting}
-                id={`custom-inline-${"radio"}-6`}
-              />
-              <FontAwesomeIcon icon={faUsers} />
-              <Form.Check
-                custom
-                inline
-                label="Conference Rooms"
-                type={"radio"}
-                onChange={this.handleConferenceRooms}
-                id={`custom-inline-${"radio"}-7`}
-              />
-              <FontAwesomeIcon icon={faLock} />
-              <Form.Check
-                custom
-                inline
-                label="Private Lockers"
-                type={"radio"}
-                onChange={this.handleLockers}
-                id={`custom-inline-${"radio"}-8`}
-              />
-            </div>
-          </Form>
-          <Button
-            variant="flat"
-            size="xxl"
-            type="submit"
-            onClick={event => this.handleSubmit(event)}
-          >
-            Submit
-          </Button>
-        </Jumbotron>
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formGridCity">
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                as="select"
+                value={this.state.city}
+                onChange={e => this.handleChange(e)}
+              >
+                <option value="Egypt">other</option>
+                <option value="10th of Ramadan City">
+                  10th of Ramadan City
+                </option>
+                <option value="6 of October">6 of October</option>
+                <option value="Alexandria">Alexandria</option>
+                <option value="Cairo">Cairo</option>
+                <option value="Giza">Giza</option>
+                <option value="Helwan">Helwan</option>
+              </Form.Control>
+            </Form.Group>
+          </Form.Row>
+          <Form.Group controlId="formGridPhoneNumber">
+            <Form.Label>Phone Number</Form.Label>
+            <Form.Control onChange={evt => this.updatePhoneNumber(evt)} />
+          </Form.Group>
+          <Form.Group controlId="formGridWebsite">
+            <Form.Label>Website</Form.Label>
+            <Form.Control onChange={evt => this.updateWebsite(evt)} />
+          </Form.Group>
+          <Form.Group controlId="formGridDescription">
+            <Form.Label>Company Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows="3"
+              onChange={evt => this.updateDescription(evt)}
+            />
+          </Form.Group>
+          <div key={`custom-inline-${"radio"}`} className="mb-3">
+            <Form.Label>Facilities</Form.Label>
+            <br />
+            <FontAwesomeIcon icon={faWifi} />
+            <Form.Check
+              custom
+              inline
+              value="Free WiFi"
+              label="Free WiFi"
+              type={"radio"}
+              onChange={evt => this.handleWifi(evt)}
+              id={`custom-inline-${"radio"}-1`}
+            />
+            <FontAwesomeIcon icon={faRestroom} />
+            <Form.Check
+              custom
+              inline
+              value="Toilets"
+              label="Toilets"
+              type={"radio"}
+              onChange={this.handleToilets}
+              id={`custom-inline-${"radio"}-2`}
+            />
+            <FontAwesomeIcon icon={faUtensils} />
+
+            <Form.Check
+              custom
+              inline
+              label="Food & Drinks"
+              type={"radio"}
+              onChange={this.handleFood}
+              id={`custom-inline-${"radio"}-3`}
+            />
+            <FontAwesomeIcon icon={faThermometerHalf} />
+            <Form.Check
+              custom
+              inline
+              label="Air Conditioning"
+              type={"radio"}
+              onChange={this.handleAirConditioning}
+              id={`custom-inline-${"radio"}-4`}
+            />
+            <FontAwesomeIcon icon={faCar} />
+            <Form.Check
+              custom
+              inline
+              label="Parking Area"
+              type={"radio"}
+              onChange={this.handleParking}
+              id={`custom-inline-${"radio"}-5`}
+            />
+            <FontAwesomeIcon icon={faPrint} />
+            <Form.Check
+              custom
+              inline
+              label="Printing & Scanning"
+              type={"radio"}
+              onChange={this.handlePrinting}
+              id={`custom-inline-${"radio"}-6`}
+            />
+            <FontAwesomeIcon icon={faUsers} />
+            <Form.Check
+              custom
+              inline
+              label="Conference Rooms"
+              type={"radio"}
+              onChange={this.handleConferenceRooms}
+              id={`custom-inline-${"radio"}-7`}
+            />
+            <FontAwesomeIcon icon={faLock} />
+            <Form.Check
+              custom
+              inline
+              label="Private Lockers"
+              type={"radio"}
+              onChange={this.handleLockers}
+              id={`custom-inline-${"radio"}-8`}
+            />
+          </div>
+        </Form>
+        <Button
+          variant="flat"
+          size="xxl"
+          type="submit"
+          onClick={event => this.handleSubmit(event)}
+        >
+          Submit
+        </Button>
       </div>
     );
   }

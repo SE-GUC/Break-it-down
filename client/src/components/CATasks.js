@@ -5,7 +5,7 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group'
 import {connect} from 'react-redux'
 import {getMyTasks,getApplicants} from '../actions/ConsultancyAgencyActions'
 import PropTypes from 'prop-types'
-import CASidenav from './CASidenav';
+import CASidenav from './BasicSideNavBar';
 
 class CATasks extends Component{
     
@@ -27,10 +27,18 @@ render(){
 this.props.getMyTasks();
 const {mytasks}=this.props.ca
 const {taskapplicants}=this.props.ca
+let output
+{ if (mytasks.length===0)
+   output=" You have no tasks"
+else{
+  output="" 
+}
+}
 
     return(
-    <Container  >
+    <div  >
         <CASidenav></CASidenav>
+        <Container>
         <h1> My Assigned Tasks </h1>
         <br/>
         <ListGroup >
@@ -43,8 +51,11 @@ const {taskapplicants}=this.props.ca
                 </ListGroupItem>
                 </CSSTransition>
           ))}
+        
             </TransitionGroup>
         </ListGroup>
+       <h2> {output}</h2>
+    
         <br/>
     <Modal isOpen= {this.state.modal} toggle={this.toggle}>
        <ModalHeader toggle={this.toggle}>
@@ -63,8 +74,8 @@ const {taskapplicants}=this.props.ca
                  </ListGroup>    
              </ModalBody>
        </Modal>
-
-    </Container>
+</Container>
+    </div>
  
 
     );

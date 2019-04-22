@@ -14,7 +14,6 @@ const coworkingSpace = require("./routes/api/coworkingSpace");
 const ca = require("./routes/api/consultancyAgency");
 const ProfilesAPI = require("./routes/api/Profiles");
 const partner = require("./routes/api/partner");
-const notification = require("./routes/api/notification");
 const member = require("./routes/api/member");
 const Event = require("./routes/api/Event");
 const consultancyAgency = require("./routes/api/consultancyAgency");
@@ -104,7 +103,6 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
-
 
 //--------------------Handling Error 404--------------------
 app.use((req, res) => {

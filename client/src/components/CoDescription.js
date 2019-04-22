@@ -26,7 +26,7 @@ class CoDesc extends Component {
     super(props);
     this.state = {
       info: {},
-      coID: this.props.coID,
+      coID: window.location.pathname.split("/").pop(),
       facilities: [],
       flag: false,
       namee: "",
@@ -52,12 +52,12 @@ class CoDesc extends Component {
 
   // Retrieves the list of items from the Express app
   getList = async () => {
-    const coID = this.props.coID;
+    const coID = this.state.coID;
     //console.log(coID)
     //   const rID = this.props.match.params.rID;
     // console.log(rID)
     await fetch(
-      `/api/coworkingSpace/viewCoworkingSpace/${coID}`
+      `/api/coworkingSpace/viewCoworkingSpace/`
     )
       .then(res => res.json())
       .then(info => this.setState({ info }));
@@ -75,8 +75,8 @@ class CoDesc extends Component {
         "description": c,
     };
     console.log(databody)
-    const coID = this.props.coID;
-    fetch(`/api/coworkingspace/updateCospace/${coID}`, {
+    const coID = this.state.coID;
+    fetch(`http://localhost:4000/api/coworkingspace/updateCospace/${coID}`, {
       method: "PUT",
       body: JSON.stringify(databody),
       headers: {

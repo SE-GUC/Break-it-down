@@ -59,9 +59,8 @@ a:hover {
   white-space: pre-line; */
   width: 500px;
   margin-left: 900px;
-  border: 3px solid #73AD21;
+  border: 3px solid #73ad21;
   float: left;
-  
 }
 
 .img2 {
@@ -71,38 +70,38 @@ a:hover {
   /* float: right; */
 }
 
-#wrapper { 
-    width: 1000px;
-    height: 100%;
-    border: 1px solid black;
-    height: 300px;
-    align-self:center;
-    overflow: hidden; /* add this to contain floated children */
+#wrapper {
+  width: 1000px;
+  height: 100%;
+  border: 1px solid black;
+  height: 300px;
+  align-self: center;
+  overflow: hidden; /* add this to contain floated children */
 }
 #first {
-    margin-top: 0px;
-    width: 400px;
-    float:left; /* add this */
+  margin-top: 0px;
+  width: 400px;
+  float: left; /* add this */
 }
 #second {
   margin-top: 50px;
   margin-left: 60px;
-    width: 500px;
-    float: left; /* add this */
+  width: 500px;
+  float: left; /* add this */
 }
 
 #COfooter {
-  width:1505px;
+  width: 1505px;
   height: 150px;
   background-color: #fec79a;
 }
 
-#navbar{
-  background-color: #022525
+#navbar {
+  background-color: #022525;
 }
 
 .rounded-circle {
-  border-radius: 50%!important;
+  border-radius: 50% !important;
   background-color: #084c4b;
 }
 
@@ -132,19 +131,19 @@ a:hover {
 }
 
 #list {
-  margin-right: 310px; 
-  font-family: 'Courier New', Courier, monospace;
-  color: grey
+  margin-right: 310px;
+  font-family: "Courier New", Courier, monospace;
+  color: grey;
 }
 
 #title {
-  margin-right: 250px; 
-  color:rgb(85, 80, 80) !important;
+  margin-right: 250px;
+  color: rgb(85, 80, 80) !important;
 }
 
 #addF {
-  margin-left: 360px; 
- 
+  margin-left: 360px;
+
   /* margin-bottom: 100px; */
 }
 
@@ -157,11 +156,148 @@ a:hover {
   transform: translate(0%, -50%);
 }
 
-#facilities{
+#facilities {
   margin-left: 320px;
 }
 
-#ed1{
+#ed1 {
   margin-left: 555px;
 }
+
+* {
+  font-family: "Montserrat", sans-serif;
+}
+.w100 {
+  font-weight: 100;
+}
+.w200 {
+  font-weight: 200;
+}
+.w300 {
+  font-weight: 300;
+}
+.w400 {
+  font-weight: 400;
+}
+
+.bm-item {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 10px;
+  color: #d1d1d1;
+  transition: color 0.2s;
+}
+
+.bm-item:hover {
+  color: white;
+}
+
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+}
+
+.bm-burger-bars {
+  background: #373a47;
+}
+
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+.bm-cross {
+  background: #bdc3c7;
+}
+
+.bm-menu {
+  background: #373a47;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+.bm-item-list {
+  color: #b8b7ad;
+}
+
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+.dropdown {
+  display: inline-block;
+  vertical-align: middle;
+}
+.dropdown .dropbtn {
+  display: inline;
+  font-size: 115%;
+  background: transparent; /* no background! */
+  border: 1px solid white;
+  border-radius: 100px;
+  border: none;
+  padding: 10px 20px;
+  min-width: 80%;
+  outline: none;
+  color: inherit;
+  /* padding: 14px 16px; */
+  background-color: inherit;
+}
+
+/* color of Resume when hovered */
+.container a:hover,
+.dropdown:hover .dropbtn {
+  background-color: inherit;
+}
+
+button .hover {
+  display: none;
+}
+.dropdown:hover .no_hover {
+  display: none;
+}
+.dropdown:hover .hover {
+  display: inline;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 52.3%;
+  background-color: white;
+  min-width: 50%;
+  box-shadow: 0px 8px 16px 0px rgba(88, 88, 88, 0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: rgb(218, 213, 213);
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+  text-align: left;
+}
+/* .close:hover {background: #bbb;} */
+
+/* .close:hover {background: #bbb;} */
+
 /* .close:hover {background: #bbb;} */

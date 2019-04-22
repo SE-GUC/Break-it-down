@@ -59,16 +59,13 @@ class List extends Component {
     const rID = this.props.match.params.rID;
     console.log(rID);
     console.log(JSON.stringify(databody));
-    fetch(
-      `/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(databody),
-        headers: {
-          "Content-Type": "application/json"
-        }
+    fetch(`/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(databody),
+      headers: {
+        "Content-Type": "application/json"
       }
-    )
+    })
       .then(res => res.json())
       .then(json => this.setState({ res: json }));
   };
@@ -85,9 +82,7 @@ class List extends Component {
     //console.log(this.props.match.params.coID)
     const rID = this.props.match.params.rID;
     console.log(rID);
-    await fetch(
-      `/api/coworkingspace/viewroomschedule/${coID}/${rID}`
-    )
+    await fetch(`/api/coworkingspace/viewroomschedule/${coID}/${rID}`)
       .then(res => res.json())
       .then(list => this.setState({ list }));
     //  console.log(this.state.list)
@@ -115,15 +110,12 @@ class List extends Component {
     let databody = [c];
     console.log(databody);
 
-    fetch(
-      `/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        }
+    fetch(`/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
       }
-    )
+    })
       .then(res => res.json())
       .then(json => this.setState({ res: json }));
     // this.getList()
@@ -225,7 +217,7 @@ class List extends Component {
                             result={this.state.res}
                             onClick={e => {
                               this.getUser(e);
-                                window.location.reload();
+                              window.location.reload();
                             }}
                           >
                             Submit update

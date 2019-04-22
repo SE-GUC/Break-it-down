@@ -12,6 +12,13 @@ const users = require("../../models/UserProfile");
 //nourhan
 var objectid = require("mongodb").ObjectID;
 
+//auth
+const jwt = require("jsonwebtoken");
+
+const tokenKey = require("../../config/keys").secretOrKey;
+
+var store = require("store");
+
 var Members = require("../../models/Member");
 var partner = require("../../models/Partner");
 const PartnerCoworkingSpace = require("../../models/cospaceMTest");
@@ -134,6 +141,46 @@ router.get("/PartnerCoworkingspaces/Filter", (req, res) => {
             })
           : res.json(p)
     );
+});
+
+//Get specific member -Mariam
+router.get("/viewMember/:id", async (req, res) => {
+  try {
+    const member = await User.findOne({
+      type: "member",
+      _id: objectid(req.params.id)
+    });
+    if (member === undefined || member.length == 0)
+      return res.json("Member does not exist");
+    res.json(member);
+  } catch (error) {
+    res.json(error.message);
+  }
+});
+
+//private route
+router.get("/viewMember", (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      try {
+        const member = await User.findOne({
+          type: "member",
+          _id: authorizedData.id
+        });
+        if (member === undefined || member.length == 0)
+          return res.json("Member does not exist");
+        res.json(member);
+      } catch (error) {
+        res.json(error.message);
+      }
+      console.log("SUCCESS: Connected to protected route y");
+    }
+  });
 });
 
 //shaza
@@ -340,7 +387,7 @@ router.put("/cospace/rooms/:userID/:id/:id2/:id3", async (req, res) => {
 
       async function(err, model) {
         if (err) return handleError(res, err);
-        else res.json({ data: test0.pop().reserved });
+        else res.json({ data: "booked successfully" });
       }
     );
   } catch (error) {
@@ -432,27 +479,27 @@ router.delete("/RoomBookings/:userID/:bookingID", async (req, res) => {
 //------------------------------------------------------------------------------------------
 
 // Get all Members (Malak&Nour) MONGOUPDATED
-router.get("/", async (req, res) => {
+router.get("/viewAllMembers", async (req, res) => {
   // Members.find()
   // .then(items=>res.json(items))
   const r = await User.find({ type: "member" });
   res.json(r);
 });
 
-//Get specific member -Mariam
-router.get("/viewMember/:id", async (req, res) => {
-  try {
-    const member = await User.findOne({
-      type: "member",
-      userID: parseInt(req.params.id)
-    });
-    if (member === undefined || member.length == 0)
-      return res.json("Member does not exist");
-    res.json(member);
-  } catch (error) {
-    res.json(error.message);
-  }
+router.get("/getUserData", (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      res.send(authorizedData);
+    }
+  });
 });
+
+
 
 //------------------------get all approved tasks------------------------------//
 router.get("/allTasks", async (req, res) => {

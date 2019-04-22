@@ -89,7 +89,8 @@ module.exports = {
       title: Joi.string().required(),
       content: Joi.string().required(),
       userID: Joi.required(),
-      likes: Joi.number()
+      likes: Joi.number(),
+      name: Joi.string().required()
     };
     return Joi.validate(request, loginSchema);
   },

@@ -5,8 +5,10 @@ import Post from "../components/Post";
 import Fa from "../components/Facilities";
 import Desc from "../components/CoDescription";
 import { Link } from "react-router-dom";
-import Rooms from "../pages/AllRooms"
-import Basics from "../components/BasicInfoCO"
+import Rooms from "../pages/AllRooms";
+import Basics from "../components/BasicInfoCO";
+import Side from "../components/BasicSideNavBar";
+import Search from '../components/Search';
 import {
   faPhone,
   faAt,
@@ -32,7 +34,7 @@ class Profile extends Component {
     super(props);
     this.state = {
       view: "Info",
-      coID: "5caf3f533f50a4165057019f",
+      coID: window.location.pathname.split("/").pop(),
       info: {},
       facilities: [],
       namee: "",
@@ -44,19 +46,25 @@ class Profile extends Component {
     this.getList();
   }
 
-
+//window.location.pathname.split("/").pop(),
 
   // Retrieves the list of items from the Express app
   getList = async () => {
     
     const coID = this.state.coID;
     await fetch(
-      `/api/coworkingSpace/viewCoworkingSpace/${coID}`
+      `/api/coworkingSpace/viewCoworkingSpace/`
     )
       .then(res => res.json())
-      .then(info => this.setState({ info }));
+      .then(info => this.setState({ info }))
+      .then(coID => this.setState({coID}))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
     this.setState({
-      facilities: this.state.info.facilities
+      facilities: this.state.info.facilities,
     });
     
   };
@@ -69,6 +77,8 @@ class Profile extends Component {
   }
 
   render() {
+    
+    console.log(this.state.coID)
     const view = this.state.view;
     let output;
     const { info } = this.state;
@@ -78,6 +88,7 @@ class Profile extends Component {
         <div>           
           <ul>
             <div>
+              
                 <Desc coID={this.state.coID} />
                 <br/>
                 <br />
@@ -100,10 +111,12 @@ class Profile extends Component {
 
     return (
       <div>
-        <style type="text/css">
+        {/* <Navbar /> */}
+        <Side />
+        <style type="text/css" >
           {`
     .btn-flat {
-      background-color: orange;
+      background-color: gray;
       color: white;
     }
 
@@ -120,10 +133,14 @@ class Profile extends Component {
   }
 
     `}
+    
         </style>
+
         <Jumbotron fluid>
           <Container>
+
             <Card>
+
               <Card.Body>
                 <Row>
                   <ul>
@@ -174,6 +191,7 @@ class Profile extends Component {
               </ButtonGroup>
             </div>
             <Card>
+
               <Card.Body>{output}</Card.Body>
             </Card>
           </Container>

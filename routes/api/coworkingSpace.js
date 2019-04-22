@@ -15,6 +15,13 @@ const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule')
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 
+//auth
+const jwt = require("jsonwebtoken");
+
+const tokenKey = require("../../config/keys").secretOrKey;
+
+var store = require("store");
+
 //---------------------------------Nourhan-----------------------------------------------------------------------
 //Facilities
 //create a facility
@@ -108,6 +115,7 @@ router.post('/addfacility/:idC', async (req,res) => {
 
 
 
+
 //==================================================================================================================
 //---------------------------------Mariam------------------------------------------------------------------------
 
@@ -156,8 +164,33 @@ router.post('/addfacility/:idC', async (req,res) => {
     } 
     });
 
+    router.get("/viewCoworkingSpace", (req, res) => {
+      jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+        if (err) {
+          //If error send Forbidden (403)
+          console.log("ERROR: Could not connect to the protected route");
+          res.sendStatus(403);
+        } else {
+          // console.log(authorizedData)
+          try {
+            const co = await users.findOne({
+              type: "coworkingSpace",
+              _id: authorizedData.id
+            });
+            // console.log("co._id")
+            if (co === undefined || co.length == 0)
+              return res.json("co does not exist");
+            res.json(co);
+          } catch (error) {
+            res.json(error.message);
+          }
+          console.log("SUCCESS: Connected to protected route y");
+        }
+      });
+    });
+
 // View all coworking spaces  TESTED 
-router.get('/viewCoworkingSpace', async (req, res) => {
+router.get('/viewCoworkingSpaceAll', async (req, res) => {
 try{
 const coworkingSpace = await users.find({type:"coworkingSpace"})
 res.json( coworkingSpace);
@@ -202,18 +235,28 @@ router.put('/updateCospace/:idC', async (req, res)=>{
   
   const isValidated = validator.updateValidation(req.body)
   if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+  var max32 = Math.pow(2, 32) - 1;
+  var ID = Math.floor(Math.random() * max32);
+  const id = req.params.idC;
+  const upd = Object.assign({ _id: ID }, req.body);
+
+  console.log(upd);
+  users
+    .update({ _id: id }, { $push: { updates: upd } })
+    .then(res.json({ msg: "Awaiting admin approval for your updates.", data: upd }))
+    .catch(res.json({ msg: "An error occured. Please try again." }));
+
   
-  
-  const updatedco = await users.updateOne(
-    {type:"coworkingSpace",'_id':req.params.idC},
-    req.body,
-    {new: true}, (err, doc) => {
-        if (err) {
-            console.log("Something wrong when updating data!");
-        }
+  // const updatedco = await users.updateOne(
+  //   {type:"coworkingSpace",'_id':req.params.idC},
+  //   req.body,
+  //   {new: true}, (err, doc) => {
+  //       if (err) {
+  //           console.log("Something wrong when updating data!");
+  //       }
     
-        console.log(doc);
-    });
+  //       console.log(doc);
+  //   });
   
   res.json({msg:'Coworking space was updated successfully', data: updatedco})
   }
@@ -495,20 +538,21 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
   temp3[0].rooms.schedule.forEach(sch=>{ if(sch._id==req.params.ids)  check=sch.reserved })
   if(check===true) return res.json({msg:"This schedule is already reserved. Please come back and updated it when its reservation period ends."})
   else{
-  if(req.body.Date && req.body.time && req.body.scheduleNumber){
+  if(req.body.Date && req.body.time  && req.body.endTime){
     const updatedroom = 
     await User.findOneAndUpdate(
       {"_id": (idc)},
         {  $set: {
           "rooms.$[i].schedule.$[j].Date": req.body.Date,
           "rooms.$[i].schedule.$[j].time": req.body.time,
-          "rooms.$[i].schedule.$[j].scheduleNumber": req.body.scheduleNumber
+          "rooms.$[i].schedule.$[j].endTime": req.body.endTime,
         }},
       { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
       )
       res.json({msg:"Schedule updated successfully",data:updatedroom})
     }
-    else if(req.body.Date){
+    //Date
+    else if(req.body.Date && !req.body.time && !req.body.endTime){
       const updatedroom = 
       await User.findOneAndUpdate(
         {"_id": (idc)},
@@ -521,6 +565,61 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
         )
         res.json({msg:"Date updated successfully",data:updatedroom})
     }
+    //end time
+    else if(!req.body.time && !req.body.Date && req.body.endTime){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+  
+        { $set: {
+          "rooms.$[i].schedule.$[j].endTime": req.body.endTime
+          }},
+  
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Time updated successfully",data:updatedroom})
+    }
+    //Date and time
+    else if(req.body.time && req.body.Date && !req.body.endTime){
+      const updatedroom = 
+      
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].Date": req.body.Date,
+            "rooms.$[i].schedule.$[j].time": req.body.time,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Date and time updated successfully",data:updatedroom})
+    
+    }
+    //time & end time
+    else if(req.body.time && req.body.endTime && !req.body.Date){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].time": req.body.time,
+            "rooms.$[i].schedule.$[j].scheduleNumber": req.body.endTime,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Time and schedule number updated successfully",data:updatedroom})
+    }
+    //Date & end time
+    else if(req.body.Date && req.bosy.endTime && !req.body.time){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].Date": req.body.Date,
+            "rooms.$[i].schedule.$[j].scheduleNumber": req.body.endTime,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Date and schedule number updated successfully",data:updatedroom})
+    }
     else if(req.body.time){
       const updatedroom = 
       await User.findOneAndUpdate(
@@ -528,19 +627,6 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
   
         { $set: {
           "rooms.$[i].schedule.$[j].time": req.body.time
-          }},
-  
-        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
-        )
-        res.json({msg:"Time updated successfully",data:updatedroom})
-    }
-    else if(req.body.scheduleNumber){
-      const updatedroom = 
-      await User.findOneAndUpdate(
-        {"_id": (idc)},
-  
-        { $set: {
-          "rooms.$[i].schedule.$[j].scheduleNummber": req.body.scheduleNumber
           }},
   
         { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
@@ -684,7 +770,7 @@ router.put('/update/booking/:bid/:uid', async(req, res)=>{
 
 
 
-//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  tested
 //get only empty rooms?
 router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
     try{

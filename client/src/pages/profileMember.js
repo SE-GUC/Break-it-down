@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import profile from "../profile.svg";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
+import Side from "../components/BasicSideNavBar";
 import {
   faPhone,
   faAt,
@@ -39,7 +40,12 @@ class ProfileMember extends Component {
   async getMemberProfile() {
     await fetch(`/api/member/viewMember`)
       .then(res => res.json())
-      .then(data => this.setState({ data }));
+      .then(data => this.setState({ data }))      
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
   }
 
   handleButtonClick(evt) {
@@ -106,6 +112,7 @@ class ProfileMember extends Component {
 
     return (
       <div>
+        <Side />
         <style type="text/css">
           {`
     .btn-flat {
