@@ -22,140 +22,149 @@ var store = require("store");
 
 new CronJob('0,30  * * * *', function() {
   console.log("===================================================================")
+
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
     if (err) {
       //If error send Forbidden (403)
       console.log("ERROR: Could not connect to the protected route");
      // res.sendStatus(403);
     } else {
-      const partnerID = ObjectId(authorizedData.id);
-      sendNotification(partnerID)
+      const ID = ObjectId(authorizedData.id);
+      sendNotification(ID)
     }
   })
 }, null, true, 'America/Los_Angeles');
 
 
-async function sendNotification(Id){
-  const ID= ObjectId(Id)
-  const user = await users.findOne(ID)
-  const notif= user.notifications
-  console.log(notif)
-  notif.forEach(element => {
 
-    notifier.notify({
-      title: 'New Notification' ,
-      message: element.notificationContent,
-      //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
-      sound: true, // Only Notification Center or Windows Toasters
-      wait: true // Wait with callback, until user action is taken against notification
-    }, function (err, response) {});
-  
-    console.log(element.notifID)
-    notifier.on('click', function(notifierObj, options) {
-       users.updateOne({'_id':ID, }, 
-                       {$set: {'notifications.$[i].read': true, 'notifications.$[i].unread': false}},
-                       { arrayFilters: [{ "i.notifID": element.notifID }]},
-                       function(err, model){}); 
+async function sendNotification(Id) {
+  const ID = ObjectId(Id);
+  const user = await users.findOne(ID);
+  const notif = user.notifications;
+  console.log(notif);
+  notif.forEach(element => {
+    notifier.notify(
+      {
+        title: "New Notification",
+        message: element.notificationContent,
+        //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
+        sound: true, // Only Notification Center or Windows Toasters
+        wait: true // Wait with callback, until user action is taken against notification
+      },
+      function(err, response) {}
+    );
+
+    console.log(element.notifID);
+    notifier.on("click", function(notifierObj, options) {
+      users.updateOne(
+        { _id: ID },
+        {
+          $set: {
+            "notifications.$[i].read": true,
+            "notifications.$[i].unread": false
+          }
+        },
+        { arrayFilters: [{ "i.notifID": element.notifID }] },
+        function(err, model) {}
+      );
 
       // element.read= true,
       // element.unread= false
       // // Triggers if `wait: true` and user clicks notification
-    //  console.log('The user clicked on the Notification!');
+      //  console.log('The user clicked on the Notification!');
     });
   });
-     
- 
- 
 }
 
 async function notify(senderIDs, Id, content) {
 
-  //==== if notification sent from admin===//
+   //==== if notification sent from admin===//
 
- if(senderIDs === ""){
-   const senderName = "LirtenHub"
-   const ID = ObjectId(Id);
-   const user = await users.findOne(ID);
-   if (user === null) {
-     res.json("the database has no partner with the given ID");
-   } else {
-     const notificationContent = content;
-     const read = false;
- 
-     newNotification = {
-       senderName,
-       notificationContent,
-       read
-     };
-       await users.updateOne(
-       { _id: ID },
-       { $push: { notifications: newNotification } },
-       function(err, model) {}
-     );
- 
-     const user2 = await users.findOne({ _id: ID });
-     const not2 = user2.notifications;
-     console.log(not2);
-   }
- }
-    //==== if notification sent to admin===//
- else{
-   if(Id === ""){
-       const senderID = ObjectId(senderIDs);
-       const sender = await users.findOne(senderID);
-       const senderName = sender.name
-       const admins = await users.find({type:'admin'});
+  if(senderIDs === ""){
+    const senderName = "LirtenHub"
+    const ID = ObjectId(Id);
+    const user = await users.findOne(ID);
+    if (user === null) {
+      res.json("the database has no partner with the given ID");
+    } else {
+      const notificationContent = content;
+      const read = false;
+  
+      newNotification = {
+        senderName,
+        notificationContent,
+        read
+      };
+        await users.updateOne(
+        { _id: ID },
+        { $push: { notifications: newNotification } },
+        function(err, model) {}
+      );
+  
+      const user2 = await users.findOne({ _id: ID });
+      const not2 = user2.notifications;
+      console.log(not2);
+    }
+  }
+     //==== if notification sent to admin===//
+  else{
+    if(Id === ""){
+        const senderID = ObjectId(senderIDs);
+        const sender = await users.findOne(senderID);
+        const senderName = sender.name
+        const admins = await users.find({type:'admin'});
 
-         const notificationContent = content;
-         const read = false;
+          const notificationContent = content;
+          const read = false;
 
-         newNotification = {
-           senderName,
-           notificationContent,
-           read
-         };
+          newNotification = {
+            senderName,
+            notificationContent,
+            read
+          };
 
-         admins.forEach(async(element) => {
-           await users.updateOne(
-             { _id: element._id },
-             { $push: { notifications: newNotification } },
-             function(err, model) {}
-           );
-         });  
-     }
+          admins.forEach(async(element) => {
+            await users.updateOne(
+              { _id: element._id },
+              { $push: { notifications: newNotification } },
+              function(err, model) {}
+            );
+          });  
+      }
 
-      //==== if notification does not include the admin===//
-     else{
+       //==== if notification does not include the admin===//
+      else{
 
-     const senderID = ObjectId(senderIDs);
-     const sender = await users.findOne(senderID);
-     const senderName = sender.name
-     const ID = ObjectId(Id);
-     const user = await users.findOne(ID);
-     if (user === null) {
-       res.json("the database has no partner with the given ID");
-     } else {
-       const notificationContent = content;
-       const read = false;
+      const senderID = ObjectId(senderIDs);
+      const sender = await users.findOne(senderID);
+      const senderName = sender.name
+      const ID = ObjectId(Id);
+      const user = await users.findOne(ID);
+      if (user === null) {
+        res.json("the database has no partner with the given ID");
+      } else {
+        const notificationContent = content;
+        const read = false;
 
-       newNotification = {
-         senderName,
-         notificationContent,
-         read
-       };
-       await users.updateOne(
-         { _id: ID },
-         { $push: { notifications: newNotification } },
-         function(err, model) {}
-       );
+        newNotification = {
+          senderName,
+          notificationContent,
+          read
+        };
+        await users.updateOne(
+          { _id: ID },
+          { $push: { notifications: newNotification } },
+          function(err, model) {}
+        );
 
-       const user2 = await users.findOne({ _id: ID });
-       const not2 = user2.notifications;
-       console.log(not2);
-     }
-   }
- }
+        const user2 = await users.findOne({ _id: ID });
+        const not2 = user2.notifications;
+        console.log(not2);
+      }
+    }
+  }
 }
+
 
 //Get specific partner -Nourhan
 router.get("/viewProfile/:pID", async (req, res) => {
