@@ -95,99 +95,99 @@ router.put("/approveUpdates/:id/:uid", async (req, res) => {
           //user may want to deactivate or activate account, therefore, activation can be changed
           const newusers = {
             type:
-              update[0].updates[0].type === undefined
+             ( update[0].updates[0].type === undefined || update[0].updates[0].type === null)
                 ? user.type
                 : update[0].updates[0].type,
             name:
-              update[0].updates[0].name === undefined
+             (update[0].updates[0].name === undefined || update[0].updates[0].name === null)
                 ? user.name
                 : update[0].updates[0].name,
             email:
-              update[0].updates[0].email === undefined
+              (update[0].updates[0].email === undefined || update[0].updates[0].email === null)
                 ? user.email
                 : update[0].updates[0].email,
             phoneNumber:
-              update[0].updates[0].phoneNumber === undefined
+              (update[0].updates[0].phoneNumber === undefined || update[0].updates[0].phoneNumber === null)
                 ? user.phoneNumber
                 : update[0].updates[0].phoneNumber,
             field:
-              update[0].updates[0].field === undefined
+              (update[0].updates[0].field === undefined || update[0].updates[0].field === null)
                 ? user.field
                 : update[0].updates[0].field,
             memberTasks:
-              update[0].updates[0].memberTasks === undefined
+              (update[0].updates[0].memberTasks === undefined || update[0].updates[0].memberTasks === null)
                 ? user.memberTasks
                 : update[0].updates[0].memberTasks,
             activation:
-              update[0].updates[0].activation === undefined
+              (update[0].updates[0].activation === undefined || update[0].updates[0].activation === null)
                 ? user.activation
                 : update[0].updates[0].activation,
             address:
-              update[0].updates[0].address === undefined
+             (update[0].updates[0].address === undefined || update[0].updates[0].address === null)
                 ? user.address
                 : update[0].updates[0].address,
             birthday:
-              update[0].updates[0].birthday === undefined
+              (update[0].updates[0].birthday === undefined || update[0].updates[0].birthday === null)
                 ? user.birthday
                 : update[0].updates[0].birthday,
             skills:
-              update[0].updates[0].skills === undefined
+              (update[0].updates[0].skills === undefined || update[0].updates[0].skills === null)
                 ? user.skills
                 : update[0].updates[0].skills,
             interests:
-              update[0].updates[0].interests === undefined
+              (update[0].updates[0].interests === undefined || update[0].updates[0].interests === null)
                 ? user.interests
                 : update[0].updates[0].interests,
             accomplishments:
-              update[0].updates[0].accomplishments === undefined
+              (update[0].updates[0].accomplishments === undefined || update[0].updates[0].accomplishments === null)
                 ? user.accomplishments
                 : update[0].updates[0].accomplishments,
             trainers:
-              update[0].updates[0].trainers === undefined
+              (update[0].updates[0].trainers === undefined || update[0].updates[0].trainers === null)
                 ? user.trainers
                 : update[0].updates[0].trainers,
             trainingPrograms:
-              update[0].updates[0].trainingPrograms === undefined
+             (update[0].updates[0].trainingPrograms === undefined || update[0].updates[0].trainingPrograms === null)
                 ? user.trainingPrograms
                 : update[0].updates[0].trainingPrograms,
             partners:
-              update[0].updates[0].partners === undefined
+              (update[0].updates[0].partners === undefined || update[0].updates[0].partners === null)
                 ? user.partners
                 : update[0].updates[0].partners,
             boardMembers:
-              update[0].updates[0].boardMembers === undefined
+              (update[0].updates[0].boardMembers === undefined || update[0].updates[0].boardMembers === null)
                 ? user.boardMembers
                 : update[0].updates[0].boardMembers,
             events:
-              update[0].updates[0].events === undefined
+             ( update[0].updates[0].events === undefined || update[0].updates[0].events === null)
                 ? user.events
                 : update[0].updates[0].events,
             reports:
-              update[0].updates[0].reports === undefined
+              (update[0].updates[0].reports === undefined ||  update[0].updates[0].reports === null)
                 ? user.reports
                 : update[0].updates[0].reports,
             tasks:
-              update[0].updates[0].tasks === undefined
+             (update[0].updates[0].tasks === undefined || update[0].updates[0].tasks === null)
                 ? user.tasks
                 : update[0].updates[0].tasks,
             certificates:
-              update[0].updates[0].certificates === undefined
+              (update[0].updates[0].certificates === undefined || update[0].updates[0].certificates === null)
                 ? user.certificates
                 : update[0].updates[0].certificates,
             website:
-              update[0].updates[0].website === undefined
+              (update[0].updates[0].website === undefined || update[0].updates[0].website === null)
                 ? user.website
                 : update[0].updates[0].website,
             description:
-              update[0].updates[0].description === undefined
+              (update[0].updates[0].description === undefined || update[0].updates[0].description === null)
                 ? user.description
                 : update[0].updates[0].description,
             facilities:
-              update[0].updates[0].facilities === undefined
+              (update[0].updates[0].facilities === undefined || update[0].updates[0].facilities === null)
                 ? user.facilities
                 : update[0].updates[0].facilities,
             rooms:
-              update[0].updates[0].rooms === undefined
+              (update[0].updates[0].rooms === undefined || update[0].updates[0].rooms === null)
                 ? user.rooms
                 : update[0].updates[0].rooms
           };
@@ -229,7 +229,7 @@ router.put("/approveUpdates/:id/:uid", async (req, res) => {
             { $pull: { updates: { _id: updtid } } }
           );
 
-          notify(userid, "Your profile has been updated successfully");
+          notify("",userid, "Your profile has been updated successfully");
 
           res.json({ msg: "User updated successfully" });
         } catch (error) {
@@ -271,7 +271,7 @@ router.delete("/disapproveUpdates/:id/:uid", async (req, res) => {
             { $pull: { updates: { _id: updtid } } }
           );
 
-          notify(
+          notify("",
             userid,
             "Sorry your update request was disapproved by an admin"
           );

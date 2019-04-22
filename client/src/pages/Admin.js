@@ -13,7 +13,7 @@ class Admin extends Component {
   render() {
     return (
       <BrowserRouter>
-      <div className="App" style={{ backgroundColor:  '#b1b1b1'}}>
+      <div className="App" style={{ backgroundColor:  '#ffffff'}}>
       <AdminNavbar/>
       {/* <Side /> */}
       <img src={power} alt="You've got the power" style={{width: '100%'}} />

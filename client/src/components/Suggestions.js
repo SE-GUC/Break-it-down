@@ -18,14 +18,16 @@ class Suggestions extends Component {
     .then(res=>{
       const coworkingSpace=res.data
       this.setState({coworkingSpace:coworkingSpace,isLoading:false})})
-      .catch(error => this.setState({ error, isLoading: false }));
+      .catch(error =>{ this.setState({ error, isLoading: false })
+      alert(error.message )
+    });
 
   }
 
   render() {
     return (
-      <div className="Suggestions" style={{ backgroundColor:  '#FFFFEB'}}>
-      <h1 style={{color:'#005a73',textAlign:'center'}}>Coworking Space Suggestions</h1>
+      <div className="Suggestions" style={{ backgroundColor:  '#ffffff'}}>
+      <h1 style={{color:'#000000',textAlign:'center'}}>Coworking Space Suggestions</h1>
       <SuggestionItems coworkingSpace={this.state.coworkingSpace} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>

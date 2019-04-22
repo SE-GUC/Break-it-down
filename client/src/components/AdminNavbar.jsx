@@ -33,6 +33,7 @@ class NavbarPage extends Component {
   render() {
     return (
       <Navbar style={{ backgroundColor: "#ffffff" }}>
+      <Adminside />
         <Nav className="mr-auto">
           <img style={{ width: "33%", height: "10%" }} src={Logo2} />
         </Nav>
@@ -50,10 +51,6 @@ class NavbarPage extends Component {
           </Button>
         </Form>
 
-        <Nav.Link href="#home">SignOut</Nav.Link>
-        <Nav.Link href="">notifications</Nav.Link>
-
-        <Adminside />
         <footer
           class="page-footer font-small blue"
           style={{

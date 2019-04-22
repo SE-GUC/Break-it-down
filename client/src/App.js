@@ -59,6 +59,11 @@ import CAEvents from "./components/CAMyEvents";
 import ChangePass from './pages/ChangePass';
 
 class App extends Component {
+  
+  componentWillMount() {
+    document.title = 'Lirten Hub'
+  }
+
   render() {
     return (
       <Router>
@@ -124,7 +129,7 @@ class App extends Component {
 
           <Route
             exact
-            path="/user/updateRoomBooking"
+            path="/user/updateRoomBooking/:BID"
             component={UpdateRoomBooking}
           />
 

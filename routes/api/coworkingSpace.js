@@ -711,86 +711,164 @@ catch(error) {
 })
 
 //Update coworking space booking, to request a larger room. I am assuming that when we call this route the booking exists.   
-router.put('/update/booking/:bid/:uid', async(req, res)=>{
-    try
-    {
-        const bookingid=parseInt(req.params.bid);
+router.put("/update/booking/:bid", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      try {
+        const bookingid = objectid(req.params.bid);
 
-        const userid=req.params.uid;
+        const userid = objectid(authorizedData.id);
 
-        const newCapacity=parseInt(req.body.capacity);
-      
-        const booking=await User.find({'_id':userid,'RoomsBooked.bookingID': bookingid},{RoomsBooked:1,_id:0}).lean()
+        const newCapacity = parseInt(req.body.capacity);
 
-        let myBooking=undefined;
+        const booking = await User.find(
+          { _id: userid, "RoomsBooked.bookingID": bookingid },
+          { RoomsBooked: 1, _id: 0 }
+        ).lean();
 
-        for(var i=0;i<booking[0].RoomsBooked.length;i++){
-          if(booking[0].RoomsBooked[i].bookingID===bookingid){
-            myBooking=booking[0].RoomsBooked[i];
+        let myBooking = undefined;
+
+        for (var i = 0; i < booking[0].RoomsBooked.length; i++) {
+          if (objectid(booking[0].RoomsBooked[i].bookingID).equals(bookingid)) {
+            myBooking = booking[0].RoomsBooked[i];
             break;
           }
         }
 
         //find empty room in same coworking space with same date,time and with specified capacity or greater
-        const room= await User.findOne({$and:[{'_id':myBooking.coworkingSpaceID},
-        {'rooms.schedule.reserved':false},{'rooms.schedule.Date':myBooking.Date},
-        {'rooms.capacity':{$gte:newCapacity}},{'rooms.schedule.time':myBooking.time}]},{rooms:1,_id:0}).lean()
+        const room = await User.findOne(
+          {
+            _id: myBooking.coworkingSpaceID,
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { reserved: false } } }
+            },
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { Date: myBooking.Date } } }
+            },
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { time: myBooking.time } } }
+            },
+            rooms: { $elemMatch: { capacity: { $gte: newCapacity } } }
+          },
+          { rooms: 1, _id: 0 }
+        ).lean();
 
         let myRoom;
+        let mySchedule;
 
-        for(var j=0;j<room.rooms.length;j++){
-          if(room.rooms[j].schedule.reserved===false && room.rooms[j].capacity>=newCapacity 
-            && room.rooms[0].schedule.time===myBooking.time && room.rooms[0].schedule.Date.getTime()===myBooking.Date.getTime()){
-            myRoom=room.rooms[j];
-            break;
+        for (var j = 0; j < room.rooms.length; j++) {
+          for (var z = 0; z < room.rooms[j].schedule.length; z++) {
+            if (
+              room.rooms[j].schedule[z].reserved === false &&
+              room.rooms[j].capacity >= newCapacity &&
+              room.rooms[j].schedule[z].time === myBooking.time &&
+              room.rooms[j].schedule[z].Date.getTime() ===
+                myBooking.Date.getTime()
+            ) {
+              myRoom = room.rooms[j];
+              mySchedule=room.rooms[j].schedule[z];
+              break;
+            }
           }
         }
-
-        if(!myRoom)
-         return res.status(404).send({error:'Could not find an empty room with the desired capacity in the same coworking space'})
-
-         var mongoose=require('mongoose')
     
-        const updtbooking=await User.updateOne({'_id':userid,'RoomsBooked.bookingID': bookingid}, {$set:{'RoomsBooked.$.roomID':myRoom.id,
-        'RoomsBooked.$.scheduleID':myRoom.schedule.id}});
+        if (!myRoom || myRoom === null || myRoom === undefined)
+          return res .status(404) .send({ error:
+                "Could not find an empty room with the desired capacity in the same coworking space"});
 
-        const updtOldRoom=await User.updateOne({'_id':myBooking.coworkingSpaceID,'rooms.id':myBooking.roomID},
-        {$set:{'rooms.$.schedule.reserved':false}})
+        var mongoose = require("mongoose");
+        
+         const updtbooking = await User.findOneAndUpdate(
+          { _id: userid, "RoomsBooked.bookingID": bookingid },
 
-        const updtNewRoom=await User.updateOne({'_id':myBooking.coworkingSpaceID,'rooms.id':myRoom.id},
-        {$set:{'rooms.$.schedule.reservedBy':mongoose.Types.ObjectId(userid),'rooms.$.schedule.reserved':true}});
-      
-        res.json({msg:'Your room booking is successfully updated.'})
+          {$set: {
+              "RoomsBooked.$[i].roomID": myRoom._id,
+              "RoomsBooked.$[i].scheduleID": mySchedule._id,
+              "RoomsBooked.$[i].roomName": "Room"+myRoom.roomNumber
+          }},
+        {arrayFilters: [
+                { "i.bookingID": (bookingid) }]});
 
+        const updtOldRoom = await User.findOneAndUpdate( 
+          {  _id: myBooking.coworkingSpaceID,"rooms._id": myBooking.roomID},
+          { $set: { 
+            "rooms.$[i].schedule.$[j].reserved": false } },
+            {arrayFilters: [
+              { "i._id": (myBooking.roomID) },
+              { "j._id": (myBooking.scheduleID)}
+          ]}
+        );
+
+        const updtNewRoom = await User.findOneAndUpdate(
+          { _id: myBooking.coworkingSpaceID, "rooms._id": myRoom._id },
+          {
+            $set: {
+              "rooms.$[i].schedule.$[j].reservedBy": mongoose.Types.ObjectId(userid),
+              "rooms.$[i].schedule.$[j].reserved": true
+            } },
+            {arrayFilters: [
+              { "i._id": (myRoom._id) },
+              { "j._id": (mySchedule._id)}
+          ]}
+        );
+
+        res.json({ msg: "Your room booking is successfully updated." });
+      } catch (error) {
+        console.log(error);
+      }
     }
-    catch(error) {
-        console.log(error)
-    }  
+  });
 });
-
 
 
 //view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  tested
 //get only empty rooms?
-router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
-    try{
-    const eventid=parseInt(req.params.eid)
+router.get("/CoworkingSpace/Suggestions/:eid", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      res.sendStatus(403);
+    } else {
+      try {
+        const eventid = parseInt(req.params.eid);
 
-    const event=await users.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+        const event = await users.find(
+          { "events.id": eventid },
+          { events: { $elemMatch: { id: eventid } } }
+        );
 
-    const suggestions=await users.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
-    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
-    'address':event[0].events[0].location},
-    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+        const suggestions = await users.find(
+          {
+            "rooms.capacity": { $gte: event[0].events[0].capacity },
+            "rooms.schedule.Date": event[0].events[0].date,
+            "rooms.schedule.time": event[0].events[0].time,
+            "rooms.schedule.reserved": false,
+            address: event[0].events[0].location
+          },
+          {
+            name: 1,
+            email: 1,
+            address: 1,
+            website: 1,
+            phoneNumber: 1,
+            description: 1,
+            facilities: 1,
+            rooms: 1
+          }
+        );
 
-    if(suggestions.length===0)return res.status(404).send({error: 'No room suggestions found'})
+        if (suggestions.length === 0)
+          return res.status(404).send({ error: "No room suggestions found" });
 
-    res.json(suggestions)
- 
-    }catch(error){
-        return res.status(404).send({error: 'No room suggestions found'})
+        res.json(suggestions);
+      } catch (error) {
+        return res.status(404).send({ error: "No room suggestions found" });
+      }
     }
-})
+  });
+});
 
 
 

@@ -11,27 +11,23 @@ class ViewRoomBookings extends Component {
     error:null
   }
 
-  update = (id) => {
-    
-  }
-
-
-  //id will change to generic type when linking with authorization
   componentDidMount(){
-    axios.get('/api/partner/roombookings/5c9113101c9d440000a926cc')
+    axios.get('/api/partner/roombookings')
     .then(res=>{
       const roomBooking=res.data
       this.setState({roomBooking:roomBooking,isLoading:false})})
-      .catch(error => this.setState({ error, isLoading: false }));
-
+      .catch(error => {
+        this.setState({ error, isLoading: false })
+      alert(error.message )
+      });
   }
 
   render() {
     return (
-      <div className="Rooms Bookings" style={{ backgroundColor:  '#FFFFEB'}}>
-      <h1 style={{color:'#005a73',textAlign:'center'}}>Room Bookings</h1>
+      <div className="Rooms Bookings" style={{ backgroundColor:  '#ffffff'}}>
+      <h1 style={{color:'#000000',textAlign:'center'}}>Room Bookings</h1>
       <RoomBookingItems roomBooking={this.state.roomBooking} 
-      isLoading={this.state.isLoading}  error={this.state.error} update={this.update}/>
+      isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>
     );
   }

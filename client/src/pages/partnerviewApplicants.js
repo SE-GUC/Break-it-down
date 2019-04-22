@@ -17,20 +17,15 @@ class partnerviewApplicants extends Component {
 
   // Retrieves the list of items from the Express app
   getDescription = async () => {
-    const idT = this.props.match.params.TID;
+    const idT =  this.props.match.params.TID;
     const TID = this.props.match.params.TID;
     await fetch(`/api/partner/view/${TID}`)
       .then(res => res.json())
-      .then(descript => this.setState({ descript }))
-      .catch(error => {
-        alert("Your session has expired. Please login again");
-        window.location = "/";
-        return error;
-      });
+      .then(descript => this.setState({ descript }));
   };
 
   render() {
-    const idT = this.props.match.params.TID;
+    const idT =  this.props.match.params.TID;
     let descript = this.state.descript || {};
 
     {
@@ -41,7 +36,9 @@ class partnerviewApplicants extends Component {
         <PartnerSidenav />
         <br />
         <h1>Your Task's applicants </h1>
-        {descript.map(el => {
+        {descript.length ? (
+         <div>
+                   {descript.map(el => {
           return (
             <ListGroup>
               <div key={el.applicantID}>
@@ -65,14 +62,13 @@ class partnerviewApplicants extends Component {
                     accepted: {JSON.stringify(el.accepted)}{" "}
                     {"                         "}
                     {"          "}
-                    <Link
-                      to={`/myTasks/AcceptApplicant/${idT}/${el.applicantID}`}
-                    >
-                      <button type="button" class="btn btn-success">
-                        Accept applicant
-                      </button>
+                    <Link to={`/myTasks/AcceptApplicant/${idT}/${el.applicantID}`}>
+                    <button type="button" class="btn btn-success">
+                      Accept applicant
+                    </button>
                     </Link>
                   </ListGroup.Item>
+                  
                 </span>
                 <span>
                   <ListGroup.Item variant="info">
@@ -84,13 +80,21 @@ class partnerviewApplicants extends Component {
             </ListGroup>
           );
         })}
-        <div
+
+        </div>
+     ) : (
+  <div>
+    <h2>{"there is consultancy agency Assigned to accept applicants"}</h2>
+    <div
           class="alert alert-secondary"
           role="alert"
           style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         >
           Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
         </div>
+  </div>
+)}
+
       </div>
     );
   }
@@ -98,9 +102,4 @@ class partnerviewApplicants extends Component {
 
 export default partnerviewApplicants;
 
-// <ListGroup>
-// <ListGroup.Item variant="applicantID">applicantID:  { descript.applicantID }</ListGroup.Item>
-// <ListGroup.Item variant="accepted">accepted:  { JSON.stringify(descript.accepted) }</ListGroup.Item>
-// <ListGroup.Item variant="assigned">assigned:  { JSON.stringify(descript.assigned) }</ListGroup.Item>
-// </ListGroup>
-// <br/>
+

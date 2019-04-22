@@ -19,7 +19,6 @@ class List extends Component {
       res: "",
       time: null,
       date: null,
-      mID : "5ca00f9a1c9d4400009a80cf"
     };
 
   }
@@ -60,7 +59,7 @@ class List extends Component {
     // console.log("sID: "+ sID);
     // console.log("mID: "+this.state.mID)
     fetch(
-      `/api/member/cospace/rooms/${this.state.mID}/${coID}/${rID}/${sID}`, {
+      `/api/partner/cospace/rooms/${coID}/${rID}/${sID}`, {
         method: "PUT",
         body: JSON.stringify({}),
         headers: {
