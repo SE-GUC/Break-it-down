@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const tokenKey = require("../../config/keys").secretOrKey;
 var store = require("store");
+var CronJob = require('cron').CronJob;
 
 //--------------------models--------------------
 const users = require("../../models/UserProfile");
@@ -318,13 +319,52 @@ function sendMailToUsers(recieverEmail, subjectff, textxxx) {
     //   text: "Hello world?", // plain text body
     //  html: "<b>Hello world?</b>" // html body
   };
-
   transporter.sendMail(mailOptions, function(error, info) {
     if (error) {
       console.log("something went wrong please try again later ");
     } else {
+      console.log(recieverEmail);
       console.log("email sent successfully");
     }
+  });
+}
+
+async function sendNotification(Id) {
+  const ID = ObjectId(Id);
+  const user = await users.findOne(ID);
+  const notif = user.notifications;
+  console.log(notif);
+  notif.forEach(element => {
+    notifier.notify(
+      {
+        title: "New Notification",
+        message: element.notificationContent,
+        //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
+        sound: true, // Only Notification Center or Windows Toasters
+        wait: true // Wait with callback, until user action is taken against notification
+      },
+      function(err, response) {}
+    );
+
+    console.log(element.notifID);
+    notifier.on("click", function(notifierObj, options) {
+      users.updateOne(
+        { _id: ID },
+        {
+          $set: {
+            "notifications.$[i].read": true,
+            "notifications.$[i].unread": false
+          }
+        },
+        { arrayFilters: [{ "i.notifID": element.notifID }] },
+        function(err, model) {}
+      );
+
+      // element.read= true,
+      // element.unread= false
+      // // Triggers if `wait: true` and user clicks notification
+      //  console.log('The user clicked on the Notification!');
+    });
   });
 }
 
@@ -345,18 +385,7 @@ router.put("/NotifyUsersToSignContract/:PID", async (req, res) => {
         console.log(email);
   
         const { time, date, location } = req.body;
-  
-        const schema = {
-          time: Joi.string().required(),
-          date: Joi.string().required(),
-          location: Joi.string().required()
-        };
-  
-        const result = Joi.validate(req.body, schema);
-  
-        if (result.error) {
-          return res.send(result.error.details[0].message);
-        } else {
+
           const message = `Hi ${name}! 
                           Thanks for signing up with LirtenHub.
                           To verify your account please meet with one of our team on ${date} at ${time} in ${location}.
@@ -374,7 +403,7 @@ router.put("/NotifyUsersToSignContract/:PID", async (req, res) => {
               res.json("email sent successfully");
             }
           );
-        }
+        
       }
      else{
        res.sendStatus(403);
@@ -386,7 +415,6 @@ router.put("/NotifyUsersToSignContract/:PID", async (req, res) => {
 });
 
 //--------------------------------------notify users with expiry of their contract-------------------------------------------
-
 async function deactivateAccount(id) {
   const activate = false;
   users.updateOne({ _id: id }, { $set: { activation: activate } }, function(
@@ -412,7 +440,7 @@ async function checkExpiryDatePartner(currentDate) {
   userIds.forEach(element => {
     const activatedOn = element.membershipExpiryDate;
     const difference = Noofmonths(new Date(activatedOn), new Date(currentDate));
-    console.log(difference, element.name);
+  //  console.log(difference, element.name);
 
     if (difference === 11) {
       // console.log('11 months passed')
@@ -451,7 +479,7 @@ async function checkExpiryDateMember(currentDate) {
   userIds.forEach(element => {
     const activatedOn = element.membershipExpiryDate;
     const difference = Noofmonths(new Date(activatedOn), new Date(currentDate));
-    console.log(difference, element.name);
+    //console.log(difference, element.name);
 
     if (difference === 11) {
       // console.log('11 months passed')
@@ -490,7 +518,7 @@ async function checkExpiryDateCS(currentDate) {
   userIds.forEach(element => {
     const activatedOn = element.membershipExpiryDate;
     const difference = Noofmonths(new Date(activatedOn), new Date(currentDate));
-    console.log(difference, element.name);
+    //console.log(difference, element.name);
 
     if (difference === 11) {
       // console.log('11 months passed')
@@ -529,7 +557,7 @@ async function checkExpiryDateCA(currentDate) {
   userIds.forEach(element => {
     const activatedOn = element.membershipExpiryDate;
     const difference = Noofmonths(new Date(activatedOn), new Date(currentDate));
-    console.log(difference, element.name);
+    //console.log(difference, element.name);
 
     if (difference === 11) {
       // console.log('11 months passed')
@@ -566,19 +594,30 @@ async function checkExpiryDateCA(currentDate) {
 var todate = new Date();
 var date = todate.getFullYear() + "-" + (todate.getMonth() + 1) + "-" + todate.getDate();
 
-// const job = cron.job('* * * * * *', () =>
-//       console.log("--------Partner--------"),
-//       checkExpiryDatePartner(todate),
-//       console.log("--------Member--------"),
-//       checkExpiryDateMember(todate),
-//       console.log("----------CS----------"),
-//       checkExpiryDateCS(todate),
-//       console.log("----------CA----------"),
-//       checkExpiryDateCA(todate)
+  new CronJob('0,0  * * * 5', function() {
+      console.log("--------Partner--------"),
+      checkExpiryDatePartner(todate)
+      console.log("--------Member--------"),
+      checkExpiryDateMember(todate),
+      console.log("----------CS----------"),
+      checkExpiryDateCS(todate),
+      console.log("----------CA----------"),
+      checkExpiryDateCA(todate)
+  }, null, true, 'America/Los_Angeles');
 
-// );
-// job.start()
-
+  new CronJob('0,30  * * * *', function() {
+    jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+      if (err) {
+        //If error send Forbidden (403)
+        console.log("ERROR: Could not connect to the protected route");
+       // res.sendStatus(403);
+      } else {
+        const ID = ObjectId(authorizedData.id);
+        //sendNotification(ID)
+      }
+    })
+  }, null, true, 'America/Los_Angeles');
+  
 
 //--------------------------- admin check task description ---------------------------------------------
 router.get("/CheckTaskDescriptions/:PID/:TID", async (req, res) => {
@@ -616,17 +655,30 @@ router.get("/CheckTaskDescriptions/:PID/:TID", async (req, res) => {
 // partner id and task id are passed to the method to be able to access the required task to be checked  whether its approved or not
 
 router.get("/getUnapprovedTasks", async (req, res) => {
-  const user = await users.find({type:'partner'})
-  var hell=[]
-  for(var i=0; i<user.length; i++ ){
-    for(var j=0;j<user[i].tasks.length;j++){
-      if(user[i].tasks[j].approved===false){
-         hell.push(user[i].tasks[j])
-      }    
-    }
-  }
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      if(authorizedData.type ==="admin"){
+          const user = await users.find({type:'partner'})
+          var hell=[]
+          for(var i=0; i<user.length; i++ ){
+            for(var j=0;j<user[i].tasks.length;j++){
+              if(user[i].tasks[j].approved===false){
+                hell.push(user[i].tasks[j])
+              }    
+            }
+          }
   res.json(hell)
+}
+else{
+  res.sendStatus(403);
+}
 
+}
+});
 });
 
 router.put("/ApproveTasks/:PID/:TID", async (req, res) => {
@@ -637,6 +689,7 @@ router.put("/ApproveTasks/:PID/:TID", async (req, res) => {
       res.sendStatus(403);
     } else {
       if(authorizedData.type === "admin"){
+        const adminID = ObjectId(authorizedData.id);
         const id = req.params.PID;
         const PartID = ObjectId(id);
         const partner = await users.findOne(PartID);
@@ -667,8 +720,8 @@ router.put("/ApproveTasks/:PID/:TID", async (req, res) => {
             );
             
             const name =task_to_post.name
-            notify(PartID, `Task ${name} was approved!`);
-      
+            notify("", PartID, `Task ${name} was approved!`);
+
             const partners = await users.findOne(PartID);
             const x = partners.tasks;
             const task_to_post2 = x.find(task => task.taskID === Task_id);
@@ -694,6 +747,7 @@ router.delete("/DisapproveTasks/:PID/:TID", async (req, res) => {
       res.sendStatus(403);
     } else {
       if(authorizedData.type === "admin"){
+        const adminID = ObjectId(authorizedData.id);
         const PartID = ObjectId(req.params.PID);
         const partner = await users.findOne(PartID);
         const Task_id = parseInt(req.params.TID);
@@ -716,7 +770,7 @@ router.delete("/DisapproveTasks/:PID/:TID", async (req, res) => {
 
             const name =task_to_post.name
    
-            notify(PartID, `Task ${name} was not approved!`);
+            notify("", PartID, `Task ${name} was not approved!`);
 
             const partners = await users.findOne(PartID);
             const x = partners.tasks;
@@ -764,6 +818,30 @@ router.put("/ActivateAccounts/:MID", async (req, res) => {
         const user = await users.findOne({ _id: MemID });
         res.json("account activated successfully")
         console.log("account activated successfully")
+
+        const email = user.email;
+        const name = user.name;
+        console.log(email);
+
+        const message = `Hi ${name}! 
+                        Your account with LirtenHub has been successfully activated.
+                        Working hard becomes a habit, a serious kind of fun.
+                        You get self-satisfaction from pushing yourself to the limit, knowing that all the effort is going to pay off.
+                        So don't give up ^-^. `;
+  
+  
+        sendMailToUsers(
+          email,
+          "Urgent! LirtenHub Account Activation",
+          message,
+          function(err, data) {
+            if (err) {
+              res.json(err);
+            }
+            res.json("email sent successfully");
+          }
+        );
+
       }
       else{
         res.sendStatus(403);
@@ -871,7 +949,11 @@ async function assignMembers(){
                 { "i.taskID": Task_id },
                 { "j.applicantID": applicantID  }
           ]});
-    
+
+          const u = await users.findOne({ _id: applicantID });
+          notify( "", PartID, `${u.name} was assigned to task: ${element2.name}`)
+          notify( "", applicantID, `You were assigned to task: ${element2.name}`)
+
           const partner = await users.findOne({ _id: PartID });
 
           if (partner === null)
@@ -884,13 +966,15 @@ async function assignMembers(){
                 { _id: applicantID },
                 { $push: { memberTasks : t } },
                 function(err, model) {});
+                
           }
+
         }}}
       });
       flag = true;
     }});
 }}
-//assignMembers();
+assignMembers();
 
 //---------------------------------admin assigning the chosen member by partner as an engine with no routes-------------------- 
 async function assignConsultancyAgency(){
@@ -947,6 +1031,10 @@ async function assignConsultancyAgency(){
                 { "j.consultancyID": consultancyID  }
             ]});
   
+            const u = await users.findOne({ _id: consultancyID });
+            notify( "", PartID, `${u.name} Consultancy Agency was assigned to task: ${element2.name}`)
+            notify( "", consultancyID, `You were assigned to task: ${element2.name}`)
+  
             const partner = await users.findOne({ _id: PartID });
             if (partner === null)
               res.json("either the partner or the task id is not correct");
@@ -964,43 +1052,107 @@ async function assignConsultancyAgency(){
       flag = true;
     }});
 }}
-//assignConsultancyAgency();
+assignConsultancyAgency();
 
 //---------------------------------send push notification to users-------------------- 
 async function notify(senderIDs, Id, content) {
-  const senderID = ObjectId(senderIDs);
-  const sender = await users.findOne(senderID);
-  const senderName = sender.name
-  const ID = ObjectId(Id);
-  const user = await users.findOne(ID);
-  if (user === null) {
-    res.json("the database has no partner with the given ID");
-  } else {
-    const notificationContent = content;
-    const read = false;
 
-    newNotification = {
-      senderName,
-      notificationContent,
-      read
-    };
+   //==== if notification sent from admin===//
 
-   // console.log(newNotification)
-    await users.updateOne(
-      { _id: ID },
-      { $push: { notifications: newNotification } },
-      function(err, model) {}
-    );
+  if(senderIDs === ""){
+    const senderName = "LirtenHub"
+    const ID = ObjectId(Id);
+    const user = await users.findOne(ID);
+    if (user === null) {
+      res.json("the database has no partner with the given ID");
+    } else {
+      const notificationContent = content;
+      const read = false;
+  
+      newNotification = {
+        senderName,
+        notificationContent,
+        read
+      };
+        await users.updateOne(
+        { _id: ID },
+        { $push: { notifications: newNotification } },
+        function(err, model) {}
+      );
+  
+      const user2 = await users.findOne({ _id: ID });
+      const not2 = user2.notifications;
+      console.log(not2);
+    }
+  }
+     //==== if notification sent to admin===//
+  else{
+    if(Id === ""){
+        const senderID = ObjectId(senderIDs);
+        const sender = await users.findOne(senderID);
+        const senderName = sender.name
+        const admins = await users.find({type:'admin'});
 
-    const user2 = await users.findOne({ _id: ID });
-    const not2 = user2.notifications;
-    console.log(not2);
+          const notificationContent = content;
+          const read = false;
+
+          newNotification = {
+            senderName,
+            notificationContent,
+            read
+          };
+
+          admins.forEach(async(element) => {
+            await users.updateOne(
+              { _id: element._id },
+              { $push: { notifications: newNotification } },
+              function(err, model) {}
+            );
+          });  
+      }
+
+       //==== if notification does not include the admin===//
+      else{
+
+      const senderID = ObjectId(senderIDs);
+      const sender = await users.findOne(senderID);
+      const senderName = sender.name
+      const ID = ObjectId(Id);
+      const user = await users.findOne(ID);
+      if (user === null) {
+        res.json("the database has no partner with the given ID");
+      } else {
+        const notificationContent = content;
+        const read = false;
+
+        newNotification = {
+          senderName,
+          notificationContent,
+          read
+        };
+        await users.updateOne(
+          { _id: ID },
+          { $push: { notifications: newNotification } },
+          function(err, model) {}
+        );
+
+        const user2 = await users.findOne({ _id: ID });
+        const not2 = user2.notifications;
+        console.log(not2);
+      }
+    }
   }
 }
-// notify( "5c9537e61c9d4400004158be","5c9114781c9d440000a926ce", "sendinggggg")
+
+ // notify(sender id,  reciever id , message)
+ // for notifying the admin --> reciever id--> ""
+ notify( "","5c9114781c9d440000a926ce", "admin to partner")
+ notify( "5c9114781c9d440000a926ce","5cba37e26f7e976658a4cb00", "partner to member")
+ notify( "5c9114781c9d440000a926ce","", "partner to admin")
 
 //---------------------------------get user notification------------------------------- 
-router.get('/getNotifications/:id', async (req, res)=>{
+
+router.get('/getNotifications', async (req, res)=>{
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
     if (err) {
       //If error send Forbidden (403)
@@ -1009,28 +1161,15 @@ router.get('/getNotifications/:id', async (req, res)=>{
     } 
     
     else {
-      if(authorizedData.type === "admin"){
-        const id = req.params.id;
-        const user = await users.findOne({ _id: id });
-        if(user === undefined || user.length === 0){
-          res.sendStatus(404)
-
-        }
-        else{
+        const id = ObjectId(authorizedData.id) 
+        const user = await users.findOne(id);
         const notif = user.notifications
         console.log(notif)
         res.json(notif)
-        }
 
-      }
-      else{
-        res.sendStatus(403);
-      }
     }
   });
 })
-
-
 //===================================================================================================================================
 //===================================================================================================================================
 
