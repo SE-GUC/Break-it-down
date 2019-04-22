@@ -14,6 +14,17 @@ class UpdateRoomBooking extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  auth = async () => {
+    await fetch(
+      `/api/coworkingSpace/viewCoworkingSpace`)
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  };
+
   onSubmit(e) {
     e.preventDefault();
     const bid = this.props.match.params.BID;
@@ -28,6 +39,9 @@ class UpdateRoomBooking extends Component {
         this.setState({ error });
         alert(error.message + ". Could not update room booking !");
       });
+  }
+  componentDidMount() {
+    this.auth();
   }
 
   render() {
