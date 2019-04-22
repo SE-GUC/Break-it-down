@@ -12,7 +12,19 @@ class MainUpdates extends Component {
     error:null
   }
 
+ auth = async () => {
+    await fetch(
+      `/api/coworkingSpace/viewCoworkingSpace`)
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  };
+
   componentDidMount(){
+    this.auth();
     axios.get('/api/admin/viewUpdates')
     .then(res=>{
       const updates=res.data
