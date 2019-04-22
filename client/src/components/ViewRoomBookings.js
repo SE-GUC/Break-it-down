@@ -10,8 +10,20 @@ class ViewRoomBookings extends Component {
     isLoading:true,
     error:null
   }
+  
+  auth = async () => {
+    await fetch(
+      `/api/coworkingSpace/viewCoworkingSpace`)
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  };
 
   componentDidMount(){
+      this.auth();
     axios.get('/api/partner/roombookings')
     .then(res=>{
       const roomBooking=res.data
