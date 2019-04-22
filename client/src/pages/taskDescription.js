@@ -1,15 +1,9 @@
 import React, { Component } from "react";
-import {ListGroup} from "react-bootstrap";
 import {Button} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {Card} from "react-bootstrap";
 import {CardDeck} from "react-bootstrap";
-import {Form} from "react-bootstrap";
-import {Label} from "reactstrap";
-import {Input} from "reactstrap";
-import {FormGroup} from "reactstrap";
 import axios from "axios";
-import {Grid} from '@material-ui/core/Grid'
 
 class taskDescription extends Component {
   // Initialize the state
@@ -20,7 +14,21 @@ class taskDescription extends Component {
     };
   }
 
-  componentDidMount() {
+  auth = async () => {
+    await fetch(
+      `/api/admin/getUnapprovedTasks/`
+    )
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+    
+  };
+
+  componentWillMount() {
+    this.auth();
     this.getDescription();
   }
 
@@ -41,13 +49,13 @@ class taskDescription extends Component {
         })
   }
   getDescription = async () => {
-    await fetch(`http://localhost:4000/api/admin/getUnapprovedTasks`)
+    await fetch(`/api/admin/getUnapprovedTasks`)
     .then(res => res.json())
     .then(descript => this.setState({ descript }))
-    // .catch(error =>{
-    //   this.setState({error})
-    //   alert(error.message+". No Unapproved tasks were found!");
-    // })
+    .catch(error =>{
+      this.setState({error})
+      alert(error.message+". No Unapproved tasks were found!");
+    })
   };
 
   render() {
@@ -67,8 +75,8 @@ class taskDescription extends Component {
                             <Card.Title> {d.name} </Card.Title>
                             <Card.Text> {d.description} </Card.Text>
                         </p>
-                    <Button variant="info"onClick={this.DisapproveTasks.bind(this, d.pid, d.taskID)}>Disapprove</Button> {         }
-                    <Button variant="info"onClick={this.ApproveTasks.bind(this, d.pid, d.taskID)}>Approve</Button> 
+                    <Button variant="dark"onClick={this.DisapproveTasks.bind(this, d.pid, d.taskID)}>Disapprove</Button> {         }
+                    <Button variant="warning"onClick={this.ApproveTasks.bind(this, d.pid, d.taskID)}>Approve</Button> 
                   </Card.Body>
                 </Card>
                 )
@@ -76,9 +84,17 @@ class taskDescription extends Component {
         </CardDeck>
         <br/>
 
-        <Link to={'/'}>
-           <Button variant="info">Done </Button>
+        <Link to={'/admin'}>
+           <Button variant="warning">Done </Button>
         </Link> 
+
+        <div
+          class="alert alert-secondary"
+          role="alert"
+          style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+        >
+          Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
+        </div>
       </div>
      
     );
