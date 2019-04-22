@@ -1,5 +1,5 @@
 import React from "react";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 
 const UserForm = props => {
   return (

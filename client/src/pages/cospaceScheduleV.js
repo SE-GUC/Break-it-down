@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import Side from "../components/BasicSideNavBar";
 
 class List extends Component {
   // Initialize the state
@@ -85,6 +86,7 @@ class List extends Component {
     const rID = this.props.match.params.rID;
     return (
       <div className="App">
+      <Side />
         <h1>schedules</h1>
         {/* Check to see if any items are found*/}
         {list.length ? (
@@ -115,7 +117,13 @@ class List extends Component {
                             class="list-group-item list-group-item-action"
                             disabled={el.reserved}
                           >
-                            {" Time: " + el.time}
+                            {"Start time: " + el.time}
+                          </a>
+                          <a
+                            class="list-group-item list-group-item-action"
+                            disabled={el.reserved}
+                          >
+                            {"End time: " + el.endTime}
                           </a>
                           <a
                             class="list-group-item list-group-item-action"

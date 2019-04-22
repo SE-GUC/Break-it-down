@@ -8,6 +8,7 @@ import {Form} from "react-bootstrap";
 import {Label} from "reactstrap";
 import {Input} from "reactstrap";
 import {FormGroup} from "reactstrap";
+// import Side from "../components/BasicSideNavBar";
 
 var Mongoose = require("mongoose");
 var ObjectId = Mongoose.Types.ObjectId;
@@ -36,7 +37,7 @@ class AdminNotifyToSignContract extends Component {
   console.log(e.target.elements.date.value)
   console.log(e.target.elements.time.value)
   console.log(e.target.elements.time.value)
-    await fetch(`http://localhost:4000/api/admin/NotifyUsersToSignContract/${Id}`, {
+    await fetch(`/api/admin/NotifyUsersToSignContract/${Id}`, {
       method: 'PUT',
        body: JSON.stringify(databody),
        headers: {'Content-Type': 'application/json' },
@@ -50,7 +51,7 @@ class AdminNotifyToSignContract extends Component {
   }
 
   getUsers = async () => {
-    await fetch(`http://localhost:4000/api/admin/getUnregisteredUsers`)
+    await fetch(`/api/admin/getUnregisteredUsers`)
     .then(res => res.json())
     .then(users => this.setState({ users }));
 
@@ -63,6 +64,7 @@ class AdminNotifyToSignContract extends Component {
     return (
       
       <div className="App">
+      {/* <Side /> */}
         <h1> Signed up Users who still didn't sign the contract  </h1>
         <CardDeck>
         { users.map((user,i)=>

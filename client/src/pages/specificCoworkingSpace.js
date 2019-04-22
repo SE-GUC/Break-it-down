@@ -11,6 +11,7 @@ import Fa from "../components/cospaceFacilitiesV";
 import Desc from "../components/CospaceDescV";
 import Rooms from "../pages/cospcaeAllRoomsV"
 import Basics from "../components/CospaceBasicInfoV"
+import Side from "../components/BasicSideNavBar";
 
 import {
   faPhone,
@@ -171,6 +172,7 @@ class List extends Component {
 
     return (
       <div>
+        <Side />
         <style type="text/css" >
           {`
     .btn-flat {

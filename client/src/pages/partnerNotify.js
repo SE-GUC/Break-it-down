@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 
 class partnerNotify extends Component {
   constructor(props) {

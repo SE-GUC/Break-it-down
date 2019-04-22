@@ -1,22 +1,6 @@
 import React, { Component } from "react";
 import Shared from "../../src/Shared.jpg";
-import {
-    Jumbotron,
-    Button,
-    Badge,
-    Card,
-    Row,
-    Container,
-    Col,
-    ButtonGroup
-  
-  } from "react-bootstrap";
   import {
-    faPhone,
-    faAt,
-    faMapMarkerAlt,
-    faCheck,
-    faGlobe,
     faPencilAlt
   } from "@fortawesome/free-solid-svg-icons";
   import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -76,7 +60,7 @@ class CoDesc extends Component {
     };
     console.log(databody)
     const coID = this.state.coID;
-    fetch(`http://localhost:4000/api/coworkingspace/updateCospace/${coID}`, {
+    fetch(`/api/coworkingspace/updateCospace/${coID}`, {
       method: "PUT",
       body: JSON.stringify(databody),
       headers: {

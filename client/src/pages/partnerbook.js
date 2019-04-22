@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 
 class partnerbook extends Component {
   constructor(props) {

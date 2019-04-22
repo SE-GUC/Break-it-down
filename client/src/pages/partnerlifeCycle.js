@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ProgressBar } from "react-bootstrap";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 import First from "../components/Lifecyclefirst";
 import Second from "../components/LifecyclePosted";
 import Third from "../components/LifecycleAssigned";

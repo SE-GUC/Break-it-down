@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 
 class partnermyschedule extends Component {
   constructor(props) {

@@ -3,7 +3,7 @@ import profile from "../profile.svg";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
 import { Link } from "react-router-dom";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 import {
   faPhone,
   faAt,

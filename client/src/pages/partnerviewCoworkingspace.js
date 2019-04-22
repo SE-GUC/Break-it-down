@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 import { BrowserRouter as Route } from "react-router-dom";
-import PartnerSidenav from "../components/APartnerside";
+import PartnerSidenav from "../components/BasicSideNavBar";
 class partnerviewCoworkingSpaces extends Component {
   state = { list: [], type: "member" };
 
@@ -11,7 +11,7 @@ class partnerviewCoworkingSpaces extends Component {
   }
   // Retrieves the list of items from the Express app
   getList = async () => {
-    await fetch(`http://localhost:4000/api/partner/PartnerCoworkingspaces/`)
+    await fetch(`/api/partner/PartnerCoworkingspaces/`)
       .then(res => res.json())
       .then(list => this.setState({ list }))
       .catch(error => {

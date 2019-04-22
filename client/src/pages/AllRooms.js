@@ -115,7 +115,7 @@ class AllRooms extends Component {
     console.log(id);
     // const rID = this.props.match.params.rID;
     fetch(
-      `http://localhost:4000/api/coworkingspace//updateRoom/${coID}/${id}`,
+      `/api/coworkingspace//updateRoom/${coID}/${id}`,
       {
         method: "PUT",
         body: JSON.stringify(databody),
@@ -138,7 +138,7 @@ class AllRooms extends Component {
   getRooms = async () => {
     const coID = this.state.coID;
     console.log(coID);
-    await fetch(`http://localhost:4000/api/coworkingSpace/viewAllRooms/${coID}`)
+    await fetch(`/api/coworkingSpace/viewAllRooms/${coID}`)
       .then(res => res.json())
       .then(rooms => this.setState({ rooms }));
   };
@@ -180,7 +180,7 @@ class AllRooms extends Component {
     let databody = [c];
     console.log(databody);
 
-    fetch(`http://localhost:4000/api/coworkingSpace/deleteRoom/${coID}/${c}`, {
+    fetch(`/api/coworkingSpace/deleteRoom/${coID}/${c}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"

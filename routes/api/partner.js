@@ -104,6 +104,15 @@ router.get("/PartnerCoworkingspaces", async (req, res) => {
   const Users = await User.find({ type: "coworkingSpace" });
   res.json(Users);
 });
+
+
+//-------------------------------
+//Get All partners
+router.get("/viewAllProfile", async (req, res) => {
+  const r = await users.find({ type: "partner" });
+  res.json(r);
+});
+
 //-----------------------------------partner submit task description-------------------------------------------//  done all
 
 router.post("/createTask", async (req, res) => {

@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Side from "../components/BasicSideNavBar";
 
-import { BrowserRouter as Route } from "react-router-dom";
-import NavbarPage from "../components/Navbar";
-import MemberSidenav from "../components/MemberSidenav";
 class viewCoworkingSpaces extends Component {
   state = { list: [], type: "member" };
 

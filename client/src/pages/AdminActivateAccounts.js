@@ -6,6 +6,7 @@ import {Card} from "react-bootstrap";
 import {CardDeck} from "react-bootstrap";
 import {Form} from "react-bootstrap";
 import {FormGroup} from "reactstrap";
+// import Side from "../components/BasicSideNavBar";
 
 
 class AdminActivateAccounts extends Component {
@@ -31,7 +32,7 @@ class AdminActivateAccounts extends Component {
   }
 
   getDeactivatedUsers = async ()=> {
-      await fetch(`http://localhost:4000/api/admin/getDeactivatedAccounts`)
+      await fetch(`/api/admin/getDeactivatedAccounts`)
       .then(res => res.json())
       .then(users => this.setState({ users }));
   };
@@ -41,6 +42,7 @@ class AdminActivateAccounts extends Component {
 
     return (
       <div className="App" style={{alignItems:'center'}}>
+      {/* <Side /> */}
         <h1> Activate Accounts </h1>
             <h3>Deactivated Users</h3>
 

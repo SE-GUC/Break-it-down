@@ -1,14 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import {
-  Alert,
-  Container,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter
-} from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import Side from "../components/BasicSideNavBar";
 
 class List extends Component {
   // Initialize the state
@@ -23,34 +16,116 @@ class List extends Component {
       field: null,
       value: null,
       roomNumber: null,
-      res: ""
+      res: "",
+      time: null,
+      endTime:null,
+      date: null
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeDate = this.handleChangeDate.bind(this);
+    this.handleChangeStartTime = this.handleChangeStartTime.bind(this);
+    this.handleChangeEndTime = this.handleChangeEndTime.bind(this);
+
   }
   handleChange(e) {
     this.setState({ value: e.target.value });
-    console.log(e);
+    console.log(e.target.value);
+  }
+  handleChangeStartTime(e) {
+    this.setState({ time: e.target.value });
+    console.log(e.target.value);
+  }
+  handleChangeEndTime(e) {
+    this.setState({ endTime: e.target.value });
+    console.log(e.target.value);
+  }
+  handleChangeDate(e) {
+    this.setState({ date: e.target.value });
+    console.log(e.target.value);
   }
   handleChangeEditField(e) {
-    this.setState({ field: e.target.value });
-    console.log(e);
+    var elem = document.getElementById("mainDD");
+    console.log(elem.value);
+    if (e.target.id === "time") elem.value = "Time";
+    else {
+      elem.value = e.target.id;
+    }
+    this.setState({ field: e.target.id });
+    console.log(e.target.id);
+    console.log("Mariaam");
   }
 
   // Fetch the list on first mount
   componentDidMount() {
     this.getList();
+    this.auth();
   }
 
+  auth = async () => {
+    
+    const coID = this.state.coID;
+    await fetch(
+      `/api/coworkingSpace/viewCoworkingSpace/`
+    )
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+    
+  };
   getUser = ev => {
     ev.preventDefault();
     const c = this.state.value;
     const field = this.state.field;
-    console.log(c);
-    console.log(field);
+    const time = this.state.time;
+    const endTime = this.state.endTime;
+    const date = this.state.date;
+    console.log(endTime)
+    console.log(date);
+    console.log(time);
+    let databody = {};
+    if(time && endTime && date){
+      databody = {
+        time: time,
+        Date: date,
+        endTime: endTime
+      };
+    }
+    else if (time && date) {
+      databody = {
+        time: time,
+        Date: date
+      };
+    }
+    else if (endTime && date) {
+      databody = {
+        endTime: endTime,
+        Date: date
+      };
+    }
+    else if (time && endTime) {
+      databody = {
+        time: time,
+        endTime: endTime
+      };
+    }
+    else if (time) {
+      databody = {
+        time: time
+      };
+    } else if (date) {
+      databody = {
+        Date: date
+      };
+    }
+    else if(endTime){
+      databody = {
+        endTime: endTime
+      };
+    }
 
-    let databody = {
-      [field]: c
-    };
     const id = this.state.idx;
     console.log(id);
     console.log(databody);
@@ -59,13 +134,16 @@ class List extends Component {
     const rID = this.props.match.params.rID;
     console.log(rID);
     console.log(JSON.stringify(databody));
-    fetch(`/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(databody),
-      headers: {
-        "Content-Type": "application/json"
+    fetch(
+      `/api/coworkingspace/updateSchedule/${coID}/${rID}/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(databody),
+        headers: {
+          "Content-Type": "application/json"
+        }
       }
-    })
+    )
       .then(res => res.json())
       .then(json => this.setState({ res: json }));
   };
@@ -82,7 +160,9 @@ class List extends Component {
     //console.log(this.props.match.params.coID)
     const rID = this.props.match.params.rID;
     console.log(rID);
-    await fetch(`/api/coworkingspace/viewroomschedule/${coID}/${rID}`)
+    await fetch(
+      `/api/coworkingspace/viewroomschedule/${coID}/${rID}`
+    )
       .then(res => res.json())
       .then(list => this.setState({ list }));
     //  console.log(this.state.list)
@@ -110,12 +190,15 @@ class List extends Component {
     let databody = [c];
     console.log(databody);
 
-    fetch(`/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
+    fetch(
+      `/api/coworkingSpace/deleteSchedule/${coID}/${rID}/${c}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
       }
-    })
+    )
       .then(res => res.json())
       .then(json => this.setState({ res: json }));
     // this.getList()
@@ -128,11 +211,11 @@ class List extends Component {
     const rID = this.props.match.params.rID;
     return (
       <div className="App">
-        <h1>schedules</h1>
+      <Side />
+        <h1 style={{ "font-weight": "bold"}}>All available schedules</h1>
         {/* Check to see if any items are found*/}
         {list.length ? (
           <div>
-            {/* Render the list of items */}
             {list.map(el => {
               return (
                 <div key={el.id}>
@@ -148,29 +231,35 @@ class List extends Component {
                       <p class="card-text">
                         {" "}
                         <div class="list-group">
-                          <button
+                          <a
                             class="list-group-item list-group-item-action"
                             disabled={el.reserved}
                           >
                             {" Date: " + el.Date}
-                          </button>
-                          <button
+                          </a>
+                          <a
                             class="list-group-item list-group-item-action"
                             disabled={el.reserved}
                           >
-                            {" Time: " + el.time}
-                          </button>
-                          <button
+                            {"Start time: " + el.time}
+                          </a>
+                          <a
+                            class="list-group-item list-group-item-action"
+                            disabled={el.reserved}
+                          >
+                            {"End time: " + el.endTime}
+                          </a>
+                          <a
                             class="list-group-item list-group-item-action"
                             disabled={el.reserved}
                           >
                             {" Reservation state: " + el.reserved}
-                          </button>
+                          </a>
                         </div>
                       </p>
                       <button
                         type="button"
-                        class="btn btn-outline-info"
+                        class="btn btn-outline-dark"
                         onClick={() => {
                           this.toggleUpdateModal();
                           this.setState({ idx: el._id });
@@ -180,37 +269,68 @@ class List extends Component {
                         Update Schedule
                       </button>
                       <Modal isOpen={this.state.updateModalIsOpen}>
+                        <ModalHeader>
+       
+                          <h4 style={{ "font-weight": "bold"}}>Update details</h4>
+                          <button
+                          style={{ position: "absolute", top: "5", right: "5" }}
+                          type="button"
+                          class="close"
+                          onClick={() => {
+                            this.toggleUpdateModal();
+                          }}
+                          aria-label="Close"
+                        > &times;
+                        </button>
+                         <h6>Fill in the fields you want to update only.</h6>
+                  
+                        </ModalHeader>
                         <ModalBody>
-                          {/* <form onSubmit={this.props.getUser}> */}
-                          <div class="form-group">
-                            <label for="usr">What do you want to edit:</label>
-                            <input
-                              type="text"
-                              name="name"
-                              placeholder="Date-time"
-                              onChange={e => {
-                                this.handleChangeEditField(e);
-                              }}
-                              class="form-control"
-                              id="usr"
-                            />
-                          </div>
-
-                          <div class="form-group">
-                            {/* <label for="usr">Your new capacity value:</label> */}
+                          <div class="input-group" style={{display:"block"}}>
+                          <div>
+                              <input
+                                type="date"
+                                name="value"
+                                placeholder="Date"
+                                onChange={e => {
+                                  this.handleChangeDate(e);
+                                }}
+                                class="form-control"
+                                id="usr"
+                                onChange={e => {
+                                  this.handleChangeDate(e);
+                                }}
+                              />
+                            </div>
+                            <div>
                             <input
                               type="text"
                               name="value"
+                              placeholder="Start time"
                               onChange={e => {
-                                this.handleChange(e);
+                                this.handleChangeStartTime(e);
                               }}
                               class="form-control"
                               id="usr"
                             />
                           </div>
-
+                          <div>
+                            <input
+                              type="text"
+                              name="value"
+                              placeholder="End time"
+                              onChange={e => {
+                                this.handleChangeEndTime(e);
+                              }}
+                              class="form-control"
+                              id="usr"
+                            />
+                          </div>
+                          </div>
+                        </ModalBody>
+                        <ModalFooter>
                           <button
-                            class="btn btn-outline-success"
+                            class="btn btn-outline-dark"
                             change={e => {
                               this.handleChange(e);
                             }}
@@ -220,41 +340,60 @@ class List extends Component {
                               window.location.reload();
                             }}
                           >
-                            Submit update
+                            Update schedule
                           </button>
-                        </ModalBody>
+                          <button
+                            onClick={() => {
+                              this.toggleUpdateModal();
+                            }}
+                            class="btn btn-outline-secondary"
+                          >
+                            Cancel
+                          </button>
+                        </ModalFooter>
                       </Modal>
                       &nbsp;
                       <button
                         type="button"
                         onClick={this.toggleModal.bind(this)}
-                        class="btn btn-outline-danger"
+                        class="btn btn-outline-secondary"
                         disabled={el.reserved}
                       >
                         Delete Schedule
                       </button>
                       <Modal isOpen={this.state.modalIsOpen}>
-                        <ModalHeader toggle={this.toggleModal.bind(this)}>
-                          {"Are you sure you want to delete this schedule"}
+                        <ModalHeader >
+                        <h6 style={{ "font-weight": "bold"}}>Are you sure you want to delete this schedule?</h6>
+                        <button
+       style={{ position: "absolute", top: "5", right: "5" }}
+       type="button"
+       class="close"
+       onClick={() => {
+         this.toggleModal();
+       }}
+       aria-label="Close"
+     > &times;
+     </button>
                         </ModalHeader>
-                        <ModalBody>{"This action can not be undone"}</ModalBody>
+                        <ModalBody>
+                          <h6>This action can not be undone.</h6>
+                        </ModalBody>
                         <ModalFooter>
-                          <button
-                            onClick={this.toggleModal.bind(this)}
-                            class="btn btn-outline-info"
-                          >
-                            Cancel
-                          </button>
                           <button
                             onClick={e => {
                               this.delete(e, el._id);
                               window.location.reload();
                             }}
-                            class="btn btn-outline-danger"
+                            class="btn btn-outline-secondary"
                           >
                             Delete
                           </button>
-                          {/* </Link> */}
+                          <button
+                            onClick={this.toggleModal.bind(this)}
+                            class="btn btn-outline-dark"
+                          >
+                            Cancel
+                          </button>
                         </ModalFooter>
                       </Modal>
                     </div>

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
-import "semantic-ui/dist/semantic.min.css";
+// import "semantic-ui/dist/semantic.min.css";
+import "semantic-ui-css/semantic.min.css";
 import List from "./pages/List";
 import CreateRoom from "./pages/CreateRoom";
 import CreateSch from "./pages/Createsch";
@@ -55,6 +56,7 @@ import SpecificPartner from "./pages/partnerProfileV";
 import PartnerProfile from "./pages/partnerprofile";
 import CaAllTasks from "./components/CAApplyForTask";
 import CAEvents from "./components/CAMyEvents";
+import ChangePass from './pages/ChangePass';
 
 class App extends Component {
   render() {
@@ -234,6 +236,8 @@ class App extends Component {
             path="/ConsultancyAgency/MyEvents"
             component={CAEvents}
           />
+
+          <Route exach path="/changePassword" component={ChangePass} />
         </div>
       </Router>
     );
