@@ -5,9 +5,6 @@ import axios from "axios";
 import {Card} from "react-bootstrap";
 import {CardDeck} from "react-bootstrap";
 import {Form} from "react-bootstrap";
-import {FormGroup} from "reactstrap";
-// import Side from "../components/BasicSideNavBar";
-
 
 class AdminActivateAccounts extends Component {
   constructor(props) {
@@ -18,7 +15,20 @@ class AdminActivateAccounts extends Component {
     };
   }
 
-  componentDidMount() {
+  auth = async () => {
+    await fetch(
+      `/api/admin/ActivateAccounts/`
+    )
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+    
+  };
+  componentWillMount() {
+    this.auth();
     this.getDeactivatedUsers();  
   }
 
@@ -32,9 +42,15 @@ class AdminActivateAccounts extends Component {
   }
 
   getDeactivatedUsers = async ()=> {
-      await fetch(`/api/admin/getDeactivatedAccounts`)
+      await fetch(`http://localhost:4000/api/admin/getDeactivatedAccounts`)
       .then(res => res.json())
-      .then(users => this.setState({ users }));
+      .then(users => this.setState({ users }))
+      .catch(error => {
+        alert("no deactivated accounts were found!");
+        window.location = "/";
+        return error;
+      });
+
   };
 
   render() {
@@ -42,15 +58,15 @@ class AdminActivateAccounts extends Component {
 
     return (
       <div className="App" style={{alignItems:'center'}}>
-      {/* <Side /> */}
         <h1> Activate Accounts </h1>
             <h3>Deactivated Users</h3>
 
-        
+            <br/>
 
-            <CardDeck>
+      <CardDeck>
         { users.map((user,i)=>
-          <div>
+          <div>              <br/>
+
             <Card style={{ width: '20rem'  }  } >
               <Card.Body>
             
@@ -63,7 +79,7 @@ class AdminActivateAccounts extends Component {
                     </p>
 
                     <Form onSubmit={this.activateAccount.bind(this, user._id)}>
-                    <Button variant="info"onClick={this.activateAccount.bind(this, user._id)}>Activate</Button> 
+                    <Button variant="dark"onClick={this.activateAccount.bind(this, user._id)}>Activate</Button> 
                     </Form>
 
               </Card.Body>
@@ -79,9 +95,16 @@ class AdminActivateAccounts extends Component {
 
         <br/>
         <br/>
-        <Link to={'/'}>
-           <Button variant="info">Done </Button>
-        </Link>   
+        <Link to={'/admin'}>
+           <Button variant="warning">Done </Button>
+        </Link>  
+        <div
+          class="alert alert-secondary"
+          role="alert"
+          style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+        >
+          Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
+        </div> 
       </div>
     );
   }
