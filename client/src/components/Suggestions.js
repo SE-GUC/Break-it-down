@@ -11,9 +11,20 @@ class Suggestions extends Component {
     error:null
   }
 
+  auth = async () => {
+    await fetch(
+      `/api/coworkingSpace/viewCoworkingSpace`)
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  };
 
   //id will change to generic type when linking  `/api/coworkingSpace/CoworkingSpace/Suggestions/${eid}`
   componentDidMount(){
+    this.auth();
     axios.get('/api/coworkingSpace/CoworkingSpace/Suggestions/6')
     .then(res=>{
       const coworkingSpace=res.data
