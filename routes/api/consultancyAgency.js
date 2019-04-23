@@ -7,6 +7,12 @@ const users = require('../../models/UserProfile');
 const ConsultancyAgency = require('../../models/consultancyAgency');
 const Message = require('../../models/messages');
 const recommendedAppl = require('../../models/RecommendedApplicants');
+//auth
+const jwt = require("jsonwebtoken");
+
+const tokenKey = require("../../config/keys").secretOrKey;
+
+var store = require("store");
 
 
 //-------------------pathToSendFile----------------------------
