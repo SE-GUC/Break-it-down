@@ -1,6 +1,7 @@
 // import React from 'react';
 import { slide as Menu } from "react-burger-menu";
 import Search from "../components/Search";
+import AdminNavbar from '../components/AdminNavbar'
 
 import SideNav, {
   Nav,
@@ -203,7 +204,13 @@ class BasicSideNavBar extends Component {
           </Menu>
         </div>
       );
-    } else {
+    } 
+    else if (this.state.type === "admin") {
+      return (
+       <AdminNavbar />
+      );
+    }
+    else {
       return (
         <Menu>
           <a className="menu-item" href="">
