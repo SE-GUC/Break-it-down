@@ -117,6 +117,11 @@ class BasicSideNavBar extends Component {
               My profile
             </a>
 
+            <a className="menu-item" href={`/user/viewRoomBooking`}>
+            <Icon name="calendar alternate outline" />
+              View and Update my booking
+            </a>
+
             <a className="menu-item" href={`/createTask`}>
               <Icon name="plus circle" />
               Create a Task{" "}
@@ -189,6 +194,12 @@ class BasicSideNavBar extends Component {
               {"  "}
               Apply for a Task
             </a>
+
+            <a className="menu-item" href={`/user/viewRoomBooking`}>
+            <Icon name="calendar alternate outline" />
+              View and Update my booking
+            </a>
+            
             <a className="menu-item" href={`/changePassword/${coID}`}>
               Change password{" "}
             </a>
