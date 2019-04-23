@@ -137,6 +137,11 @@ class BasicSideNavBar extends Component {
               Book A Room
             </a>
 
+ <a className="menu-item" href={`/user/viewRoomBooking`}>
+              <Icon name="calendar plus" />
+              View and Update Room Bookings
+            </a>
+
             <a className="menu-item" href={`/getNotifications`}>
               <BellIcon width="40" active={true} animate={true} />
               Notifications
@@ -176,6 +181,11 @@ class BasicSideNavBar extends Component {
             <a className="menu-item" href={`/ConsultancyAgency/Tasks`}>
               <SvgIcon size={20} icon={clipboard} /> {"  "}
               My Assigned Tasks
+            </a>
+
+ <a className="menu-item" href={`/user/viewRoomBooking`}>
+              <Icon name="calendar plus" />
+              View and Update Room Bookings
             </a>
 
             <a className="menu-item" href={`/ConsultancyAgency/MyEvents`}>
@@ -218,6 +228,10 @@ class BasicSideNavBar extends Component {
           <a className="menu-item" href={`/changePassword/${coID}`}>
             Change password{" "}
           </a>
+ <a className="menu-item" href={`/user/viewRoomBooking`}>
+              <Icon name="calendar plus" />
+              View and Update Room Bookings
+            </a>
 
           <a
             className="menu-item"
