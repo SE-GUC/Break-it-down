@@ -21,7 +21,7 @@ module.exports = {
             email: Joi.string().min(3).max(100),
             website:Joi.string().min(9).max(100),
             phoneNumber:Joi.number(),
-            description:Joi.string().min(10).max(100),
+            description:Joi.string().min(10).max(1000),
             facilities: Joi.array(),
             rooms:Joi.array()
         }

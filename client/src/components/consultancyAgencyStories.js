@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 
 import uuid from 'uuid'
 import CAPartners from './CAPartners';
+import CASidenav from './BasicSideNavBar';
 
 
 class consultancyAgencyStories extends Component{
@@ -18,6 +19,13 @@ class consultancyAgencyStories extends Component{
         caemail:null,
         camessage:null,
         //dropdownOpen:false
+    }
+
+    componentDidCatch(error, info) {
+      // Display fallback UI
+     // this.setState({ hasError: true });
+      // You can also log the error to an error reporting service
+     // logErrorToMyService(error, info);
     }
   
 toggle =() => {
@@ -73,8 +81,8 @@ render(){
     return(
    
  
-    <Container  >
-   
+    <div>
+   <CASidenav></CASidenav>
     <CAPartners/>
 
 <Container>
@@ -113,7 +121,7 @@ render(){
         </Modal>
 
 
-    </Container>
+ </div>
 
     );
     }}

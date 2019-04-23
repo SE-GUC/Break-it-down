@@ -15,6 +15,13 @@ const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule')
 const PartnerCoworkingSpace = require('../../models/PartnerCoworkingSpace');
 
+//auth
+const jwt = require("jsonwebtoken");
+
+const tokenKey = require("../../config/keys").secretOrKey;
+
+var store = require("store");
+
 //---------------------------------Nourhan-----------------------------------------------------------------------
 //Facilities
 //create a facility
@@ -61,50 +68,156 @@ router.post('/addfacility/:idC', async (req,res) => {
     res.json(error)
     } 
     });
-//============================== recieve notifications=================================//
+//==================================================================================================================
 
+//------------------------------push notifications---------------------------
+var CronJob = require('cron').CronJob;
+const cron = require("cron");
+const notifier = require("node-notifier");
 
+async function sendNotification(Id) {
+  const ID = ObjectId(Id);
+  const user = await users.findOne(ID);
+  const notif = user.notifications;
+  console.log(notif);
+  notif.forEach(element => {
+    notifier.notify(
+      {
+        title: "New Notification",
+        message: element.notificationContent,
+        //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
+        sound: true, // Only Notification Center or Windows Toasters
+        wait: true // Wait with callback, until user action is taken against notification
+      },
+      function(err, response) {}
+    );
 
-// const job = cron.job('*/10 * * * * *', () => 
-//     // console.log('helloo'),
-//   //   getUsers(),
-//      sendNotification('5c9114781c9d440000a926ce')
+    console.log(element.notifID);
+    notifier.on("click", function(notifierObj, options) {
+      users.updateOne(
+        { _id: ID },
+        {
+          $set: {
+            "notifications.$[i].read": true,
+            "notifications.$[i].unread": false
+          }
+        },
+        { arrayFilters: [{ "i.notifID": element.notifID }] },
+        function(err, model) {}
+      );
 
-// );
-// //job.start()
+      // element.read= true,
+      // element.unread= false
+      // // Triggers if `wait: true` and user clicks notification
+      //  console.log('The user clicked on the Notification!');
+    });
+  });
+}
 
-// async function sendNotification(Id){
-//   const ID= ObjectId(Id)
-//   const user = await users.findOne(ID)
-//   const notif= user.notifications
-//   console.log(notif)
-//   notif.forEach(element => {
+new CronJob('0,30  * * * *', function() {
+  console.log("===================================================================")
 
-//     notifier.notify({
-//       title: 'New Notification' ,
-//       message: element.notificationContent,
-//       //icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons)
-//       sound: true, // Only Notification Center or Windows Toasters
-//       wait: true // Wait with callback, until user action is taken against notification
-//     }, function (err, response) {});
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+     // res.sendStatus(403);
+    } else {
+      const ID = ObjectId(authorizedData.id);
+      sendNotification(ID)
+    }
+  })
+}, null, true, 'America/Los_Angeles');
+
+//---------------------------------send push notification to users-------------------- 
+async function notify(senderIDs, Id, content) {
+
+   //==== if notification sent from admin===//
+
+  if(senderIDs === ""){
+    const senderName = "LirtenHub"
+    const ID = ObjectId(Id);
+    const user = await users.findOne(ID);
+    if (user === null) {
+      res.json("the database has no partner with the given ID");
+    } else {
+      const notificationContent = content;
+      const read = false;
   
-//     console.log(element.notifID)
-//     notifier.on('click', function(notifierObj, options) {
-//        users.updateOne({'_id':ID, }, 
-//                        {$set: {'notifications.$[i].read': true, 'notifications.$[i].unread': false}},
-//                        { arrayFilters: [{ "i.notifID": element.notifID }]},
-//                        function(err, model){}); 
+      newNotification = {
+        senderName,
+        notificationContent,
+        read
+      };
+        await users.updateOne(
+        { _id: ID },
+        { $push: { notifications: newNotification } },
+        function(err, model) {}
+      );
+  
+      const user2 = await users.findOne({ _id: ID });
+      const not2 = user2.notifications;
+      console.log(not2);
+    }
+  }
+     //==== if notification sent to admin===//
+  else{
+    if(Id === ""){
+        const senderID = ObjectId(senderIDs);
+        const sender = await users.findOne(senderID);
+        const senderName = sender.name
+        const admins = await users.find({type:'admin'});
 
-//       // element.read= true,
-//       // element.unread= false
-//       // // Triggers if `wait: true` and user clicks notification
-//     //  console.log('The user clicked on the Notification!');
-//     });
-//   });
-     
- 
- 
-// }
+          const notificationContent = content;
+          const read = false;
+
+          newNotification = {
+            senderName,
+            notificationContent,
+            read
+          };
+
+          admins.forEach(async(element) => {
+            await users.updateOne(
+              { _id: element._id },
+              { $push: { notifications: newNotification } },
+              function(err, model) {}
+            );
+          });  
+      }
+
+       //==== if notification does not include the admin===//
+      else{
+
+      const senderID = ObjectId(senderIDs);
+      const sender = await users.findOne(senderID);
+      const senderName = sender.name
+      const ID = ObjectId(Id);
+      const user = await users.findOne(ID);
+      if (user === null) {
+        res.json("the database has no partner with the given ID");
+      } else {
+        const notificationContent = content;
+        const read = false;
+
+        newNotification = {
+          senderName,
+          notificationContent,
+          read
+        };
+        await users.updateOne(
+          { _id: ID },
+          { $push: { notifications: newNotification } },
+          function(err, model) {}
+        );
+
+        const user2 = await users.findOne({ _id: ID });
+        const not2 = user2.notifications;
+        console.log(not2);
+      }
+    }
+  }
+}
 
 
 
@@ -156,8 +269,33 @@ router.post('/addfacility/:idC', async (req,res) => {
     } 
     });
 
+    router.get("/viewCoworkingSpace", (req, res) => {
+      jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+        if (err) {
+          //If error send Forbidden (403)
+          console.log("ERROR: Could not connect to the protected route");
+          res.sendStatus(403);
+        } else {
+          // console.log(authorizedData)
+          try {
+            const co = await users.findOne({
+              type: "coworkingSpace",
+              _id: authorizedData.id
+            });
+            // console.log("co._id")
+            if (co === undefined || co.length == 0)
+              return res.json("co does not exist");
+            res.json(co);
+          } catch (error) {
+            res.json(error.message);
+          }
+          console.log("SUCCESS: Connected to protected route y");
+        }
+      });
+    });
+
 // View all coworking spaces  TESTED 
-router.get('/viewCoworkingSpace', async (req, res) => {
+router.get('/viewCoworkingSpaceAll', async (req, res) => {
 try{
 const coworkingSpace = await users.find({type:"coworkingSpace"})
 res.json( coworkingSpace);
@@ -202,18 +340,28 @@ router.put('/updateCospace/:idC', async (req, res)=>{
   
   const isValidated = validator.updateValidation(req.body)
   if (isValidated.error) return res.status(400).send({ error: isValidated.error.details[0].message })
+  var max32 = Math.pow(2, 32) - 1;
+  var ID = Math.floor(Math.random() * max32);
+  const id = req.params.idC;
+  const upd = Object.assign({ _id: ID }, req.body);
+
+  console.log(upd);
+  users
+    .update({ _id: id }, { $push: { updates: upd } })
+    .then(res.json({ msg: "Awaiting admin approval for your updates.", data: upd }))
+    .catch(res.json({ msg: "An error occured. Please try again." }));
+
   
-  
-  const updatedco = await users.updateOne(
-    {type:"coworkingSpace",'_id':req.params.idC},
-    req.body,
-    {new: true}, (err, doc) => {
-        if (err) {
-            console.log("Something wrong when updating data!");
-        }
+  // const updatedco = await users.updateOne(
+  //   {type:"coworkingSpace",'_id':req.params.idC},
+  //   req.body,
+  //   {new: true}, (err, doc) => {
+  //       if (err) {
+  //           console.log("Something wrong when updating data!");
+  //       }
     
-        console.log(doc);
-    });
+  //       console.log(doc);
+  //   });
   
   res.json({msg:'Coworking space was updated successfully', data: updatedco})
   }
@@ -495,20 +643,21 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
   temp3[0].rooms.schedule.forEach(sch=>{ if(sch._id==req.params.ids)  check=sch.reserved })
   if(check===true) return res.json({msg:"This schedule is already reserved. Please come back and updated it when its reservation period ends."})
   else{
-  if(req.body.Date && req.body.time && req.body.scheduleNumber){
+  if(req.body.Date && req.body.time  && req.body.endTime){
     const updatedroom = 
     await User.findOneAndUpdate(
       {"_id": (idc)},
         {  $set: {
           "rooms.$[i].schedule.$[j].Date": req.body.Date,
           "rooms.$[i].schedule.$[j].time": req.body.time,
-          "rooms.$[i].schedule.$[j].scheduleNumber": req.body.scheduleNumber
+          "rooms.$[i].schedule.$[j].endTime": req.body.endTime,
         }},
       { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
       )
       res.json({msg:"Schedule updated successfully",data:updatedroom})
     }
-    else if(req.body.Date){
+    //Date
+    else if(req.body.Date && !req.body.time && !req.body.endTime){
       const updatedroom = 
       await User.findOneAndUpdate(
         {"_id": (idc)},
@@ -521,6 +670,61 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
         )
         res.json({msg:"Date updated successfully",data:updatedroom})
     }
+    //end time
+    else if(!req.body.time && !req.body.Date && req.body.endTime){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+  
+        { $set: {
+          "rooms.$[i].schedule.$[j].endTime": req.body.endTime
+          }},
+  
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Time updated successfully",data:updatedroom})
+    }
+    //Date and time
+    else if(req.body.time && req.body.Date && !req.body.endTime){
+      const updatedroom = 
+      
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].Date": req.body.Date,
+            "rooms.$[i].schedule.$[j].time": req.body.time,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Date and time updated successfully",data:updatedroom})
+    
+    }
+    //time & end time
+    else if(req.body.time && req.body.endTime && !req.body.Date){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].time": req.body.time,
+            "rooms.$[i].schedule.$[j].scheduleNumber": req.body.endTime,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Time and schedule number updated successfully",data:updatedroom})
+    }
+    //Date & end time
+    else if(req.body.Date && req.bosy.endTime && !req.body.time){
+      const updatedroom = 
+      await User.findOneAndUpdate(
+        {"_id": (idc)},
+          {  $set: {
+            "rooms.$[i].schedule.$[j].Date": req.body.Date,
+            "rooms.$[i].schedule.$[j].scheduleNumber": req.body.endTime,
+          }},
+        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
+        )
+        res.json({msg:"Date and schedule number updated successfully",data:updatedroom})
+    }
     else if(req.body.time){
       const updatedroom = 
       await User.findOneAndUpdate(
@@ -528,19 +732,6 @@ if (isValidated.error) return res.status(400).send({ error: isValidated.error.de
   
         { $set: {
           "rooms.$[i].schedule.$[j].time": req.body.time
-          }},
-  
-        { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
-        )
-        res.json({msg:"Time updated successfully",data:updatedroom})
-    }
-    else if(req.body.scheduleNumber){
-      const updatedroom = 
-      await User.findOneAndUpdate(
-        {"_id": (idc)},
-  
-        { $set: {
-          "rooms.$[i].schedule.$[j].scheduleNummber": req.body.scheduleNumber
           }},
   
         { arrayFilters: [{ "i._id": (idr) },  { "j._id": (ids) }]}
@@ -625,86 +816,164 @@ catch(error) {
 })
 
 //Update coworking space booking, to request a larger room. I am assuming that when we call this route the booking exists.   
-router.put('/update/booking/:bid/:uid', async(req, res)=>{
-    try
-    {
-        const bookingid=parseInt(req.params.bid);
+router.put("/update/booking/:bid", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      try {
+        const bookingid = objectid(req.params.bid);
 
-        const userid=req.params.uid;
+        const userid = objectid(authorizedData.id);
 
-        const newCapacity=parseInt(req.body.capacity);
-      
-        const booking=await User.find({'_id':userid,'RoomsBooked.bookingID': bookingid},{RoomsBooked:1,_id:0}).lean()
+        const newCapacity = parseInt(req.body.capacity);
 
-        let myBooking=undefined;
+        const booking = await User.find(
+          { _id: userid, "RoomsBooked.bookingID": bookingid },
+          { RoomsBooked: 1, _id: 0 }
+        ).lean();
 
-        for(var i=0;i<booking[0].RoomsBooked.length;i++){
-          if(booking[0].RoomsBooked[i].bookingID===bookingid){
-            myBooking=booking[0].RoomsBooked[i];
+        let myBooking = undefined;
+
+        for (var i = 0; i < booking[0].RoomsBooked.length; i++) {
+          if (objectid(booking[0].RoomsBooked[i].bookingID).equals(bookingid)) {
+            myBooking = booking[0].RoomsBooked[i];
             break;
           }
         }
 
         //find empty room in same coworking space with same date,time and with specified capacity or greater
-        const room= await User.findOne({$and:[{'_id':myBooking.coworkingSpaceID},
-        {'rooms.schedule.reserved':false},{'rooms.schedule.Date':myBooking.Date},
-        {'rooms.capacity':{$gte:newCapacity}},{'rooms.schedule.time':myBooking.time}]},{rooms:1,_id:0}).lean()
+        const room = await User.findOne(
+          {
+            _id: myBooking.coworkingSpaceID,
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { reserved: false } } }
+            },
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { Date: myBooking.Date } } }
+            },
+            rooms: {
+              $elemMatch: { schedule: { $elemMatch: { time: myBooking.time } } }
+            },
+            rooms: { $elemMatch: { capacity: { $gte: newCapacity } } }
+          },
+          { rooms: 1, _id: 0 }
+        ).lean();
 
         let myRoom;
+        let mySchedule;
 
-        for(var j=0;j<room.rooms.length;j++){
-          if(room.rooms[j].schedule.reserved===false && room.rooms[j].capacity>=newCapacity 
-            && room.rooms[0].schedule.time===myBooking.time && room.rooms[0].schedule.Date.getTime()===myBooking.Date.getTime()){
-            myRoom=room.rooms[j];
-            break;
+        for (var j = 0; j < room.rooms.length; j++) {
+          for (var z = 0; z < room.rooms[j].schedule.length; z++) {
+            if (
+              room.rooms[j].schedule[z].reserved === false &&
+              room.rooms[j].capacity >= newCapacity &&
+              room.rooms[j].schedule[z].time === myBooking.time &&
+              room.rooms[j].schedule[z].Date.getTime() ===
+                myBooking.Date.getTime()
+            ) {
+              myRoom = room.rooms[j];
+              mySchedule=room.rooms[j].schedule[z];
+              break;
+            }
           }
         }
-
-        if(!myRoom)
-         return res.status(404).send({error:'Could not find an empty room with the desired capacity in the same coworking space'})
-
-         var mongoose=require('mongoose')
     
-        const updtbooking=await User.updateOne({'_id':userid,'RoomsBooked.bookingID': bookingid}, {$set:{'RoomsBooked.$.roomID':myRoom.id,
-        'RoomsBooked.$.scheduleID':myRoom.schedule.id}});
+        if (!myRoom || myRoom === null || myRoom === undefined)
+          return res .status(404) .send({ error:
+                "Could not find an empty room with the desired capacity in the same coworking space"});
 
-        const updtOldRoom=await User.updateOne({'_id':myBooking.coworkingSpaceID,'rooms.id':myBooking.roomID},
-        {$set:{'rooms.$.schedule.reserved':false}})
+        var mongoose = require("mongoose");
+        
+         const updtbooking = await User.findOneAndUpdate(
+          { _id: userid, "RoomsBooked.bookingID": bookingid },
 
-        const updtNewRoom=await User.updateOne({'_id':myBooking.coworkingSpaceID,'rooms.id':myRoom.id},
-        {$set:{'rooms.$.schedule.reservedBy':mongoose.Types.ObjectId(userid),'rooms.$.schedule.reserved':true}});
-      
-        res.json({msg:'Your room booking is successfully updated.'})
+          {$set: {
+              "RoomsBooked.$[i].roomID": myRoom._id,
+              "RoomsBooked.$[i].scheduleID": mySchedule._id,
+              "RoomsBooked.$[i].roomName": "Room"+myRoom.roomNumber
+          }},
+        {arrayFilters: [
+                { "i.bookingID": (bookingid) }]});
 
+        const updtOldRoom = await User.findOneAndUpdate( 
+          {  _id: myBooking.coworkingSpaceID,"rooms._id": myBooking.roomID},
+          { $set: { 
+            "rooms.$[i].schedule.$[j].reserved": false } },
+            {arrayFilters: [
+              { "i._id": (myBooking.roomID) },
+              { "j._id": (myBooking.scheduleID)}
+          ]}
+        );
+
+        const updtNewRoom = await User.findOneAndUpdate(
+          { _id: myBooking.coworkingSpaceID, "rooms._id": myRoom._id },
+          {
+            $set: {
+              "rooms.$[i].schedule.$[j].reservedBy": mongoose.Types.ObjectId(userid),
+              "rooms.$[i].schedule.$[j].reserved": true
+            } },
+            {arrayFilters: [
+              { "i._id": (myRoom._id) },
+              { "j._id": (mySchedule._id)}
+          ]}
+        );
+
+        res.json({ msg: "Your room booking is successfully updated." });
+      } catch (error) {
+        console.log(error);
+      }
     }
-    catch(error) {
-        console.log(error)
-    }  
+  });
 });
 
 
-
-//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  *tested*
+//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  tested
 //get only empty rooms?
-router.get('/CoworkingSpace/Suggestions/:eid', async (req, res) => {
-    try{
-    const eventid=parseInt(req.params.eid)
+router.get("/CoworkingSpace/Suggestions/:eid", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      res.sendStatus(403);
+    } else {
+      try {
+        const eventid = parseInt(req.params.eid);
 
-    const event=await users.find({'events.id':eventid},{events:{$elemMatch:{id:eventid}}})
+        const event = await users.find(
+          { "events.id": eventid },
+          { events: { $elemMatch: { id: eventid } } }
+        );
 
-    const suggestions=await users.find({'rooms.capacity':{$gte:event[0].events[0].capacity},
-    'rooms.schedule.Date':event[0].events[0].date,'rooms.schedule.time':event[0].events[0].time,'rooms.schedule.reserved':false,
-    'address':event[0].events[0].location},
-    {name:1,email:1,address:1,website:1,phoneNumber:1,description:1,facilities:1,rooms:1})
+        const suggestions = await users.find(
+          {
+            "rooms.capacity": { $gte: event[0].events[0].capacity },
+            "rooms.schedule.Date": event[0].events[0].date,
+            "rooms.schedule.time": event[0].events[0].time,
+            "rooms.schedule.reserved": false,
+            address: event[0].events[0].location
+          },
+          {
+            name: 1,
+            email: 1,
+            address: 1,
+            website: 1,
+            phoneNumber: 1,
+            description: 1,
+            facilities: 1,
+            rooms: 1
+          }
+        );
 
-    if(suggestions.length===0)return res.status(404).send({error: 'No room suggestions found'})
+        if (suggestions.length === 0)
+          return res.status(404).send({ error: "No room suggestions found" });
 
-    res.json(suggestions)
- 
-    }catch(error){
-        return res.status(404).send({error: 'No room suggestions found'})
+        res.json(suggestions);
+      } catch (error) {
+        return res.status(404).send({ error: "No room suggestions found" });
+      }
     }
-})
+  });
+});
 
 
 

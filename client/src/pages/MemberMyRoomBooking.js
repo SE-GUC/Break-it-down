@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { Link, BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
-import MemberSidenav from "../components/MemberSidenav";
+import MemberSide from "../components/MemberSide";
 class MemberMyRoomBooking extends Component {
   // Initialize the state
   constructor(props) {
@@ -19,11 +19,27 @@ class MemberMyRoomBooking extends Component {
 
   // Retrieves the list of items from the Express app
   getList = async () => {
-    const id = this.props.match.params.id;
-    await fetch(`/api/partner/roombookings/${id}/`)
+    await fetch(`/api/member/roombookings/`)
       .then(res => res.json())
       .then(list => this.setState({ list }));
     //  console.log(this.state.list)
+  };
+  delete = (e, a) => {
+    e.preventDefault();
+    const c = a;
+    console.log(c);
+    let databody = [c];
+    console.log(databody);
+
+    fetch(`/api/member/RoomBookings/${c}/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then(json => this.setState({ res: json }));
+    // this.getList()
   };
 
   render() {
@@ -32,12 +48,9 @@ class MemberMyRoomBooking extends Component {
       <div className="App">
         <Route>
           {" "}
+          <div> </div>{" "}
           <div>
-            {" "}
-            <NavbarPage whichPage="member" />
-          </div>{" "}
-          <div>
-            <MemberSidenav />;
+            <MemberSide />;
           </div>
         </Route>
         <div>
@@ -60,6 +73,12 @@ class MemberMyRoomBooking extends Component {
                     {"Coworkingspace"}
                   </button>
                 </Link>
+                <Link to={`/RoomBookings/${el.bookingID}`}>
+                  <button variant="primary" size="lg" color="blue" active>
+                    Delete booking
+                  </button>
+                </Link>
+
                 <br />
               </div>
             );

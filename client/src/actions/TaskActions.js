@@ -8,7 +8,28 @@ export const getTasks = () =>  dispatch =>{
     type: GET_TASKS,
     payload: res.data
   }))
+  .catch(error => {
+    alert("Your session has expired. Please login again");
+    window.location = "/";
+    return error;
+  });
 
+}
+
+  export const getAvailableTasks = () =>  dispatch =>{
+    dispatch(setLoading());
+    axios.get('/api/ConsultancyAgency/allTasks')
+    .then(res => dispatch({
+      type: GET_TASKS,
+      payload: res.data
+    }))
+    .catch(error => {
+      alert("Your session has expired. Please login again");
+      window.location = "/";
+      return error;
+    });
+
+  }
 
   /*dispatch(setItemsLoading());
   axios
@@ -22,7 +43,7 @@ export const getTasks = () =>  dispatch =>{
     .catch(err =>
         console.log(err)
     );*/
-};
+
 
 export const setLoading= () => {
   return {

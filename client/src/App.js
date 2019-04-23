@@ -1,21 +1,15 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/HomeCS";
+// import "semantic-ui/dist/semantic.min.css";
+import "semantic-ui-css/semantic.min.css";
 import List from "./pages/List";
 import CreateRoom from "./pages/CreateRoom";
 import CreateSch from "./pages/Createsch";
 import ViewRoom from "./pages/ViewRoom";
 import AllRooms from "./pages/AllRooms";
 import Login from "./pages/login";
-import SignUp from "./pages/signUp";
-import SignUpMember from "./pages/signUpMember";
-import SignUpPartner from "./pages/signUpPartner";
-import SignUpCoworkingSpace from "./pages/signUpCoworkingSpace";
-import SignUpConsultancyAgency from "./pages/signUpConsultancyAgency";
-import SignUpEducationalOrganization from "./pages/signUpEducationalOrganization";
 import taskDescription from "./pages/taskDescription";
-import MemberHomePage from "./pages/MemberHomePage";
 import viewcoWorkingSpace from "./pages/viewCoworkingspace";
 import specificCoworkingSpace from "./pages/specificCoworkingSpace";
 import specificRoom from "./pages/specificRoom";
@@ -29,37 +23,60 @@ import ProfileCO from "./pages/profileCO";
 import MemberMyRoomBooking from "./pages/MemberMyRoomBooking";
 import MemberViewAllmembers from "./pages/MemberViewAllmembers";
 import CAHome from "./pages/CAHome";
-import CAPartners from "./components/CAPartners";
-import consultancyAgencyStories from "./components/consultancyAgencyStories"
+import consultancyAgencyStories from "./components/consultancyAgencyStories";
 import CATasks from "./components/CATasks";
-import EventList from './components/EventList'
-import TaskList from './components/TaskList'
-class App extends Component {
-  render() {
+import EventList from "./components/EventList";
+import TaskList from "./components/TaskList";
+import lifeCycle from "./pages/partnerlifeCycle";
+import createTask from "./pages/partnercreateTask";
+import partnerprofile from "./pages/partnerprofile";
+import viewApplicants from "./pages/partnerviewApplicants";
+import review from "./pages/partnerreview";
+import reqChange from "./pages/partnerreqChange";
+import viewConsultancies from "./pages/partnerviewConsultancies";
+import viewProfile from "./pages/partnerviewProfile";
+import myTasks from "./pages/partnermyTasks";
+import myRoomBookings from "./pages/partnermyRoomBookings";
+import schedule from "./pages/partnermyschedule";
+import book from "./pages/partnerbook";
+import deletebook from "./pages/partnerdeletebook";
+import ViewSchedule from "./pages/cospaceScheduleV";
+import partnerviewcoWorkingSpace from "./pages/partnerviewCoworkingspace";
+import partneraccept from "./pages/partnerAcceptApplicant";
+import partneracceptcons from "./pages/partnerAcceptCons";
+import partnernotify from "./pages/partnerNotify";
+import activateAccount from "./pages/AdminActivateAccounts";
+import NotifyToSignContract from "./pages/AdminNotifyToSignContract";
+import MemberProfileV from "./pages/memberProfileV";
+import PartnerProfileV from "./pages/partnerProfileV";
+import ViewAllPartners from "./pages/ViewAllPartners";
+import ViewAllMembers from "./pages/ViewAllMembers";
+import SpecificMember from "./pages/memberProfileV";
+import SpecificPartner from "./pages/partnerProfileV";
+import PartnerProfile from "./pages/partnerprofile";
+import CaAllTasks from "./components/CAApplyForTask";
+import CAEvents from "./components/CAMyEvents";
+import ChangePass from "./pages/ChangePass";
+import Notify from "./pages/AdminNotify";
+import MemberTasks from "./pages/MemberTasks";
+import MemberRecommendedTasks from "./pages/MemberRecommendedTasks";
+import Memberdeletebook from "./pages/Memberdeletebook";
+import Memberapplytasks from "./pages/Memberapplytasks";
+import MemberStartTask from "./pages/MemberStartTask";
+import MemberEndTask from "./pages/MemberEndTask";
 
+class App extends Component {
+  componentWillMount() {
+    document.title = "Lirten Hub";
+  }
+
+  render() {
     return (
-         <Router>
-           <div className="App"> 
+      <Router>
+        <div className="App">
           <Route exact path="/" component={Login} />
 
-          <Route exact path="/MemberHomePage" component={MemberHomePage} />
-          <Route exact path="/signup" component={SignUp} />
-
-          <Route exact path="/signup/member" component={SignUpMember} />
-          <Route exact path="/signup/partner" component={SignUpPartner} />
-          <Route exact path="/signup/coworkingspace" component={SignUpCoworkingSpace}/>
-          <Route
-            exact
-            path="/signup/consultancyagency"
-            component={SignUpConsultancyAgency}
-          />
-          <Route
-            exact
-            path="/signup/educationalorganization"
-            component={SignUpEducationalOrganization}
-          />
-
-          <Route exact path="/coworkingSpace" component={ProfileCO} />
+          <Route exact path="/coworkingSpace/:coID" component={ProfileCO} />
 
           <Route
             exact
@@ -80,11 +97,6 @@ class App extends Component {
             exact
             path="/coworkingSpace/viewAllRooms/:coID"
             component={AllRooms}
-          />
-          <Route
-            exact
-            path="/checkTaskDescriptions/:PID/:TID"
-            component={taskDescription}
           />
 
           <Route
@@ -114,6 +126,18 @@ class App extends Component {
             path="/RoombookingsMem/:id"
             component={MemberMyRoomBooking}
           />
+          <Route exact path="/AllMembersmem" component={MemberViewAllmembers} />
+
+          <Route
+            exact
+            path="/RoombookingsMem/"
+            component={MemberMyRoomBooking}
+          />
+          <Route
+            exact
+            path="/RoomBookings/:bookingID"
+            component={Memberdeletebook}
+          />
 
           <Route exact path="/admin/updates" component={MainUpdates} />
 
@@ -123,7 +147,7 @@ class App extends Component {
 
           <Route
             exact
-            path="/user/updateRoomBooking"
+            path="/user/updateRoomBooking/:BID"
             component={UpdateRoomBooking}
           />
 
@@ -134,13 +158,127 @@ class App extends Component {
           />
           <Route exact path="/MemberProfile" component={MemberProfile} />
           <Route exact path="/ConsultancyAgency" component={CAHome} />
-          <Route exact path="/ConsultancyAgency/Partners" component={consultancyAgencyStories} />
-        
-          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
-          <Route exact path="/Tasks" component={TaskList}/>
-    <Route exact path="/Events" component={EventList}/>
+          <Route
+            exact
+            path="/ConsultancyAgency/Partners"
+            component={consultancyAgencyStories}
+          />
 
-    </div>
+          <Route exact path="/ConsultancyAgency/Tasks" component={CATasks} />
+          <Route exact path="/Tasks" component={TaskList} />
+          <Route exact path="/Events" component={EventList} />
+
+          <Route exact path="/partner" component={partnerprofile} />
+          <Route
+            exact
+            path="/myTasks/TaskLifeCycle/:TID"
+            component={lifeCycle}
+          />
+          <Route exact path="/createTask" component={createTask} />
+          <Route exact path="/myTasks/:TID" component={viewApplicants} />
+          <Route exact path="/myTasks/ReviewandRate/:TID" component={review} />
+          <Route
+            exact
+            path="/myTasks/viewConsultancy/:TID"
+            component={viewConsultancies}
+          />
+          <Route
+            exact
+            path="/myTasks/RequestDescriptionChange/:TID"
+            component={reqChange}
+          />
+          <Route exact path="/viewProfile" component={partnerprofile} />
+          <Route exact path="/myProfile" component={viewProfile} />
+          <Route exact path="/myTasks" component={myTasks} />
+          <Route exact path="/roombookings" component={myRoomBookings} />
+          <Route exact path="/cospace/rooms/:id/:id2" component={schedule} />
+          <Route
+            exact
+            path="/RoomBookings/cospace/rooms/:id/:id2/:id3"
+            component={book}
+          />
+          <Route exact path="/RoomBookings/:bookingID" component={deletebook} />
+          <Route
+            exact
+            path="/coworkingSpace/viewRoomSchedulepublic/:coID/:rID"
+            component={ViewSchedule}
+          />
+          <Route
+            exact
+            path="/partnerviewCoworkingspace"
+            component={partnerviewcoWorkingSpace}
+          />
+          <Route
+            exact
+            path="/myTasks/AcceptApplicant/:idT/:idA"
+            component={partneraccept}
+          />
+          <Route
+            exact
+            path="/myTasks/ChooseConsultancyAgency/:idT/:idA"
+            component={partneracceptcons}
+          />
+          <Route exact path="/getNotifications" component={partnernotify} />
+          <Route exact path="/admin/mails" component={NotifyToSignContract} />
+          <Route exact path="/admin/notifications" component={Notify} />
+          <Route exact path="/admin/activate" component={activateAccount} />
+          <Route
+            exact
+            path="/admin/taskDescription"
+            component={taskDescription}
+          />
+          <Route exact path="/viewMembermem/:mID" component={MemberProfileV} />
+
+          <Route
+            exact
+            path="/viewPartnerProfile/:pID"
+            component={PartnerProfileV}
+          />
+
+          <Route exact path="/ViewAllPartners" component={ViewAllPartners} />
+
+          <Route exact path="/ViewAllMembers" component={ViewAllMembers} />
+
+          <Route exact path="/specificMember/:mID" component={SpecificMember} />
+
+          <Route
+            exact
+            path="/specificPartner/:pID"
+            component={SpecificPartner}
+          />
+
+          <Route exact path="/partnerprofile" component={PartnerProfile} />
+
+          <Route
+            exact
+            path="/ConsultancyAgency/AllTasks"
+            component={CaAllTasks}
+          />
+
+          <Route
+            exact
+            path="/ConsultancyAgency/MyEvents"
+            component={CAEvents}
+          />
+
+          <Route exach path="/changePassword" component={ChangePass} />
+          <Route exact path="/MemberTasks" component={MemberTasks} />
+          <Route
+            exact
+            path="/MemberRecommendedTasks/"
+            component={MemberRecommendedTasks}
+          />
+          <Route
+            exact
+            path="/MemberStartTask/:taskID"
+            component={MemberStartTask}
+          />
+          <Route
+            exact
+            path="/MemberEndTask/:taskID"
+            component={MemberEndTask}
+          />
+        </div>
       </Router>
     );
   }

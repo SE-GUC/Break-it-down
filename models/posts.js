@@ -6,6 +6,7 @@ var connection = mongoose.createConnection(
 
 // Create the schema
 const PostsSchema = new Schema({
+  name: { type: String, required: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
   likes: { type: Number, required: true },

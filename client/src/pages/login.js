@@ -1,9 +1,15 @@
 import React, { Component } from "react";
-import { Jumbotron, Button, Form, ButtonToolbar } from "react-bootstrap";
-import { Link, NavLink } from "react-router-dom";
 import axios from "axios";
 import validator from "../validations/validation";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Dimmer, Loader, Modal } from "semantic-ui-react";
+import { Button, ButtonToolbar } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import SignUpEducationalOrganization from "../pages/signUpEducationalOrganization";
+import SignUpMember from "../pages/signUpMember";
+import SignUpCoworkingSpace from "../pages/signUpCoworkingSpace";
+import SignUpConsultancyAgency from "../pages/signUpConsultancyAgency";
+import SignUpPartner from "../pages/signUpPartner";
 
 class Login extends Component {
   constructor(props) {
@@ -12,11 +18,17 @@ class Login extends Component {
     this.state = {
       isLoading: false,
       email: "",
-      password: ""
+      password: "",
+      userID: null,
+      coID: null,
+      type: null
     };
+    this.handleSignIn = this.handleSignIn.bind(this);
   }
 
-  async handleSignIn(event) {
+  handleSignIn = event => {
+    event.preventDefault();
+    this.setState({ isLoading: true });
     console.log("handled");
     const info = {
       email: this.state.email,
@@ -25,10 +37,24 @@ class Login extends Component {
     const isValidated = validator.loginValidation(info);
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
-      await axios
+      axios
         .post("/api/CreateAccount/login", info)
-        .then(function(response) {
-          console.log("login is successful");
+        .then(response => {
+          axios
+            .get("/api/CreateAccount/user/auth", {
+              headers: { Authorization: response.data }
+            })
+            .then(response => {
+              console.log(response.data.authorizedData.type);
+              this.setState({
+                coID: response.data.authorizedData.id,
+                type: response.data.authorizedData.type
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          // console.log(response.data);
           /*event.preventDefault();
           window.location = "/";*/
         })
@@ -36,11 +62,10 @@ class Login extends Component {
           alert("Wrong Password");
           console.log(error);
         });
-  }
-
-  async handleGoogle() {
-    const profile = await axios.get("/auth/google");
-    console.log("using google");
+    this.setState({ isLoading: false });
+  };
+  handleSignUp(e) {
+    e.preventDefault();
   }
 
   handleSelect(eventKey) {
@@ -60,10 +85,89 @@ class Login extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <style type="text/css">
-          {`
+    let loading;
+    console.log(this.state.isLoading);
+    if (this.state.isLoading == true)
+      loading = (
+        <Dimmer active>
+          <Loader size="massive">Loading</Loader>
+        </Dimmer>
+      );
+    else loading = <div />;
+    const img = require("../backgroundLogin.jpg");
+    const divStyle = {
+      width: "100%",
+      height: "1000px",
+      backgroundImage: `url(${img})`,
+      backgroundSize: "cover"
+    };
+    if (this.state.coID === null) {
+      return (
+        <div className="cComponent" style={divStyle}>
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)"
+            }}
+          >
+            <div class="ui placeholder segment">
+              {loading}
+              <div class="ui stackable very relaxed two column grid">
+                <div class="column">
+                  <form class="ui form">
+                    <div class="field">
+                      <label>Email</label>
+                      <div class="ui left icon input">
+                        <input
+                          type="text"
+                          placeholder="Email"
+                          onChange={evt => this.updateEmail(evt)}
+                        />
+                        <i aria-hidden="true" class="user icon" />
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>Password</label>
+                      <div class="ui left icon input">
+                        <input
+                          type="password"
+                          onChange={evt => this.updatePassword(evt)}
+                        />
+                        <i aria-hidden="true" class="lock icon" />
+                      </div>
+                    </div>
+                    <button
+                      class="ui secondary button"
+                      onClick={e => this.handleSignIn(e)}
+                    >
+                      Login
+                    </button>
+                    <br />{" "}
+                    <Modal
+                      style={{
+                        position: "absolute",
+                        left: "50%",
+                        top: "50%",
+                        transform: "translate(-50%, -50%)"
+                      }}
+                      trigger={
+                        <button
+                          class="ui big button"
+                          onClick={e => this.handleSignUp(e)}
+                        >
+                          <i aria-hidden="true" class="signup icon" />
+                          Sign up
+                        </button>
+                      }
+                      basic
+                      size="small"
+                    >
+                      <Modal.Content>
+                        <div>
+                          <style type="text/css">
+                            {`
     .btn-flat {
       background-color: orange;
       color: white;
@@ -73,58 +177,162 @@ class Login extends Component {
       padding: 1rem 1.5rem;
       font-size: 1.5rem;
     }
-    .btn-google{
-      background-color: red;
-      color: white;}
-    center: {
-    marginLeft: "auto",
-    marginRight: "auto"
-  }
-
     `}
-        </style>
+                          </style>
+                          <h1>Create an account</h1>
+                          <br />
+                          <h3>Step 1: Choose account type</h3>
+                          <br />
+                          <Modal
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              transform: "translate(-50%, -50%)"
+                            }}
+                            trigger={
+                              <Button variant="flat" size="xxl" block>
+                                Educational Organization
+                              </Button>
+                            }
+                            basic
+                            size="small"
+                          >
+                            <Modal.Content>
+                              <SignUpEducationalOrganization />
+                            </Modal.Content>
+                          </Modal>
 
-        <Jumbotron>
-          <h1>Welcome to LIRTEN HUB!</h1>
-          <p>Create Your Own Future</p>
-          <Form>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                onChange={evt => this.updateEmail(evt)}
-              />
-            </Form.Group>
+                          <br />
+                          <Modal
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              transform: "translate(-50%, -50%)"
+                            }}
+                            trigger={
+                              <Button variant="flat" size="xxl" block>
+                                Consultancy Agency
+                              </Button>
+                            }
+                            basic
+                            size="small"
+                          >
+                            <Modal.Content>
+                              <SignUpConsultancyAgency />
+                            </Modal.Content>
+                          </Modal>
+                          <br />
+                          <Modal
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              transform: "translate(-50%, -50%)"
+                            }}
+                            trigger={
+                              <Button variant="flat" size="xxl" block>
+                                Coworking Space
+                              </Button>
+                            }
+                            basic
+                            size="small"
+                          >
+                            <Modal.Content>
+                              <SignUpCoworkingSpace />
+                            </Modal.Content>
+                          </Modal>
+                          <br />
 
-            <Form.Group controlId="formBasicPassword">
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                onChange={evt => this.updatePassword(evt)}
-              />
-            </Form.Group>
+                          <Modal
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              transform: "translate(-50%, -50%)"
+                            }}
+                            trigger={
+                              <Button variant="flat" size="xxl" block>
+                                Member
+                              </Button>
+                            }
+                            basic
+                            size="small"
+                          >
+                            <Modal.Content>
+                              <SignUpMember />
+                            </Modal.Content>
+                          </Modal>
+                          <br />
+                          <Modal
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              transform: "translate(-50%, -50%)"
+                            }}
+                            trigger={
+                              <Button variant="flat" size="xxl" block>
+                                Partner
+                              </Button>
+                            }
+                            basic
+                            size="small"
+                          >
+                            <Modal.Content>
+                              <SignUpPartner />
+                            </Modal.Content>
+                          </Modal>
+                          <br />
+                        </div>
+                      </Modal.Content>
+                    </Modal>
+                  </form>
+                </div>
+                <div class="middle aligned column">
+                  <h1>
+                    Welcome to <br />
+                    LIRTEN HUB!
+                  </h1>
+                  <p>
+                    Order is brought upon forthrightly from disorder. A small
+                    action can lead to a massive outcome. The humble flip of a
+                    fragile butterfly at one end of the storm.
+                  </p>
+                </div>
+              </div>
+              <div class="ui vertical divider" />
+            </div>
+          </div>
+        </div>
+      );
+    } else if (this.state.type === "coworkingSpace") {
+      // console.log(this.state.coID)
 
-            <Button
-              variant="flat"
-              size="xxl"
-              block
-              onClick={e => this.handleSignIn(e)}
-            >
-              SIGN IN
-            </Button>
-            <Link to={`/signUp`}>
-              <NavLink to="/signUp">Don't have an account yet? SIGN UP</NavLink>
-            </Link>
-          </Form>
-          <br />
-          <ButtonToolbar>
-            <Button variant="google" onClick={this.handleGoogle}>
-              Sign in with Google+
-            </Button>
-          </ButtonToolbar>
-        </Jumbotron>
-      </div>
-    );
+      this.props.history.push(`/coworkingSpace/${this.state.coID}`);
+      return <div />;
+    } else if (this.state.type === "member") {
+      // console.log(this.state.coID)
+
+      this.props.history.push(`/MemberProfile`);
+      return <div />;
+    } else if (this.state.type === "consultancyAgency") {
+      // console.log(this.state.coID)
+
+      this.props.history.push(`/consultancyAgency`);
+      return <div />;
+    } else if (this.state.type === "partner") {
+      // console.log(this.state.coID)
+
+      this.props.history.push(`/partner`);
+      return <div />;
+    } else if (this.state.type === "admin") {
+      // console.log(this.state.coID)
+
+      this.props.history.push(`/admin`);
+      return <div />;
+    }
   }
 }
 

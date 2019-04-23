@@ -3,6 +3,8 @@ import '../App.css';
 import SuggestionItems from './SuggestionItems'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
+
 
 class Suggestions extends Component {
    state={
@@ -14,13 +16,15 @@ class Suggestions extends Component {
 
   //id will change to generic type when linking  `/api/coworkingSpace/CoworkingSpace/Suggestions/${eid}`
   componentDidMount(){
-    axios.get('/api/coworkingSpace/CoworkingSpace/Suggestions/6')
+    const {data}= this.props.location
+    console.log(data)
+    axios.get('/api/coworkingSpace/CoworkingSpace/Suggestions/'+data._id)
     .then(res=>{
       const coworkingSpace=res.data
       this.setState({coworkingSpace:coworkingSpace,isLoading:false})})
       .catch(error => this.setState({ error, isLoading: false }));
 
-  }
+  } 
 
   render() {
     return (
@@ -33,4 +37,4 @@ class Suggestions extends Component {
   }
 }
 
-export default Suggestions;
+export default withRouter(Suggestions);

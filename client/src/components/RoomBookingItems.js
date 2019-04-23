@@ -11,7 +11,7 @@ class RoomBookingItems extends Component {
         this.props.isLoading? 
         <img style={{ width: 100, height: 70 }} src={horse} />:
         this.props.roomBooking.map((room)=>(
-        <RoomBookingEntry id={room.bookingID} roomBooking= {room} update={this.props.update}/> ))
+        <RoomBookingEntry id={room.bookingID} roomBooking= {room} /> ))
       )
   }
 }

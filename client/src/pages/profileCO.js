@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import profile from "../../src/profilepic.jpg";
+import CreatePost from "../components/CreatePost";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
 import Fa from "../components/Facilities";
 import Desc from "../components/CoDescription";
 import { Link } from "react-router-dom";
-import Rooms from "../pages/AllRooms"
-import Basics from "../components/BasicInfoCO"
+import Rooms from "../pages/AllRooms";
+import Basics from "../components/BasicInfoCO";
+import Side from "../components/BasicSideNavBar";
+import Search from "../components/Search";
 import {
   faPhone,
   faAt,
@@ -32,9 +35,10 @@ class Profile extends Component {
     super(props);
     this.state = {
       view: "Info",
-      coID: "5caf3f533f50a4165057019f",
+      coID: window.location.pathname.split("/").pop(),
       info: {},
       facilities: [],
+      posts: [],
       namee: "",
       flag: false
     };
@@ -42,23 +46,41 @@ class Profile extends Component {
   }
   componentDidMount() {
     this.getList();
+    this.getPosts();
   }
 
-
-
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
+  }
+  async getPosts() {
+    await fetch(`/api/posts/getPost`)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+  //window.location.pathname.split("/").pop(),
   // Retrieves the list of items from the Express app
   getList = async () => {
-    
     const coID = this.state.coID;
-    await fetch(
-      `/api/coworkingSpace/viewCoworkingSpace/${coID}`
-    )
+    await fetch(`/api/coworkingSpace/viewCoworkingSpace/`)
       .then(res => res.json())
-      .then(info => this.setState({ info }));
+      .then(info => this.setState({ info }))
+      .then(coID => this.setState({ coID }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
     this.setState({
       facilities: this.state.info.facilities
     });
-    
   };
 
   handleButtonClick(evt) {
@@ -69,41 +91,51 @@ class Profile extends Component {
   }
 
   render() {
+    console.log(this.state.coID);
     const view = this.state.view;
     let output;
+    let createPost;
     const { info } = this.state;
     if (view === "Info")
       output = (
-          
-        <div>           
+        <div>
           <ul>
             <div>
-                <Desc coID={this.state.coID} />
-                <br/>
-                <br />
-                <Fa coID={this.state.coID}/>
+              <Desc coID={this.state.coID} />
+              <br />
+              <br />
+              <Fa coID={this.state.coID} />
             </div>
           </ul>{" "}
         </div>
       );
-    if (view === "Posts") output = <Post />;
-    if (view === "Rooms") output = (
-        <div>       
-           
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      createPost = <CreatePost />;
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={true} />
+      ));
+    }
+    if (view === "Rooms")
+      output = (
+        <div>
           <ul>
             <div>
-                <Rooms coID={this.state.coID} />
+              <Rooms coID={this.state.coID} />
             </div>
           </ul>{" "}
         </div>
-    );
+      );
 
     return (
       <div>
+        {/* <Navbar /> */}
+        <Side />
         <style type="text/css">
           {`
     .btn-flat {
-      background-color: orange;
+      background-color: gray;
       color: white;
     }
 
@@ -121,6 +153,7 @@ class Profile extends Component {
 
     `}
         </style>
+
         <Jumbotron fluid>
           <Container>
             <Card>
@@ -128,7 +161,12 @@ class Profile extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>
@@ -141,7 +179,6 @@ class Profile extends Component {
                     </h3>
                     <Row>
                       <p className="text-muted">Type : {info.type}</p>
-                        
                     </Row>
                     <Basics coID={this.state.coID} />
                   </ul>
@@ -174,6 +211,7 @@ class Profile extends Component {
               </ButtonGroup>
             </div>
             <Card>
+              {createPost}
               <Card.Body>{output}</Card.Body>
             </Card>
           </Container>
