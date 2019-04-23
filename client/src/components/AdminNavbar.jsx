@@ -6,6 +6,7 @@ import axios from "axios";
 import SideNav, { NavItem, NavIcon, NavText } from "@trendmicro/react-sidenav";
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import Adminside from "./Adminside";
+import Search from "./Search";
 
 class NavbarPage extends Component {
   state = {
@@ -17,19 +18,6 @@ class NavbarPage extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmit(e) {
-    e.preventDefault();
-    axios
-      .get(`/api/admin/viewUser/${this.state.id}`)
-      .then(res => {
-        alert("Name: " + res.data.name + "\nEmail:" + res.data.email);
-      })
-      .catch(error => {
-        this.setState({ error });
-        alert(error.message + ". User not found !");
-      });
-  }
-
   render() {
     return (
       <Navbar style={{ backgroundColor: "#ffffff" }}>
@@ -38,18 +26,7 @@ class NavbarPage extends Component {
           <img style={{ width: "33%", height: "10%" }} src={Logo2} />
         </Nav>
 
-        <Form inline onSubmit={this.onSubmit.bind(this)}>
-          <FormControl
-            type="text"
-            placeholder="Search"
-            className="mr-sm-2"
-            name="id"
-            onChange={this.onChange.bind(this)}
-          />
-          <Button type="submit" variant="outline-info">
-            Search
-          </Button>
-        </Form>
+        <Search/>
 
         <footer
           class="page-footer font-small blue"
