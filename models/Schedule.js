@@ -14,6 +14,7 @@ const ScheduleSchema = new Schema({
   id: Number,
   Date: Date,
   time: Number,
+  endTime:Number,
   reserved: Boolean,
   scheduleNumber: Number
 });
