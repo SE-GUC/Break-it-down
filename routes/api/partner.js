@@ -253,7 +253,7 @@ router.post("/createTask", async (req, res) => {
       const description = req.body.description;
       const wantsConsultant = req.body.wantsConsultant;
       const field=req.body.field;
-      //const skills=req.body.skills;
+      const skills=req.body.skills;
       const applicants = [];
       const approved = false;
       const lifeCycle=[false,false,false,false]
@@ -277,13 +277,13 @@ router.post("/createTask", async (req, res) => {
         description: Joi.string().required(),
         wantsConsultant: Joi.boolean().required(),
         field: Joi.string().required(),
-        //skills: Joi.array().required(),
+        skills: Joi.array().required(),
       };
       const result = Joi.validate(req.body, schema);
-    
-      if (result.error) {
-        return res.send(error.message);
-      }
+      wantsConsultant=JSON.parse(wantsConsultant)
+      // if (result.error) {
+      //   return res.send(error);
+      // }
       const newtask = {
         taskID,
         name,
@@ -292,7 +292,7 @@ router.post("/createTask", async (req, res) => {
         lifeCycle,
         field,
         pid ,  //for malak and abdelrahman
-       // skills,
+        skills,
         approved,
         applicants
       };
@@ -314,7 +314,6 @@ router.post("/createTask", async (req, res) => {
  
 }); 
 });
-
 
 //--------------------------Partner view task's applicants -----------------------------------//  done all
 router.get("/view/:TID", async (req, res) => {
