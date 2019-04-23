@@ -14,7 +14,7 @@ class MainUpdates extends Component {
 
  auth = async () => {
     await fetch(
-      `/api/coworkingSpace/viewCoworkingSpace`)
+      `/api/admin/viewAdmin`)
       .then(res => res.json())
       .catch(error => {
         alert("Your session has expired. Please login again");
