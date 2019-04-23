@@ -1194,19 +1194,48 @@ router.get("/viewUser/:id", async (req, res) => {
   res.json(user[0]);
 });
 
-router.get("viewAdmin", async (req, res) => {
+router.get("/viewAdmin", (req, res) => {
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
     if (err) {
       //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
       res.sendStatus(403);
     } else {
-      const adminID = ObjectId(authorizedData.id);
-      const admin= await users.findById(adminID);
-      res.json(admin)
+      try {
+        const ad = await users.findOne({
+          type: "admin",
+          _id: authorizedData.id });
+        if (ad=== undefined || ad.length == 0)
+          return res.json("Admin does not exist");
+        res.json(ad);
+      } catch (error) {
+        res.json(error.message);
+      }
+      console.log("SUCCESS: Connected to protected route");
     }
   });
 });
 
+router.get("/viewAll", (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      res.sendStatus(403);
+    } else {
+      try {
+        const ad = await users.findOne({
+          _id: authorizedData.id });
+        if (ad=== undefined || ad.length == 0)
+          return res.json("User does not exist");
+        res.json(ad);
+      } catch (error) {
+        res.json(error.message);
+      }
+      console.log("SUCCESS: Connected to protected route");
+    }
+  });
+});
 
 
 module.exports = router;
