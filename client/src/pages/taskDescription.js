@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {Card} from "react-bootstrap";
 import {CardDeck} from "react-bootstrap";
 import axios from "axios";
+import AdminNavbar from '../components/AdminNavbar'
 
 class taskDescription extends Component {
   // Initialize the state
@@ -65,6 +66,7 @@ class taskDescription extends Component {
        
       <div className="App">
         <h1> Submitted Task's Description </h1>
+        <AdminNavbar/>
         <CardDeck>
               { descript.map((d,i)=>
 

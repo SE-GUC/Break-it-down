@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {Button} from "react-bootstrap";
+import AdminNavbar from '../components/AdminNavbar'
 
 class AdminNotify extends Component {
   constructor(props) {
@@ -49,6 +50,7 @@ class AdminNotify extends Component {
     }
     return (
       <div className="App">
+       <AdminNavbar/>
        
         <br />
         <h1>Notifications </h1>

@@ -5,6 +5,7 @@ import axios from "axios";
 import {Card} from "react-bootstrap";
 import {CardDeck} from "react-bootstrap";
 import {Form} from "react-bootstrap";
+import AdminNavbar from '../components/AdminNavbar'
 
 class AdminActivateAccounts extends Component {
   constructor(props) {
@@ -58,6 +59,7 @@ class AdminActivateAccounts extends Component {
 
     return (
       <div className="App" style={{alignItems:'center'}}>
+       <AdminNavbar/>
         <h1> Activate Accounts </h1>
             <h3>Deactivated Users</h3>
 

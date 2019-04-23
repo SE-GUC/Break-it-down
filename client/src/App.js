@@ -57,6 +57,7 @@ import PartnerProfile from "./pages/partnerprofile";
 import CaAllTasks from "./components/CAApplyForTask";
 import CAEvents from "./components/CAMyEvents";
 import ChangePass from './pages/ChangePass';
+import Notify from "./pages/AdminNotify";
 
 class App extends Component {
   
@@ -202,6 +203,7 @@ class App extends Component {
           />
           <Route exact path="/getNotifications" component={partnernotify} />
           <Route exact path="/admin/mails" component={NotifyToSignContract} />
+          <Route exact path="/admin/notifications" component={Notify} />
           <Route exact path="/admin/activate" component={activateAccount} />
           <Route
             exact

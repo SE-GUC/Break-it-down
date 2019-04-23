@@ -8,6 +8,7 @@ import {Label} from "reactstrap";
 import {Input} from "reactstrap";
 import {FormGroup} from "reactstrap";
 import axios from "axios";
+import AdminNavbar from '../components/AdminNavbar'
 
 
 var Mongoose = require("mongoose");
@@ -105,6 +106,7 @@ class AdminNotifyToSignContract extends Component {
     return (
       
       <div className="App">
+       <AdminNavbar/>
         <h1> Signed up Users who still didn't sign the contract  </h1>
         <br/>
         <CardDeck>
