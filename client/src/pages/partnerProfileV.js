@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import profile from "../profile.svg";
+import profile from "../profilePictureMale.png";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
 import { Link } from "react-router-dom";
-import Side from '../components/BasicSideNavBar';
+import Side from "../components/BasicSideNavBar";
 import {
   faPhone,
   faAt,
@@ -34,22 +34,41 @@ class partnerprofile extends Component {
     this.state = {
       view: "Info",
       data: [],
-      pId : this.props.match.params.pID
+      pId: this.props.match.params.pID,
+      posts: []
     };
   }
 
   componentWillMount() {
     this.getMemberProfile();
+    this.getPosts();
   }
 
   async getMemberProfile() {
-      console.log("id: "+this.state.pId)
+    console.log("id: " + this.state.pId);
     await fetch(`/api/partner/viewProfile/${this.state.pId}`)
       .then(res => res.json())
-      .then(data => this.setState({ data }))
-      ;
+      .then(data => this.setState({ data }));
 
-      console.log(this.state.data)
+    console.log(this.state.data);
+  }
+
+  async getPosts() {
+    await fetch(`/api/posts/getPost/` + this.state.pId)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
   }
 
   handleButtonClick(evt) {
@@ -60,7 +79,7 @@ class partnerprofile extends Component {
   }
   render() {
     //console.log(window.localStorage.getItem("access_token"));
-    console.log("id: "+this.state.pId)
+    console.log("id: " + this.state.pId);
     const view = this.state.view;
     let data = this.state.data || [];
     console.log(data);
@@ -78,15 +97,14 @@ class partnerprofile extends Component {
       output = (
         <div>
           <ul>
-           
             <div>
               <h4>
-              < Link >
-                <FontAwesomeIcon icon={faAward} />
-                <a> </a>
-                Certificates
-                <a> </a>
-                <FontAwesomeIcon icon={faAward} />
+                <Link>
+                  <FontAwesomeIcon icon={faAward} />
+                  <a> </a>
+                  Certificates
+                  <a> </a>
+                  <FontAwesomeIcon icon={faAward} />
                 </Link>
               </h4>
               <hr />
@@ -95,12 +113,13 @@ class partnerprofile extends Component {
           </ul>{" "}
         </div>
       );
-    if (view === "Posts")
-      output = (
-        <div>
-          <Post />
-        </div>
-      );
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={false} />
+      ));
+    }
     if (view === "Tasks") output = <h1>Tasks</h1>;
 
     return (
@@ -136,7 +155,12 @@ class partnerprofile extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>
@@ -161,7 +185,7 @@ class partnerprofile extends Component {
                     </Row>
                     <Row>
                       <FontAwesomeIcon icon={faGlobe} />
-                      
+
                       <p> Website:{data.website}</p>
                     </Row>
                   </ul>
@@ -177,16 +201,12 @@ class partnerprofile extends Component {
                 >
                   Posts
                 </Button>
-                
-                <Button variant="flat" value="Tasks" href={`/myTasks`}> 
-                Tasks
-                </Button> 
-                
-                <Button
-                  variant="flat"
-                  value="Info"
-                  href={`/myProfile`}
-                >
+
+                <Button variant="flat" value="Tasks" href={`/myTasks`}>
+                  Tasks
+                </Button>
+
+                <Button variant="flat" value="Info" href={`/myProfile`}>
                   Info
                 </Button>
               </ButtonGroup>

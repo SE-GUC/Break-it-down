@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import profile from "../profile.svg";
+import profile from "../profilePictureMale.png";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
 import { Link } from "react-router-dom";
+import CreatePost from "../components/CreatePost";
 import PartnerSidenav from "../components/BasicSideNavBar";
 import {
   faPhone,
@@ -21,8 +22,8 @@ import {
   Jumbotron,
   Button,
   Badge,
-  Card,
   Row,
+  Card,
   Container,
   ButtonGroup
 } from "react-bootstrap";
@@ -33,12 +34,21 @@ class partnerprofile extends Component {
     super(props);
     this.state = {
       view: "Info",
-      data: []
+      data: [],
+      posts: []
     };
   }
 
   componentWillMount() {
     this.getMemberProfile();
+    this.getPosts();
+  }
+
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
   }
 
   async getMemberProfile() {
@@ -53,6 +63,16 @@ class partnerprofile extends Component {
       });
   }
 
+  async getPosts() {
+    await fetch(`/api/posts/getPost`)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
   handleButtonClick(evt) {
     console.log("clicked");
     if (evt.target.value === "Info") this.setState({ view: "Info" });
@@ -65,6 +85,7 @@ class partnerprofile extends Component {
     let data = this.state.data || [];
     console.log(data);
     let output;
+    let createPost;
     let badge = this.state.data.activation ? (
       <Badge variant="primary">
         {" "}
@@ -107,12 +128,14 @@ class partnerprofile extends Component {
           </ul>{" "}
         </div>
       );
-    if (view === "Posts")
-      output = (
-        <div>
-          <Post />
-        </div>
-      );
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      createPost = <CreatePost />;
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={true} />
+      ));
+    }
     if (view === "Tasks") output = <h1>Tasks</h1>;
 
     return (
@@ -147,7 +170,12 @@ class partnerprofile extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>
@@ -199,6 +227,7 @@ class partnerprofile extends Component {
               </ButtonGroup>
             </div>
             <Card>
+              {createPost}
               <Card.Body>{output}</Card.Body>
             </Card>
           </Container>

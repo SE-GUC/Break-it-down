@@ -9,8 +9,8 @@ import Image from "react-image-resizer";
 import Post from "../components/Post";
 import Fa from "../components/cospaceFacilitiesV";
 import Desc from "../components/CospaceDescV";
-import Rooms from "../pages/cospcaeAllRoomsV"
-import Basics from "../components/CospaceBasicInfoV"
+import Rooms from "../pages/cospcaeAllRoomsV";
+import Basics from "../components/CospaceBasicInfoV";
 import Side from "../components/BasicSideNavBar";
 
 import {
@@ -44,7 +44,8 @@ class List extends Component {
       facilities: [],
       namee: "",
       flag: false,
-      coID: this.props.match.params.id
+      coID: this.props.match.params.id,
+      posts: []
     };
     this.getList = this.getList.bind(this);
   }
@@ -52,6 +53,7 @@ class List extends Component {
   // Fetch the list on first mount
   componentDidMount() {
     this.getList();
+    this.getPosts();
   }
 
   handleButtonClick(evt) {
@@ -63,22 +65,37 @@ class List extends Component {
 
   // Retrieves the list of items from the Express app
   getList = async () => {
-
     const id = this.props.match.params.id;
-    console.log("ll "+id)
-    await fetch(
-      `/api/member/PartnerCoworkingspaces/${id}/`
-    )
+    console.log("ll " + id);
+    await fetch(`/api/member/PartnerCoworkingspaces/${id}/`)
       .then(res => res.json())
       .then(info => this.setState({ info: info.pop() }))
       // .then(info => this.setState({ info }))
-      .then(coID => this.setState({coID}))
+      .then(coID => this.setState({ coID }));
     this.setState({
-      facilities: this.state.info.facilities,
+      facilities: this.state.info.facilities
     });
     // console.log(this.state.info.pop().name)
     //  console.log(this.state.list)
   };
+  async getPosts() {
+    const id = this.props.match.params.id;
+    await fetch(`/api/posts/getPost/` + id)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
+  }
 
   // render() {
   //   let sidenav;
@@ -140,40 +157,45 @@ class List extends Component {
   // }
 
   render() {
-    console.log(this.state.coID)
+    console.log(this.state.coID);
     const view = this.state.view;
     let output;
     const { info } = this.state;
     if (view === "Info")
       output = (
-          
-        <div>           
+        <div>
           <ul>
             <div>
-                <Desc coID={this.state.coID} />
-                <br/>
-                <br />
-                <Fa coID={this.state.coID}/>
+              <Desc coID={this.state.coID} />
+              <br />
+              <br />
+              <Fa coID={this.state.coID} />
             </div>
           </ul>{" "}
         </div>
       );
-    if (view === "Posts") output = <Post />;
-    if (view === "Rooms") output = (
-        <div>       
-           
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={false} />
+      ));
+    }
+    if (view === "Rooms")
+      output = (
+        <div>
           <ul>
             <div>
-                <Rooms coID={this.props.match.params.id} />
+              <Rooms coID={this.props.match.params.id} />
             </div>
           </ul>{" "}
         </div>
-    );
+      );
 
     return (
       <div>
         <Side />
-        <style type="text/css" >
+        <style type="text/css">
           {`
     .btn-flat {
       background-color: gray;
@@ -201,7 +223,12 @@ class List extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>
@@ -214,7 +241,6 @@ class List extends Component {
                     </h3>
                     <Row>
                       <p className="text-muted">Type : {info.type}</p>
-                        
                     </Row>
                     <Basics coID={this.state.coID} />
                   </ul>

@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import profile from "../profile.svg";
+import profile from "../profilePictureMale.png";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
 import { Link } from "react-router-dom";
-import { withRouter } from 'react-router-dom';
-import {ListGroup, ListGroupItem} from 'reactstrap';
-import {CSSTransition, TransitionGroup} from 'react-transition-group'
+import { withRouter } from "react-router-dom";
+import { ListGroup, ListGroupItem } from "reactstrap";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
-import CASidenav from '../components/BasicSideNavBar';
+import CASidenav from "../components/BasicSideNavBar";
 import {
   faPhone,
   faAt,
@@ -39,25 +39,45 @@ class CAVisitingPartner extends Component {
     this.state = {
       view: "Info",
       data: [],
+      posts: []
     };
   }
 
   componentWillMount() {
-    const {data}= this.props.location
-    console.log(data)
-
+    const { data } = this.props.location;
+    console.log(data);
+    this.getPosts(data);
     this.getMemberProfile(data);
-    console.log(this.state.data)
-
+    console.log(this.state.data);
   }
 
   async getMemberProfile(id) {
-    await axios.get(`/api/partner/viewProfile/`+id)
-      .then(res => {this.setState({ data:res.data })})
+    await axios
+      .get(`/api/partner/viewProfile/` + id)
+      .then(res => {
+        this.setState({ data: res.data });
+      })
       .catch(error => {
         console.log("member not authorized");
-        
       });
+  }
+
+  async getPosts(id) {
+    await fetch(`/api/posts/getPost/` + id)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
   }
 
   handleButtonClick(evt) {
@@ -83,32 +103,35 @@ class CAVisitingPartner extends Component {
     if (view === "Info")
       output = (
         <div>
-            <p>{data.description}</p>
+          <p>{data.description}</p>
 
-              <p>{data.certificates}</p>
-       
+          <p>{data.certificates}</p>
         </div>
       );
-    if (view === "Posts")
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={false} />
+      ));
+    }
+    if (view === "Tasks")
       output = (
         <div>
-          <Post />
+          <h1>Tasks</h1>
+
+          <ListGroup>
+            {data.tasks.map(task => (
+              <CSSTransition key={task._id} timeout={500}>
+                <ListGroupItem>
+                  <Button block>{task.name} </Button>
+                </ListGroupItem>
+              </CSSTransition>
+            ))}
+          </ListGroup>
         </div>
       );
-    if (view === "Tasks") output =(<div>
-         <h1>Tasks</h1>
-
-         <ListGroup>
-                {data.tasks.map( task => (
-                    <CSSTransition key={task._id} timeout={500} >
-                    <ListGroupItem >
-                    <Button block >{task.name} </Button>
-                        
-                    </ListGroupItem>
-                </CSSTransition>  ))}   
-                 </ListGroup>  
-    </div>);
-console.log(data.tasks)
+    console.log(data.tasks);
     return (
       <div>
         {/* <PartnerNavbar /> */}
@@ -142,7 +165,12 @@ console.log(data.tasks)
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>
@@ -167,7 +195,7 @@ console.log(data.tasks)
                     </Row>
                     <Row>
                       <FontAwesomeIcon icon={faGlobe} />
-                      
+
                       <p> Website:{data.website}</p>
                     </Row>
                   </ul>
@@ -183,17 +211,19 @@ console.log(data.tasks)
                 >
                   Posts
                 </Button>
-                
-                <Button variant="flat" value="Tasks"  onClick={e => this.handleButtonClick(e)}
- > 
-                Tasks
-                </Button> 
-                
+
+                <Button
+                  variant="flat"
+                  value="Tasks"
+                  onClick={e => this.handleButtonClick(e)}
+                >
+                  Tasks
+                </Button>
+
                 <Button
                   variant="flat"
                   value="Info"
                   onClick={e => this.handleButtonClick(e)}
-
                 >
                   Info
                 </Button>

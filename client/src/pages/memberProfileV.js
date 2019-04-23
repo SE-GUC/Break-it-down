@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import profile from "../profile.svg";
+import profile from "../profilePictureMale.png";
 import Image from "react-image-resizer";
 import Post from "../components/Post";
-import Side from '../components/BasicSideNavBar';
+import Side from "../components/BasicSideNavBar";
 import {
   faPhone,
   faAt,
@@ -29,22 +29,43 @@ class ProfileMember extends Component {
     super(props);
     this.state = {
       view: "Info",
-      data: []
+      data: [],
+      posts: []
     };
   }
 
   componentWillMount() {
     this.getMemberProfile();
+    this.getPosts();
   }
 
   async getMemberProfile() {
-      const mID = this.props.match.params.mID;
-      console.log("mID: "+mID);
+    const mID = this.props.match.params.mID;
+    console.log("mID: " + mID);
     await fetch(`/api/member/viewMember/${mID}`)
       .then(res => res.json())
-      .then(data => this.setState({ data}));
+      .then(data => this.setState({ data }));
 
-      console.log(this.state.data)
+    console.log(this.state.data);
+  }
+
+  async getPosts() {
+    const mID = this.props.match.params.mID;
+    await fetch(`/api/posts/getPost/` + mID)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("http://localhost:4000/api/partner/chat")
+    );
   }
 
   handleButtonClick(evt) {
@@ -101,17 +122,18 @@ class ProfileMember extends Component {
           </ul>{" "}
         </div>
       );
-    if (view === "Posts")
-      output = (
-        <div>
-          <Post />
-        </div>
-      );
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={false} />
+      ));
+    }
     if (view === "Tasks") output = <h1>Tasks</h1>;
 
     return (
       <div>
-          <Side />
+        <Side />
         <style type="text/css">
           {`
     .btn-flat {
@@ -140,7 +162,12 @@ class ProfileMember extends Component {
                 <Row>
                   <ul>
                     <Image src={profile} width={240} height={240} rounded />
-                    <Button variant="outline-warning">Send Message</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={e => this.goToChat(e)}
+                    >
+                      Send Message
+                    </Button>
                   </ul>
 
                   <ul>

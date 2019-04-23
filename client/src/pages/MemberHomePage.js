@@ -3,8 +3,29 @@ import { Link } from "react-router-dom";
 import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 import MemberSidenav from "../components/MemberSidenav";
-//import coworkingspace from "./viewCoworkingSpaces";
+
+import MemberSide from "../components/MemberSide";
+
 export default class MemberHomePage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      MID: window.location.pathname.split("/").pop()
+    };
+  }
+
+  componentDidMount() {
+    this.getMemberProfile();
+  }
+  getMemberProfile() {
+    fetch(`/api/member/viewMember`)
+      .then(res => res.json())
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
   render() {
     return (
       <div id="postData">
@@ -12,7 +33,7 @@ export default class MemberHomePage extends Component {
           {" "}
           <div>
             {" "}
-            <NavbarPage whichPage="Home" /> <MemberSidenav />;
+            <MemberSide />;
           </div>{" "}
         </Route>
 

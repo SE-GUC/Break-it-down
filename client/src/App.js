@@ -56,13 +56,18 @@ import SpecificPartner from "./pages/partnerProfileV";
 import PartnerProfile from "./pages/partnerprofile";
 import CaAllTasks from "./components/CAApplyForTask";
 import CAEvents from "./components/CAMyEvents";
-import ChangePass from './pages/ChangePass';
+import ChangePass from "./pages/ChangePass";
 import Notify from "./pages/AdminNotify";
+import MemberTasks from "./pages/MemberTasks";
+import MemberRecommendedTasks from "./pages/MemberRecommendedTasks";
+import Memberdeletebook from "./pages/Memberdeletebook";
+import Memberapplytasks from "./pages/Memberapplytasks";
+import MemberStartTask from "./pages/MemberStartTask";
+import MemberEndTask from "./pages/MemberEndTask";
 
 class App extends Component {
-  
   componentWillMount() {
-    document.title = 'Lirten Hub'
+    document.title = "Lirten Hub";
   }
 
   render() {
@@ -120,6 +125,18 @@ class App extends Component {
             exact
             path="/RoombookingsMem/:id"
             component={MemberMyRoomBooking}
+          />
+          <Route exact path="/AllMembersmem" component={MemberViewAllmembers} />
+
+          <Route
+            exact
+            path="/RoombookingsMem/"
+            component={MemberMyRoomBooking}
+          />
+          <Route
+            exact
+            path="/RoomBookings/:bookingID"
+            component={Memberdeletebook}
           />
 
           <Route exact path="/admin/updates" component={MainUpdates} />
@@ -245,6 +262,22 @@ class App extends Component {
           />
 
           <Route exach path="/changePassword" component={ChangePass} />
+          <Route exact path="/MemberTasks" component={MemberTasks} />
+          <Route
+            exact
+            path="/MemberRecommendedTasks/"
+            component={MemberRecommendedTasks}
+          />
+          <Route
+            exact
+            path="/MemberStartTask/:taskID"
+            component={MemberStartTask}
+          />
+          <Route
+            exact
+            path="/MemberEndTask/:taskID"
+            component={MemberEndTask}
+          />
         </div>
       </Router>
     );

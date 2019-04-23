@@ -1,8 +1,8 @@
 // import React from 'react';
 import { slide as Menu } from "react-burger-menu";
 import Search from "../components/Search";
-import AdminNavbar from '../components/AdminNavbar'
-
+import AdminNavbar from "../components/AdminNavbar";
+import MemberNavbar from "../components/MemberSidenav";
 import SideNav, {
   Nav,
   NavItem,
@@ -117,11 +117,6 @@ class BasicSideNavBar extends Component {
               My profile
             </a>
 
-            <a className="menu-item" href={`/user/viewRoomBooking`}>
-            <Icon name="calendar alternate outline" />
-              View and Update my booking
-            </a>
-
             <a className="menu-item" href={`/createTask`}>
               <Icon name="plus circle" />
               Create a Task{" "}
@@ -194,12 +189,6 @@ class BasicSideNavBar extends Component {
               {"  "}
               Apply for a Task
             </a>
-
-            <a className="menu-item" href={`/user/viewRoomBooking`}>
-            <Icon name="calendar alternate outline" />
-              View and Update my booking
-            </a>
-            
             <a className="menu-item" href={`/changePassword/${coID}`}>
               Change password{" "}
             </a>
@@ -215,13 +204,11 @@ class BasicSideNavBar extends Component {
           </Menu>
         </div>
       );
-    } 
-    else if (this.state.type === "admin") {
-      return (
-       <AdminNavbar />
-      );
-    }
-    else {
+    } else if (this.state.type === "admin") {
+      return <AdminNavbar />;
+    } else if (this.state.type === "member") {
+      return <MemberNavbar />;
+    } else {
       return (
         <Menu>
           <a className="menu-item" href="">

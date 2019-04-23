@@ -53,6 +53,21 @@ router.get("/getPost", async (req, res) => {
   });
 });
 
+router.get("/getPost/:id", async (req, res) => {
+  jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+    if (err) {
+      //If error send Forbidden (403)
+      console.log("ERROR: Could not connect to the protected route");
+      //res.json({ error: "forbidden", status: "403" });
+      res.sendStatus(403);
+    } else {
+      const userID = req.params.id;
+      const results = await Post.find({ userID: userID });
+      res.json({ data: results });
+    }
+  });
+});
+
 router.delete("/deletePost/:id", async (req, res) => {
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
     if (err) {
