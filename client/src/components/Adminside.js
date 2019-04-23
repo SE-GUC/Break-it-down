@@ -7,7 +7,6 @@ import BellIcon from "react-bell-icon";
 import { Icon } from "semantic-ui-react";
 import {key} from "react-icons-kit/icomoon/key";
 import {envelope} from 'react-icons-kit/fa/envelopeO';
-import Search from "../components/Search";
 
   class Adminside extends Component{
     logout = async e => {
@@ -25,7 +24,6 @@ import Search from "../components/Search";
           right: '36px',
           top: '36px'
         }} right>
-        <Search />
           <a className="menu-item" href="/admin">
           <Icon name="home" />
             Home
@@ -43,10 +41,10 @@ import Search from "../components/Search";
           Notifications
           </a>
           <a className="menu-item" href="/admin/activate">
-          Activate
+          Activate Users' Accounts
           </a>
           <a className="menu-item" href="/admin/taskDescription">
-          Task Descriptions
+          Check Task Descriptions
           </a>
           <a className="menu-item"onClick={e => {this.logout(e); window.location = "/"; }} >  
           Logout{" "}</a>
