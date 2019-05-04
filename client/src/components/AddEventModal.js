@@ -6,6 +6,9 @@ import {connect} from 'react-redux'
 import {addEvent} from '../actions/EventActions'
 import PropTypes from 'prop-types'
 import uuid from 'uuid'
+import { withRouter } from 'react-router-dom';
+
+import axios from 'axios'
 
 class AddEventModal extends Component{
 constructor(props) {
@@ -51,14 +54,26 @@ constructor(props) {
     const newEvent={name: this.state.eventname,
       date: this.state.eventdate,
       description: this.state.eventdesc,
-      location: this.state.location
+      location: this.state.location,
+      time: this.state.eventtime
     }
-    this.props.addEvent(newEvent);
-    this.state.eventname=null
-    this.state.eventdate=null
-    this.state.eventdesc=null
-   this.state.location=null
-    this.toggle();
+
+    axios.post('/api/Events',newEvent)
+    .then(res => {
+
+     this.toggle();
+     let path = `/user/suggestions`;
+      this.props.history.push({
+        pathname:path,
+        data:res.data
+      
+     })
+    
+     console.log(res.data)
+    })
+    //this.props.addEvent(newEvent);
+
+    
   
 
   }
@@ -76,7 +91,7 @@ render(){
         <Input type="textarea" name="eventdesc" id="eventdesc" placeholder="" onChange={this.onChange}/>
     
         <Label for="location">Select Location</Label>
-        <Input type="select" name="location" id="eventlocation" placeholder= "Location" onSelect={this.onChange}>
+        <Input type="select" name="location" id="eventlocation" placeholder= "Location" onChange={this.onChange}>
           <option>6th of October</option>
           <option>Dokki</option>
           <option>Mohandseen</option>
@@ -97,11 +112,6 @@ render(){
  
         <Label for="eventtime">Time</Label>
         <Input type="time" name="eventtime" id="eventtime" placeholder="" onChange={this.onChange}/>
-
-        <Label check> 
-          <Input type="checkbox"/>
-              I need a coworking space for my event
-              </Label>
           
    
         <ModalFooter>
@@ -131,4 +141,4 @@ const mapStateToProps = state => ({
   event: state.event
 
 })
-export default connect(mapStateToProps, {addEvent})(AddEventModal)
+export default withRouter(connect(mapStateToProps, {addEvent})(AddEventModal))

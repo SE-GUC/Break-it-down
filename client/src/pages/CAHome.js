@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import profile from "../logo.svg";
 import Image from "react-image-resizer";
+import CreatePost from "../components/CreatePost";
+import Post from "../components/Post";
 import {
   faPhone,
   faAt,
@@ -38,6 +40,7 @@ class CAHome extends Component {
       uwebsite:null,
       uphoneNumber:null,
       udescription:null,
+      posts: []
      
     }
     this.onChange = this.onChange.bind(this);
@@ -51,6 +54,11 @@ class CAHome extends Component {
     if (evt.target.value === "Info") this.setState({ view: "Info" });
     if (evt.target.value === "Posts") this.setState({ view: "Posts" });
     if (evt.target.value === "BoardMembers") this.setState({ view: "BoardMembers" });
+  }
+
+  componentDidMount() {
+    this.getMyInfo();
+    this.getPosts();
   }
 
   getMyInfo=() =>{
@@ -121,13 +129,30 @@ catch{
     
   }
 
+  async goToChat(e) {
+    console.log("chat");
+    await fetch(`/api/partner/chat`).then(
+      window.location.assign("/api/partner/chat")
+    );
+  }
+  async getPosts() {
+    await fetch(`/api/posts/getPost`)
+      .then(res => res.json())
+      .then(posts => this.setState({ posts }))
+      .catch(error => {
+        alert("Your session has expired. Please login again");
+        window.location = "/";
+        return error;
+      });
+  }
+
 
   render() {
 
 
-
-    
-    this.getMyInfo() //Temporary, Will Pass Token Later.
+    console.log(this.state.me.data)
+    let createPost;
+    //this.getMyInfo() //Temporary, Will Pass Token Later.
     const view = this.state.view;
     let output;
 
@@ -156,6 +181,15 @@ catch{
         </div>
 
     );}
+
+    if (view === "Posts") {
+      const posts = this.state.posts;
+      console.log(posts);
+      createPost = <CreatePost />;
+      output = posts.data.map(post => (
+        <Post key={post._id} value={post} edit={true} />
+      ));
+    }
     return (
       <div>
         <style type="text/css">
@@ -271,7 +305,7 @@ catch{
                   value="Posts"
                   onClick={e => this.handleButtonClick(e)}
                 >
-                  Posts(NextSprint)
+                  Posts
                 </Button>
                 <Button
                   variant="flat"
@@ -290,6 +324,7 @@ Board Members                </Button>
               </ButtonGroup>
             </div>
             <Card>
+            {createPost}
               <Card.Body>{output}</Card.Body>
             </Card>
           </Container>

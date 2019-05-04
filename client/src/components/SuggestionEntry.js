@@ -55,23 +55,7 @@ class SuggestionEntry extends Component {
                       "Capacity: " +
                       (room.capacity === undefined
                         ? "unknown"
-                        : room.capacity) +
-                      (room.schedule === undefined
-                        ? ""
-                        : room.schedule.map(
-                            slot =>
-                              "     Reserved: " +
-                              (slot.reserved === true ? "Yes    " : "No    ") +
-                              "     Date: " +
-                              (slot.Date === undefined
-                                ? "unknown"
-                                : slot.Date) +
-                              "     Time: " +
-                              (slot.time === undefined
-                                ? "unknown"
-                                : slot.time) +
-                              "........."
-                          ))
+                        : room.capacity) 
                   )}
               <br />
             </p>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
-import MemberSide from "../components/MemberSide";
+import MemberSide from "../components/BasicSideNavBar";
 class MemberViewAllmembers extends Component {
   state = { list: [], type: "member" };
 
@@ -27,7 +27,7 @@ class MemberViewAllmembers extends Component {
           {" "}
           <div>
             {" "}
-            <MemberSide />;
+            <MemberSide />
           </div>{" "}
         </Route>
         {list.map(el => (

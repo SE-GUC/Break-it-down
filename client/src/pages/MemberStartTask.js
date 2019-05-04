@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MemberSide from "../components/MemberSide";
+import MemberSide from "../components/BasicSideNavBar";
 
 class MemberStartTask extends Component {
   constructor(props) {

@@ -36,7 +36,7 @@ class CreatePost extends Component {
     if (isValidated.error) alert(isValidated.error.details[0].message);
     else
       await axios
-        .post("api/posts/createPost", info)
+        .post("/api/posts/createPost", info)
         .then(function(response) {
           console.log("post created successfully");
           alert("Post created successfully");

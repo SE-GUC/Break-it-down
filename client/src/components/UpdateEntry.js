@@ -146,6 +146,13 @@ class UpdateEntry extends Component {
                 Disapprove
               </button>
             </p>
+            <div
+          class="alert alert-secondary"
+          role="alert"
+          style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+        >
+          Copyright © 2019 Lirtenhub Inc. All Rights Reserved.{" "}
+        </div>
           </Card.Body>
         </Card>
       </div>

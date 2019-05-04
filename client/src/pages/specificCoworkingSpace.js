@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import { Link, BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
-import MemberSidenav from "../components/MemberSidenav";
 
 import profile from "../../src/profilepic.jpg";
 import Image from "react-image-resizer";

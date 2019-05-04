@@ -135,7 +135,7 @@ class Profile extends Component {
         <style type="text/css">
           {`
     .btn-flat {
-      background-color: gray;
+      background-color: orange;
       color: white;
     }
 

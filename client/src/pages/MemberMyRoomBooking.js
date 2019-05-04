@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { Link, BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
-import MemberSide from "../components/MemberSide";
+import MemberSide from "../components/BasicSideNavBar";
 class MemberMyRoomBooking extends Component {
   // Initialize the state
   constructor(props) {
@@ -50,7 +50,7 @@ class MemberMyRoomBooking extends Component {
           {" "}
           <div> </div>{" "}
           <div>
-            <MemberSide />;
+            <MemberSide />
           </div>
         </Route>
         <div>

@@ -613,7 +613,7 @@ var date = todate.getFullYear() + "-" + (todate.getMonth() + 1) + "-" + todate.g
        // res.sendStatus(403);
       } else {
         const ID = ObjectId(authorizedData.id);
-        //sendNotification(ID)
+        sendNotification(ID)
       }
     })
   }, null, true, 'America/Los_Angeles');

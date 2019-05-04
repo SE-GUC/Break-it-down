@@ -36,6 +36,7 @@ class taskDescription extends Component {
   ApproveTasks(Id, TId){
     axios.put(`/api/admin/ApproveTasks/${Id}/${TId}`)
          .then( res => {alert("Task Approved successfully!")})
+         .then(res =>{this.getDescription()})
          .catch(error =>{
           this.setState({error})
           alert(error.message+". Approving the task was unsuccessful! please try again");
@@ -44,6 +45,7 @@ class taskDescription extends Component {
   DisapproveTasks(Id, TId){
     axios.delete(`/api/admin/DisapproveTasks/${Id}/${TId}`)
          .then( res => {alert("Task Disapproved successfully!")})
+         .then(res =>{this.getDescription()})
          .catch(error =>{
           this.setState({error})
           alert(error.message+". Disapproving the task was unsuccessful! please try again");
@@ -95,7 +97,7 @@ class taskDescription extends Component {
           role="alert"
           style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         >
-          Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
+          Copyright © 2019 Lirtenhub Inc. All Rights Reserved.{" "}
         </div>
       </div>
      

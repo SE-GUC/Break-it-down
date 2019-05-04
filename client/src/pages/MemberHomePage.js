@@ -4,7 +4,7 @@ import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
 import MemberSidenav from "../components/MemberSidenav";
 
-import MemberSide from "../components/MemberSide";
+import MemberSide from "../components/BasicSideNavBar";
 
 export default class MemberHomePage extends Component {
   constructor(props) {

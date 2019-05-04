@@ -20,7 +20,7 @@ class NavbarPage extends Component {
 
   render() {
     return (
-      <Navbar style={{ backgroundColor: "#ffffff" }}>
+      <Navbar>
       <Adminside />
         <Nav className="mr-auto">
           <img style={{ width: "33%", height: "10%" }} src={Logo2} />
@@ -31,8 +31,7 @@ class NavbarPage extends Component {
         <footer
           class="page-footer font-small blue"
           style={{
-            backgroundColor: "#ffffff",
-            color: "#000000",
+            color: "#ffffff",
             textAlign: "center",
             position: "fixed",
             bottom: "0",
@@ -40,8 +39,8 @@ class NavbarPage extends Component {
             padding: "0.5rem"
           }}
         >
-          <div class="footer-copyright text-center py-3">
-            © 2019 Copyright: LIRTENHUB
+          <div class="footer-copyright text-center py-3" className="fixed-bottom"> 
+          Copyright © 2019 Lirtenhub Inc. All Rights Reserved.
           </div>{" "}
         </footer>
       </Navbar>
