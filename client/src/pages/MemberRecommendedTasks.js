@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { BrowserRouter as Route } from "react-router-dom";
 import NavbarPage from "../components/Navbar";
-import MemberSide from "../components/MemberSide";
+import MemberSide from "../components/BasicSideNavBar";
 class MemberRecommendedTasks extends Component {
   state = { list: [] };
 
@@ -35,7 +35,7 @@ class MemberRecommendedTasks extends Component {
           {" "}
           <div>
             {" "}
-            <MemberSide />;
+            <MemberSide />
           </div>{" "}
         </Route>
         <h1>Tasks</h1>

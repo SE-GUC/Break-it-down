@@ -10,7 +10,7 @@ const validator = require('../../Validations/CoworkingSpaceValidations');
 //--------------------models--------------------
 const users = require('../../models/UserProfile');
 const User = require('../../models/UserProfile');
-
+const Event = require('../../models/EventModel');
 
 const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule')
@@ -929,7 +929,7 @@ router.put("/update/booking/:bid", async (req, res) => {
 });
 
 
-//view suggestions of coworking spaces when creating an event,depending on capacity,location and event time  tested
+//view suggestions of coworking spaces when creating an event,depending on date,location and event time  tested
 //get only empty rooms?
 router.get("/CoworkingSpace/Suggestions/:eid", async (req, res) => {
   jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
@@ -937,21 +937,17 @@ router.get("/CoworkingSpace/Suggestions/:eid", async (req, res) => {
       //If error send Forbidden (403)
       res.sendStatus(403);
     } else {
-      try {
-        const eventid = parseInt(req.params.eid);
+        const eventid = objectid(req.params.eid);
 
-        const event = await users.find(
-          { "events.id": eventid },
-          { events: { $elemMatch: { id: eventid } } }
-        );
+        const event = await Event.findById(eventid);
 
+        console.log(typeof (event.date))
+        
         const suggestions = await users.find(
           {
-            "rooms.capacity": { $gte: event[0].events[0].capacity },
-            "rooms.schedule.Date": event[0].events[0].date,
-            "rooms.schedule.time": event[0].events[0].time,
             "rooms.schedule.reserved": false,
-            address: event[0].events[0].location
+            "rooms.schedule.Date":event.date.getTime,
+            address: event.location
           },
           {
             name: 1,
@@ -969,14 +965,8 @@ router.get("/CoworkingSpace/Suggestions/:eid", async (req, res) => {
           return res.status(404).send({ error: "No room suggestions found" });
 
         res.json(suggestions);
-      } catch (error) {
-        return res.status(404).send({ error: "No room suggestions found" });
-      }
     }
   });
 });
-
-
-
 
 module.exports = router;

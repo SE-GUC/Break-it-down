@@ -86,6 +86,14 @@ class partnermyRoomBookings extends Component {
                     &nbsp;
                     <br />
                     <br />
+                    <Link to={`/user/updateRoomBooking/${el.bookingID}`}>
+                      <Button variant="primary" size="lg" color="blue" active>
+                        Update booking
+                      </Button>
+                    </Link>
+                    &nbsp;
+                    <br />
+                    <br />
                   </div>
                   <br />
                   <br />

@@ -5,12 +5,28 @@ const router = express.Router();
 //-------------Models---------------
 const Event = require('../../models/EventModel');
 
+const jwt = require("jsonwebtoken");
+const tokenKey = require("../../config/keys").secretOrKey;
+var store = require("store");
 
 //-------------Get all events MONGOUPDATED------------------
 router.get('/', (req, res) => {
 	Event.find()
 		.then(items=>res.json(items))
 });
+//-------------Get all MY events MONGOUPDATED------------------
+router.get('/Mine', (req, res) => {
+		jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+			if (err) {
+				//If error send Forbidden (403)
+				console.log("ERROR: Could not connect to the protected route");
+				res.sendStatus(403);
+			} else {
+				Event.find({userID:authorizedData.id})
+				.then(items=>res.json(items))			}
+		});
+	});
+
 
 //---------------------Get Specific event MONGOUPDATED--------------
 router.get('/:id', (req, res) => {
@@ -21,35 +37,47 @@ router.get('/:id', (req, res) => {
 
 //-------------------Create a new event MONGOUPDATED------------------
 router.post('/', async(req, res) => {
-	const newEvent= new Event({
-		 name: req.body.name,
-		 description: req.body.description,
-		 date: req.body.date,
-		 location: req.body.location
+	jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+		if (err) {
+			//If error send Forbidden (403)
+			console.log("ERROR: Could not connect to the protected route");
+			res.sendStatus(403);
+		} else {
+
+			const newEvent= new Event({
+				userID: authorizedData.id,
+				name: req.body.name,
+				description: req.body.description,
+				date: req.body.date,
+				location: req.body.location,
+				time: req.body.time
+				
+		 });
 		 
+	 
+		 if (!newEvent.name) return res.status(400).send({ err: 'Name field is required' });
+			 if (typeof newEvent.name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
+			 
+	 
+		 if (newEvent.description) {
+			 if (typeof newEvent.description !== 'string') return res.status(400).send({ err: 'Invalid value for description' });
+		 }
+	 
+	 
+		 if (!newEvent.date) return res.status(400).send({ err: 'Date field is required' });
+			 
+		 if (!newEvent.location) return res.status(400).send({ err: 'Location field is required' });
+			 if (typeof newEvent.location !== 'string') return res.status(400).send({ err: 'Invalid value for location' });
+	 
+		 console.log(newEvent)
+		 newEvent.save()
+						 .then(items=>res.json(items))
+					 //	.catch(err => res.status(400).json({msg:"Required Field is Missing, Required Fields are: name , date, location."}))
+	 
+
+			}
 	});
 	
-
-	if (!newEvent.name) return res.status(400).send({ err: 'Name field is required' });
-    if (typeof newEvent.name !== 'string') return res.status(400).send({ err: 'Invalid value for name' });
-    
-
-	if (newEvent.description) {
-    if (typeof newEvent.description !== 'string') return res.status(400).send({ err: 'Invalid value for description' });
-	}
-
-
-	if (!newEvent.date) return res.status(400).send({ err: 'Date field is required' });
-    if (typeof newEvent.date !== 'string') return res.status(400).send({ err: 'Invalid value for date' });
-    
-	if (!newEvent.location) return res.status(400).send({ err: 'Location field is required' });
-		if (typeof newEvent.location !== 'string') return res.status(400).send({ err: 'Invalid value for location' });
-
-
-	newEvent.save()
-					.then(items=>res.json(items))
-				//	.catch(err => res.status(400).json({msg:"Required Field is Missing, Required Fields are: name , date, location."}))
-
 });
 
 

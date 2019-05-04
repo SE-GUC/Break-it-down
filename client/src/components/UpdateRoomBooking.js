@@ -34,6 +34,7 @@ class UpdateRoomBooking extends Component {
       })
       .then(res => {
         alert("Your Room Booking was updated successfully!");
+        window.location = "/roombookings";
       })
       .catch(error => {
         this.setState({ error });

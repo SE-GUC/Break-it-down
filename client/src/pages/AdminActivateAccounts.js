@@ -29,12 +29,13 @@ class AdminActivateAccounts extends Component {
     
   };
   componentWillMount() {
-    this.auth();
+   // this.auth();
     this.getDeactivatedUsers();  
   }
 
   activateAccount(Id){
     axios.put(`/api/admin/ActivateAccounts/${Id}`)
+         .then(res=>{this.getDeactivatedUsers()})
          .then( res => {alert("User Account activated successfully!")})
          .catch(error =>{
           this.setState({error})
@@ -105,7 +106,7 @@ class AdminActivateAccounts extends Component {
           role="alert"
           style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         >
-          Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
+          Copyright © 2019 Lirtenhub Inc. All Rights Reserved.{" "}
         </div> 
       </div>
     );

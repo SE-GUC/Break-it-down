@@ -39,11 +39,30 @@ class MainUpdates extends Component {
 
   approve = (id,_id) => {
     axios.put(`/api/admin/approveUpdates/${id}/${_id}`)
+   .then(res=>{axios.get('/api/admin/viewUpdates')
+   .then(res=>{
+     const updates=res.data
+     this.setState({updates:updates,isLoading:false})
+   })
+   .catch(error => {
+     this.setState({ error, isLoading: false })
+     alert(error.message )
+ })})
 
   }
 
   disapprove = (id,_id) => {
     axios.delete(`/api/admin/disapproveUpdates/${id}/${_id}`)
+    .then(res=>{axios.get('/api/admin/viewUpdates')
+    .then(res=>{
+      const updates=res.data
+      this.setState({updates:updates,isLoading:false})
+    })
+    .catch(error => {
+      this.setState({ error, isLoading: false })
+      alert(error.message )
+  })})
+    
   }
 
   render() {
@@ -52,7 +71,7 @@ class MainUpdates extends Component {
       <AdminNavbar/>
       <h1 style={{color:'#000000',textAlign:'center'}}>User updates</h1>
       <Updates updates={this.state.updates}  approve={this.approve} disapprove={this.disapprove} 
-      isLoading={this.state.isLoading}  error={this.state.error}/>
+      isLoading={this.state.isLoading}  error={this.state.error} />
       </div>
     );
   }

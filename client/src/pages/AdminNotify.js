@@ -25,7 +25,7 @@ class AdminNotify extends Component {
     
   };
   componentWillMount() {
-    this.auth();
+    // this.auth();
     this.getDescription();
   }
 
@@ -86,7 +86,7 @@ class AdminNotify extends Component {
           role="alert"
           style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         >
-          Copyright © 2019 Lirten Inc. All Rights Reserved.{" "}
+          Copyright © 2019 Lirtenhub Inc. All Rights Reserved.{" "}
         </div>
       </div>
     );

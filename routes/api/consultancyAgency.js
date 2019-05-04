@@ -7,12 +7,6 @@ const users = require('../../models/UserProfile');
 const ConsultancyAgency = require('../../models/consultancyAgency');
 const Message = require('../../models/messages');
 const recommendedAppl = require('../../models/RecommendedApplicants');
-//auth
-const jwt = require("jsonwebtoken");
-
-const tokenKey = require("../../config/keys").secretOrKey;
-
-var store = require("store");
 
 
 //-------------------pathToSendFile----------------------------
@@ -21,6 +15,12 @@ var path = require('path');
 var objectid = require('mongodb').ObjectID
 
 
+//auth
+const jwt = require("jsonwebtoken");
+
+const tokenKey = require("../../config/keys").secretOrKey;
+
+var store = require("store");
 
 //------------------------------push notifications---------------------------
 var CronJob = require('cron').CronJob;
@@ -326,8 +326,28 @@ router.post('/messages', async (req, res) => {
 
 //--------------get all consultancy agencies-----------
 router.get('/', async (req,res) => {
-const ConsultancyAgencys = await ConsultancyAgency.find()
-res.json({data: ConsultancyAgencys})
+// const ConsultancyAgencys = await ConsultancyAgency.find()
+// res.json( ConsultancyAgencys)
+jwt.verify(store.get("token"), tokenKey, async (err, authorizedData) => {
+  if (err) {
+    //If error send Forbidden (403)
+    console.log("ERROR: Could not connect to the protected route");
+    //res.json({ error: "forbidden", status: "403" });
+    res.sendStatus(403);
+  } else {
+    try {
+      const CA = await users.findOne({
+        _id: authorizedData.id
+      });
+      if (CA === undefined || CA.length == 0)
+        return res.json("Member does not exist");
+      res.json(CA);
+    } catch (error) {
+      res.json(error.message);
+    }
+    console.log("SUCCESS: Connected to protected route y");
+  }
+});
 })
 
 

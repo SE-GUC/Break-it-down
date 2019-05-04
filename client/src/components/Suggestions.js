@@ -17,8 +17,7 @@ class Suggestions extends Component {
   //id will change to generic type when linking  `/api/coworkingSpace/CoworkingSpace/Suggestions/${eid}`
   componentDidMount(){
     const {data}= this.props.location
-    console.log(data)
-    axios.get('/api/coworkingSpace/CoworkingSpace/Suggestions/'+data._id)
+    axios.get(`/api/coworkingSpace/CoworkingSpace/Suggestions/${data._id}`)
     .then(res=>{
       const coworkingSpace=res.data
       this.setState({coworkingSpace:coworkingSpace,isLoading:false})})
@@ -28,8 +27,8 @@ class Suggestions extends Component {
 
   render() {
     return (
-      <div className="Suggestions" style={{ backgroundColor:  '#FFFFEB'}}>
-      <h1 style={{color:'#005a73',textAlign:'center'}}>Coworking Space Suggestions</h1>
+      <div className="Suggestions" style={{ backgroundColor:  '#ffffff'}}>
+      <h1 style={{color:'#000000',textAlign:'center'}}>Coworking Space Suggestions</h1>
       <SuggestionItems coworkingSpace={this.state.coworkingSpace} 
       isLoading={this.state.isLoading}  error={this.state.error}/>
       </div>

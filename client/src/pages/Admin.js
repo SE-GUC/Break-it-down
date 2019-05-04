@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, BrowserRouter} from "react-router-dom";
 import AdminSidenav from '../components/AdminSidenav'
 import AdminNavbar from '../components/AdminNavbar'
-import power from '../power.png';
 // import Side from "../components/BasicSideNavBar";
 
 class Admin extends Component {
@@ -24,12 +23,20 @@ class Admin extends Component {
   };
 
   render() {
+    const img = require("../man.jpg");
+    const divStyle = {
+      width: "100%",
+      height: "760px",
+      backgroundImage: `url(${img})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+      backgroundSize: "100% 100%"
+    };
     return (
       <BrowserRouter>
-      <div className="App" style={{ backgroundColor:  '#ffffff'}}>
+      <div className="App" style={divStyle}>
       <AdminNavbar/>
       {/* <Side /> */}
-      <img src={power} alt="You've got the power" style={{width: '100%'}} />
       </div>
       </BrowserRouter>
     );

@@ -1,23 +1,12 @@
 // import React from 'react';
-import { slide as Menu } from "react-burger-menu";
+import { bubble as Menu } from "react-burger-menu";
 import Search from "../components/Search";
 import AdminNavbar from "../components/AdminNavbar";
-import MemberNavbar from "../components/MemberSidenav";
-import SideNav, {
-  Nav,
-  NavItem,
-  NavIcon,
-  NavText
-} from "@trendmicro/react-sidenav";
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
-import SvgIcon from "react-icons-kit";
-import { users } from "react-icons-kit/icomoon/users";
-import { home } from "react-icons-kit/icomoon/home";
-import { clipboard } from "react-icons-kit/icomoon/clipboard";
-import { plusSquare } from "react-icons-kit/fa/plusSquare";
-import { calendar } from "react-icons-kit/icomoon/calendar";
 import BellIcon from "react-bell-icon";
-import { Icon } from "semantic-ui-react";
+import { Icon, Modal } from "semantic-ui-react";
+import About from "../components/About";
+import ContactUs from "../components/ContactUs";
 
 // export default props => {
 // return (
@@ -58,6 +47,7 @@ class BasicSideNavBar extends Component {
       .then(res => res.json())
       .then(data => {
         this.setState({ data });
+        console.log(data);
       });
 
     this.setState({
@@ -76,171 +66,716 @@ class BasicSideNavBar extends Component {
   render() {
     // const type = this.state.data.type;
     const coID = this.state.coID;
+
     // console.log(coID + " " + this.state.type);
     if (this.state.type === "coworkingSpace") {
+      var styles = {
+        bmBurgerButton: {
+          position: "fixed",
+          width: "36px",
+          height: "30px",
+          left: "36px",
+          top: "36px"
+        },
+        bmBurgerBars: {
+          background: "#373a47"
+        },
+        bmBurgerBarsHover: {
+          background: "#a90000"
+        },
+        bmCrossButton: {
+          height: "24px",
+          width: "24px"
+        },
+        bmCross: {
+          background: "black"
+        },
+        bmMenuWrap: {
+          position: "fixed",
+          height: "100%"
+        },
+        bmMenu: {
+          background: "black",
+          padding: "2.5em 1.5em 0",
+          fontSize: "1.15em"
+        },
+        bmMorphShape: {
+          fill: "black"
+        },
+        bmItemList: {
+          color: "black",
+          padding: "0em"
+        },
+        bmItem: {
+          display: "inline-block"
+        },
+        bmOverlay: {
+          background: "rgba(0, 0, 0, 0.3)"
+        }
+      };
       return (
         <div>
-          <Menu>
+          <Menu styles={styles} disableAutoFocus>
             <Search />
-
+            <br />
+            <br />
+            <br />
             <a className="menu-item" href={`/coworkingSpace/${coID}`}>
-              My profile
+              <h3>
+                <Icon name="user outline" size="large" /> My Profile
+              </h3>
             </a>
-            <a className="menu-item" href={`/changePassword/${coID}`}>
-              Change password{" "}
+            <br />
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      <Icon name="info circle" size="large" />
+                      About
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <About />
+                </Modal.Content>
+              </Modal>
             </a>
+            <br />
+
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      {" "}
+                      <Icon name="mail" size="large" /> Contact Us
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <ContactUs />
+                </Modal.Content>
+              </Modal>
+            </a>
+            <br />
 
             <a
-              className="menu-item"
               onClick={e => {
                 this.logout(e);
                 window.location = "/";
               }}
             >
-              Logout{" "}
+              <h3>
+                <Icon name="sign-out" size="large" /> Logout
+              </h3>
             </a>
           </Menu>
         </div>
       );
     } else if (this.state.type === "partner") {
+      var styles = {
+        bmBurgerButton: {
+          position: "fixed",
+          width: "36px",
+          height: "30px",
+          left: "36px",
+          top: "36px"
+        },
+        bmBurgerBars: {
+          background: "#373a47"
+        },
+        bmBurgerBarsHover: {
+          background: "#a90000"
+        },
+        bmCrossButton: {
+          height: "24px",
+          width: "24px"
+        },
+        bmCross: {
+          background: "black"
+        },
+        bmMenuWrap: {
+          position: "fixed",
+          height: "100%"
+        },
+        bmMenu: {
+          background: "black",
+          padding: "2.5em 1.5em 0",
+          fontSize: "1.15em"
+        },
+        bmMorphShape: {
+          fill: "black"
+        },
+        bmItemList: {
+          color: "black",
+          padding: "0em"
+        },
+        bmItem: {
+          display: "inline-block"
+        },
+        bmOverlay: {
+          background: "rgba(0, 0, 0, 0.3)"
+        }
+      };
       return (
         <div>
-          <Menu>
+          <Menu styles={styles} disableAutoFocus>
             <Search />
+            <br />
+            <br />
+            <br />
             <a className="menu-item" href="/partner">
-              <Icon name="home" />
-              Home
+              <h3>
+                <Icon name="user outline" size="large" /> My Profile
+              </h3>
             </a>
-
+            <br />
             <a className="menu-item" href={`/myProfile`}>
-              <Icon name="address card" />
-              My profile
+              <h3>
+                <Icon name="book" size="large" /> My Data
+              </h3>
             </a>
-
+            <br />
             <a className="menu-item" href={`/createTask`}>
-              <Icon name="plus circle" />
-              Create a Task{" "}
+              <h3>
+                <Icon name="plus circle" size="large" />
+                Create a Task{" "}
+              </h3>
             </a>
-
+            <br />
             <a className="menu-item" href={`/myTasks`}>
-              <Icon name="tasks" />
-              My Tasks
+              <h3>
+                <Icon name="tasks" size="large" />
+                My Tasks
+              </h3>
             </a>
-
+            <br />
             <a className="menu-item" href={`/roombookings`}>
-              <Icon name="calendar alternate outline" />
-              My Room Bookings
+              <h3>
+                <Icon name="list" size="large" />
+                My Room Bookings
+              </h3>
             </a>
-
+            <br />
             <a className="menu-item" href={`./partnerviewCoworkingSpace`}>
-              <Icon name="calendar plus" />
-              Book A Room
+              <h3>
+                <Icon name="calendar plus" size="large" />
+                Book A Room
+              </h3>
             </a>
-
- <a className="menu-item" href={`/user/viewRoomBooking`}>
-              <Icon name="calendar plus" />
-              View and Update Room Bookings
-            </a>
-
+            <br />
             <a className="menu-item" href={`/getNotifications`}>
-              <BellIcon width="40" active={true} animate={true} />
-              Notifications
+              <h3>
+                <BellIcon width="40" active={true} animate={true} />
+                Notifications
+              </h3>
             </a>
-            <a className="menu-item" href={`/changePassword/${coID}`}>
-              Change password{" "}
+            <br />
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      <Icon name="info circle" size="large" />
+                      About
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <About />
+                </Modal.Content>
+              </Modal>
             </a>
+            <br />
+
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      {" "}
+                      <Icon name="mail" size="large" /> Contact Us
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <ContactUs />
+                </Modal.Content>
+              </Modal>
+            </a>
+            <br />
+
             <a
-              className="menu-item"
               onClick={e => {
                 this.logout(e);
                 window.location = "/";
               }}
             >
-              Logout{" "}
+              <h3>
+                <Icon name="sign-out" size="large" /> Logout
+              </h3>
             </a>
           </Menu>
         </div>
       );
     } else if (this.state.type === "consultancyAgency") {
+      var styles = {
+        bmBurgerButton: {
+          position: "fixed",
+          width: "36px",
+          height: "30px",
+          left: "36px",
+          top: "36px"
+        },
+        bmBurgerBars: {
+          background: "#373a47"
+        },
+        bmBurgerBarsHover: {
+          background: "#a90000"
+        },
+        bmCrossButton: {
+          height: "24px",
+          width: "24px"
+        },
+        bmCross: {
+          background: "black"
+        },
+        bmMenuWrap: {
+          position: "fixed",
+          height: "100%"
+        },
+        bmMenu: {
+          background: "black",
+          padding: "2.5em 1.5em 0",
+          fontSize: "1.15em"
+        },
+        bmMorphShape: {
+          fill: "black"
+        },
+        bmItemList: {
+          color: "black",
+          padding: "0em"
+        },
+        bmItem: {
+          display: "inline-block"
+        },
+        bmOverlay: {
+          background: "rgba(0, 0, 0, 0.3)"
+        }
+      };
       return (
-        <div>
-          <Menu>
-            <Search />
-            <a className="menu-item" href={`/ConsultancyAgency`}>
-              <SvgIcon size={20} icon={home} />
-              {"  "}
-              My Profile
-            </a>
+        <Menu styles={styles} disableAutoFocus>
+          <Search />
+          <br />
+          <br />
+          <br />
+          <a href={`/ConsultancyAgency`} left>
+            <h3>
+              <Icon name="user outline" size="large" /> My Profile
+            </h3>
+          </a>
+          <br />
 
-            <a className="menu-item" href={`/ConsultancyAgency/Partners`}>
-              <SvgIcon size={20} icon={users} />
-              {"  "}
-              My Partners
-            </a>
+          <a href={`/ConsultancyAgency/Partners`}>
+            <h3>
+              <Icon name="users" size="large" /> My Partners
+            </h3>
+          </a>
+          <br />
 
-            <a className="menu-item" href={`/ConsultancyAgency/Tasks`}>
-              <SvgIcon size={20} icon={clipboard} /> {"  "}
-              My Assigned Tasks
-            </a>
+          <a href={`/ConsultancyAgency/Tasks`}>
+            <h3>
+              {" "}
+              <Icon size="large" name="tasks" /> My Assigned Tasks
+            </h3>
+          </a>
+          <br />
 
- <a className="menu-item" href={`/user/viewRoomBooking`}>
-              <Icon name="calendar plus" />
-              View and Update Room Bookings
-            </a>
+          <a href={`/ConsultancyAgency/MyEvents`}>
+            <h3>
+              {" "}
+              <Icon size="large" name="calendar alternate outline" /> My Events
+            </h3>
+          </a>
+          <br />
 
-            <a className="menu-item" href={`/ConsultancyAgency/MyEvents`}>
-              <SvgIcon size={20} icon={calendar} />
-              {"  "}
-              My Events
-            </a>
+          <a href={`/ConsultancyAgency/AllTasks`}>
+            <h3>
+              <Icon size="large" name="add" /> Apply for a Task
+            </h3>
+          </a>
+          <br />
 
-            <a className="menu-item" href={`/ConsultancyAgency/AllTasks`}>
-              <SvgIcon size={20} icon={plusSquare} />
-              {"  "}
-              Apply for a Task
-            </a>
-            <a className="menu-item" href={`/changePassword/${coID}`}>
-              Change password{" "}
-            </a>
-            <a
-              className="menu-item"
-              onClick={e => {
-                this.logout(e);
-                window.location = "/";
+          <a>
+            <Modal
+              style={{
+                position: "absolute",
+
+                left: "50%",
+
+                top: "50%",
+
+                transform: "translate(-50%, -50%)"
               }}
+              trigger={
+                <div>
+                  <h3>
+                    <Icon name="info circle" size="large" />
+                    About
+                  </h3>
+                </div>
+              }
+              basic
+              size="large"
             >
-              Logout{" "}
-            </a>
-          </Menu>
-        </div>
-      );
-    } else if (this.state.type === "admin") {
-      return <AdminNavbar />;
-    } else if (this.state.type === "member") {
-      return <MemberNavbar />;
-    } else {
-      return (
-        <Menu>
-          <a className="menu-item" href="">
-            My profile
+              <Modal.Content>
+                <About />
+              </Modal.Content>
+            </Modal>
           </a>
+          <br />
 
-          <a className="menu-item" href={`/changePassword/${coID}`}>
-            Change password{" "}
+          <a>
+            <Modal
+              style={{
+                position: "absolute",
+
+                left: "50%",
+
+                top: "50%",
+
+                transform: "translate(-50%, -50%)"
+              }}
+              trigger={
+                <div>
+                  <h3>
+                    {" "}
+                    <Icon name="mail" size="large" /> Contact Us
+                  </h3>
+                </div>
+              }
+              basic
+              size="large"
+            >
+              <Modal.Content>
+                <ContactUs />
+              </Modal.Content>
+            </Modal>
           </a>
- <a className="menu-item" href={`/user/viewRoomBooking`}>
-              <Icon name="calendar plus" />
-              View and Update Room Bookings
-            </a>
+          <br />
 
           <a
-            className="menu-item"
             onClick={e => {
               this.logout(e);
               window.location = "/";
             }}
           >
-            Logout{" "}
+            <h3>
+              <Icon name="sign-out" size="large" /> Logout
+            </h3>
+          </a>
+        </Menu>
+      );
+    } else if (this.state.type === "admin") {
+      return <AdminNavbar />;
+    } else if (this.state.type === "member") {
+      var styles = {
+        bmBurgerButton: {
+          position: "fixed",
+          width: "36px",
+          height: "30px",
+          left: "36px",
+          top: "36px"
+        },
+        bmBurgerBars: {
+          background: "#373a47"
+        },
+        bmBurgerBarsHover: {
+          background: "#a90000"
+        },
+        bmCrossButton: {
+          height: "24px",
+          width: "24px"
+        },
+        bmCross: {
+          background: "black"
+        },
+        bmMenuWrap: {
+          position: "fixed",
+          height: "100%"
+        },
+        bmMenu: {
+          background: "black",
+          padding: "2.5em 1.5em 0",
+          fontSize: "1.15em"
+        },
+        bmMorphShape: {
+          fill: "black"
+        },
+        bmItemList: {
+          color: "black",
+          padding: "0em"
+        },
+        bmItem: {
+          display: "inline-block"
+        },
+        bmOverlay: {
+          background: "rgba(0, 0, 0, 0.3)"
+        }
+      };
+      return (
+        <div>
+          <Menu styles={styles} disableAutoFocus>
+            <Search />
+            <br />
+            <br />
+            <br />
+            <a className="menu-item" href="/MemberProfile">
+              <h3>
+                <Icon name="user outline" size="large" /> My Profile
+              </h3>
+            </a>
+            <br />
+            <a className="menu-item" href={`/roombookings`}>
+              <h3>
+                <Icon name="list" size="large" />
+                My Room Bookings
+              </h3>
+            </a>
+            <br />
+            <a className="menu-item" href={`./partnerviewCoworkingSpace`}>
+              <h3>
+                <Icon name="calendar plus" size="large" />
+                Book A Room
+              </h3>
+            </a>
+            <br />
+
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      <Icon name="info circle" size="large" />
+                      About
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <About />
+                </Modal.Content>
+              </Modal>
+            </a>
+            <br />
+
+            <a>
+              <Modal
+                style={{
+                  position: "absolute",
+
+                  left: "50%",
+
+                  top: "50%",
+
+                  transform: "translate(-50%, -50%)"
+                }}
+                trigger={
+                  <div>
+                    <h3>
+                      {" "}
+                      <Icon name="mail" size="large" /> Contact Us
+                    </h3>
+                  </div>
+                }
+                basic
+                size="large"
+              >
+                <Modal.Content>
+                  <ContactUs />
+                </Modal.Content>
+              </Modal>
+            </a>
+            <br />
+
+            <a
+              onClick={e => {
+                this.logout(e);
+                window.location = "/";
+              }}
+            >
+              <h3>
+                <Icon name="sign-out" size="large" /> Logout
+              </h3>
+            </a>
+          </Menu>
+        </div>
+      );
+    } else {
+      var styles = {
+        bmBurgerButton: {
+          position: "fixed",
+          width: "36px",
+          height: "30px",
+          left: "36px",
+          top: "36px"
+        },
+        bmBurgerBars: {
+          background: "#373a47"
+        },
+        bmBurgerBarsHover: {
+          background: "#a90000"
+        },
+        bmCrossButton: {
+          height: "24px",
+          width: "24px"
+        },
+        bmCross: {
+          background: "black"
+        },
+        bmMenuWrap: {
+          position: "fixed",
+          height: "100%"
+        },
+        bmMenu: {
+          background: "black",
+          padding: "0",
+          fontSize: "1.15em"
+        },
+        bmMorphShape: {
+          fill: "black"
+        },
+        bmItemList: {
+          color: "black",
+          padding: "0.8em"
+        },
+        bmItem: {
+          display: "inline-block"
+        },
+        bmOverlay: {
+          background: "rgba(0, 0, 0, 0.3)"
+        }
+      };
+      return (
+        <Menu styles={styles} disableAutoFocus>
+          <a href={`/`}>
+            <Icon name="home" size="massive" />
+            <br />
+            <h1>Home</h1>
+          </a>
+
+          <a>
+            <Modal
+              style={{
+                position: "absolute",
+
+                left: "50%",
+
+                top: "50%",
+
+                transform: "translate(-50%, -50%)"
+              }}
+              trigger={
+                <div>
+                  <Icon name="info circle" size="massive" />
+                  <br />
+                  <h1>About</h1>
+                </div>
+              }
+              basic
+              size="large"
+            >
+              <Modal.Content>
+                <About />
+              </Modal.Content>
+            </Modal>
+          </a>
+
+          <a>
+            <Modal
+              style={{
+                position: "absolute",
+
+                left: "50%",
+
+                top: "50%",
+
+                transform: "translate(-50%, -50%)"
+              }}
+              trigger={
+                <div>
+                  <Icon name="mail" size="massive" />
+                  <br />
+                  <h1>Contact Us</h1>
+                </div>
+              }
+              basic
+              size="large"
+            >
+              <Modal.Content>
+                <ContactUs />
+              </Modal.Content>
+            </Modal>
           </a>
         </Menu>
       );
